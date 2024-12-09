@@ -1,0 +1,16 @@
+./Metier/Chapitre.java
+./Metier/Ecriture.java
+./Metier/Lire.java
+./Metier/Metier.java
+./Metier/Question.java
+./Metier/Questionnaire.java
+./Metier/Reponse.java
+./Metier/Ressource.java
+./Metier/TestMetier.java
+./Metier/TestObjet.java
+./Metier/TestQuestion.java
+./Metier/TestRessource.java
+
+./IHM/PanelCreationRessource.java
+
+./Controlleur/Controlleur.java
