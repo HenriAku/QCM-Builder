@@ -7,19 +7,34 @@ package Metier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+
+
+import Controlleur.Controlleur;
 
 public class Metier 
 {
-	//private Controlleur     ctrl;
+	private Controlleur     ctrl;
 	private List<Ressource> lstRessources;
 	private Lire lecteur;
+	private Ecriture ecriture;
 
-	public Metier()//Controlleur ctrl)
+	public Metier(Controlleur ctrl)
 	{
-		//this.ctrl = ctrl;
+		this.ctrl = ctrl;
 		this.lstRessources = new ArrayList<>();
-		this.lecteur = new Lire("./../ressources/");
-	
+		this.lecteur  = new Lire("QCM Builder\\\\ressources/");
+		this.ecriture = new Ecriture("QCM Builder\\ressources/");
+		this.init();
+	}
+
+	public Metier()
+	{
+		this.ctrl = null;
+		this.lstRessources = new ArrayList<>();
+		this.lecteur  = new Lire("QCM Builder\" + File.separator + \"ressources\" + File.separator");
+		this.ecriture = new Ecriture("QCM Builder\" + File.separator + \"ressources\" + File.separator");
+		this.init();
 	}
 
 
@@ -27,29 +42,34 @@ public class Metier
 	 * Initialise les ressources et leurs chapitres à partir des dossiers et fichiers présents
 	 * dans le répertoire 'ressources'.
 	 */
-	public void init()
-	{
-		ArrayList<Ressource> lstRessources = new ArrayList<>();
-		ArrayList<String> nomsRessources = getLecteur().lireDossier(lecteur.getEmplacementRessources());
-
-		for (int i=0; i<nomsRessources.size(); i++)
+	public void init() {
+		ArrayList<Ressource> lstRessources  = new ArrayList<>();
+		ArrayList<String>    nomsRessources = getLecteur().lireDossier("");
+	
+		for (int i = 0; i < nomsRessources.size(); i++) 
 		{
-			ArrayList<Chapitre> lstChapitre = new ArrayList<>();
-			ArrayList<String> nomsChapitres = getLecteur().lireDossier(lecteur.getEmplacementRessources()+""+nomsRessources.get(i));
-			
-			for (int j=0; j<nomsChapitres.size(); j++)
+			ArrayList<Chapitre> lstChapitre   = new ArrayList<Chapitre>();
+			ArrayList<String  > nomsChapitres = getLecteur().lireDossier(nomsRessources.get(i));
+	
+			for (int j = 0; j < nomsChapitres.size(); j++) 
 			{
-				ArrayList<Question> lstQuestions;
-				lstQuestions = getLecteur().lireQuestion(lecteur.getEmplacementRessources()+""+nomsRessources.get(i)+""+nomsChapitres.get(j));
-				lstChapitre.add(new Chapitre(nomsChapitres.get(i), lstQuestions));
+				ArrayList<Question> lstQuestions = new ArrayList<>();
+				String cheminQuestion = lecteur.getEmplacementRessources() + nomsRessources.get(i) + "/" + nomsChapitres.get(j);
+	
+				lstQuestions = getLecteur().lireQuestion(cheminQuestion);
+				lstChapitre.add(new Chapitre(nomsChapitres.get(j), lstQuestions));
 			}
-
-			lstRessources.add(new Ressource(nomsRessources.get(i)));
-
+	
+			lstRessources.add(new Ressource(nomsRessources.get(i), lstChapitre));
 		}
-		
+	
 		setLstRessource(lstRessources);
+	}
+	
 
+	public boolean creerDossier(String nomRes)
+	{
+		return this.ecriture.creerDossier(nomRes);
 	}
 
 	/**
@@ -92,11 +112,20 @@ public class Metier
 	 */
 	public void addRessource(Ressource res)
 	{
+		boolean bOk = false;
 		for (Ressource ressource : this.lstRessources)
 		{
-			if (!ressource.getNom().equals(res.getNom())) 
-				this.lstRessources.add(res);
+			if (!ressource.getNom().equals(res.getNom()))
+				bOk = true;
 		}
+		this.lstRessources.add(res);
+	}
+
+	//generer un questionnaire
+	public Questionnaire genererQCM(Scanner sc)
+	{
+
+		return Questionnaire.genererQuestionnaire(sc, this);
 	}
 
 	/** 

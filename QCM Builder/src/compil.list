@@ -11,6 +11,12 @@
 ./Metier/TestQuestion.java
 ./Metier/TestRessource.java
 
+./IHM/FrameCreation.java
+./IHM/Modification.java
+./IHM/FrameTest.java
+./IHM/FrameTestChap.java
+./IHM/PanelChapitre.java
+./IHM/PanelRessource.java
 ./IHM/PanelCreationRessource.java
 
 ./Controlleur/Controlleur.java

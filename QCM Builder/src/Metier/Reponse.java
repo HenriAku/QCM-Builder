@@ -5,6 +5,7 @@
 
 package Metier;
 
+import java.util.ArrayList;
 import java.util.Scanner; 
 
 public class Reponse 
@@ -12,12 +13,28 @@ public class Reponse
 	private String  reponse     ;
 	private boolean valeur      ;
 	private int     ordreEnveler;
+	private ArrayList<Reponse> lstReponsesAsso; 
 
 	public Reponse(String reponse, boolean valeur, int ordreEnveler) 
 	{
 		this.reponse      = reponse     ;
 		this.valeur       = valeur      ;
 		this.ordreEnveler = ordreEnveler;
+	}
+
+	public Reponse(String reponse) 
+	{
+		this.reponse      = reponse     ;
+		this.lstReponsesAsso       = new ArrayList<Reponse>()      ;
+	}
+
+	public void associerReponse(Reponse r)
+	{
+		if(lstReponsesAsso.contains(r))
+				return;	
+
+		this.lstReponsesAsso.add(r);
+		return;
 	}
 
 	/***********************/
@@ -27,6 +44,22 @@ public class Reponse
 	public String  getReponse     () {return reponse     ;}
 	public boolean isValeur       () {return valeur      ;}
 	public int     getOrdreEnveler() {return ordreEnveler;}
+
+	public String  getReponseAsso () 
+	{
+		String sRet = "";
+	
+		for(int i = 0; i < this.lstReponsesAsso.size(); i++)
+		{
+			//System.out.print("remi ");
+			System.out.print(this.lstReponsesAsso.get(i).getReponse().strip() + "/");
+
+		}
+
+		return sRet;
+	}
+
+	public ArrayList<Reponse> getLstRep() {return lstReponsesAsso;}
 
 
 	/***********************/

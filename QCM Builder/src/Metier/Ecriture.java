@@ -14,7 +14,7 @@ public class Ecriture
 
 	public Ecriture(String emplacementRessources) 
 	{
-		this.emplacementRessources = "./../ressources/";
+		this.emplacementRessources = emplacementRessources;
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class Ecriture
 	 */
 	public boolean creerDossierRessource(Ressource ressource)
 	{
-		File dossier = new File( "./../ressources/" + ressource.getNom() );
+		File dossier = new File( "./ressources/" + ressource.getNom() );
 
 		if (!dossier.exists())
 		{
@@ -85,7 +85,7 @@ public class Ecriture
 	public boolean creerDossierChapitre(Ressource ressource, Chapitre chapitre)
 	{
 		{
-			File dossier = new File( "./../ressources/" + ressource.getNom() + "" + chapitre.getNom() );
+			File dossier = new File( "./ressources/" + ressource.getNom() + "" + chapitre.getNom() );
 
 			if (!dossier.exists())
 			{

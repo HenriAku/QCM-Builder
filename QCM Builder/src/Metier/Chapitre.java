@@ -33,7 +33,8 @@ public class Chapitre
 		Ecriture ef = new Ecriture("../ressources/" );
 		ef.creerDossier(chapitre);
 
-		initQuestion(lstQuestions);
+		if (lstQuestions != null) 
+			initQuestion(lstQuestions);
 	}
 
 	//methode creerChapitre en demandant les informations à l'utilisateur
@@ -282,7 +283,40 @@ public class Chapitre
 		return lstQuest;
 	}
 
-	public String getNom() { return this.chapitre; }
+	//aleaQuestionsSimple qui prend un nombre de question et renvoie une liste de question aléatoire
+	public ArrayList<Question> aleaQuestionsSimple(int nbQuestion)
+	{
+		ArrayList<Question> lstQuest = new ArrayList<Question>();
+
+		for (int i=0; i<nbQuestion; i++)
+		{
+			// Ajoute dans la liste en évitant de mettre plusieurs fois la même questions
+			if (i < this.lstQuestionsFacile.size())
+			{
+				boolean estDejaDansLaListe = true;
+				while (estDejaDansLaListe) 
+				{
+					Question question = this.lstQuestionsFacile.get((int)(Math.random()*this.lstQuestionsFacile.size()));
+					
+					estDejaDansLaListe = false;
+					for (Question quest:lstQuest)
+					{
+						if (quest.equals(question))
+							estDejaDansLaListe = true;
+					}
+
+					if (! estDejaDansLaListe)
+						lstQuest.add(question);
+				}
+			}
+		}
+
+		return lstQuest;
+	}
+
+	public String getNom(		   ) { return this.chapitre; }
+	public void   setNom(String nom) { this.chapitre = nom ; }
+
 	
 	//public Ressource getRessource() { return this.ressource; }
 

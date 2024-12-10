@@ -10,13 +10,6 @@ public class Lire
 	private String contenuFichier;
 	private String emplacementRessources;
 
-	public static void main(String[] args) 
-	{
-		Lire l = new Lire("./../ressources/ChapitreTest/");
-
-		l.lireQuestion("./../ressources/ChapitreTest/");
-	}
-
 	public Lire(String emplacementRessources) 
 	{
 		this.emplacementRessources = emplacementRessources;
@@ -111,7 +104,7 @@ public class Lire
                             for (File fichier : fichiers) 
 							{
                                 // Vérifier si c'est un fichier .data
-                                if (fichier.isFile() && fichier.getName().endsWith(".data")) 
+                                if (fichier.isFile() && fichier.getName().endsWith(".csv")) 
 								{
                                     try 
 									{
@@ -136,11 +129,12 @@ public class Lire
 			System.out.println(lstQuestion.get(z).getQuestion());
 			for (Reponse question : lstQuestion.get(z).getLstRep()) 
 			{
-				System.out.println(question.afficherReponse());
+//				System.out.println((question.getLstRep() == null) ? question.afficherReponse() : "rep : " + question.getReponseAsso() );
+//				System.out.println(question.afficherReponse());
 			}
 		}
 
-		return lstQuestion;
+		return null;
 	}
 
 	private Question creerQuestion(String qst)
@@ -184,7 +178,68 @@ public class Lire
 				break;
 
 			case "A":
+				
+				int indiceTabAsso = -1;
+				int indiceTabTest = -1;
+				String etape = "";
+				ArrayList<Reponse> lstReponsesAsso = new ArrayList<Reponse>();
+				
+				for(int i = 0; i<lines.length; i++)
+				{
+					String[] contenuLigne = lines[i].split("\t");
+					if(lines[i].equals("FIN"))
+					{
+						break;
+					}
+					
+					if(lines[i].strip().equals("Reponse".strip()))
+					{
+						etape = "reponse";
+					}
+					else
+					{
+						if(lines[i].strip().equals("Association".strip()))
+						{	
+							etape = "Association";
+						}
+						else
+						{
+							if(etape.equals("reponse"))
+							{
+								lstReponsesAsso.add(new Reponse(contenuLigne[0]));
+							}
+							else
+							{
+								if(etape.equals("Association"))
+								{
+									for (Reponse reponse : lstReponsesAsso) 
+									{
+										if (reponse.getReponse().strip().equals(contenuLigne[0].strip())) 
+										{
+											indiceTabAsso = lstRep.indexOf(reponse);
+										}	
+									}
 
+									for(int asso = 1; asso < contenuLigne.length; asso++)
+									{
+										for (Reponse reponse : lstReponsesAsso) 
+										{
+											if (reponse.getReponse().strip().equals(contenuLigne[asso].strip())) 
+											{
+												lstReponsesAsso.get(indiceTabAsso).associerReponse(reponse);
+											}	
+										}
+
+									}
+								}								
+							}
+							
+						}
+					}
+					
+					lstRep = lstReponsesAsso;
+
+				}
 				break;
 
 			default:

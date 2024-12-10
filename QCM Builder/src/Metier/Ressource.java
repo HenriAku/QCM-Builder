@@ -30,6 +30,14 @@ public class Ressource
 		ef.creerDossier(nom);
 	}
 
+	public Ressource(String nom, ArrayList<Chapitre> chapitres)
+	{
+		this.nom = nom;
+		this.chapitres = chapitres; 
+		Ecriture ef = new Ecriture("../ressources/");
+		ef.creerDossier(nom);
+	}
+
 	//ajout d'un chapitre dans la liste en vérifaint s'il n'existe pas encore
 	public void addChap(Chapitre chap)
 	{
@@ -49,6 +57,16 @@ public class Ressource
 			this.chapitres.add(chap);
 			System.out.println("Chapitre ajouté");
 		}
+	}
+
+	public Chapitre rechercheChapitre(String nom)
+	{
+		for (Chapitre chapitre : chapitres) 
+		{
+			if (chapitre.getNom().equals(nom))
+				return chapitre;
+		}
+		return null;
 	}
 
 	/**

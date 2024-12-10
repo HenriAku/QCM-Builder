@@ -4,39 +4,45 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
+import Controlleur.Controlleur;
+import Metier.Chapitre;
+import Metier.Question;
 import Metier.Ressource;
 
 public class FrameTest extends JFrame
 {
-	private PanelRessource panel;
+	private PanelRessource panel  ;
+	private PanelAcceuil   acceuil;
+	private Controlleur    ctrl   ;
 
-	public FrameTest()
+	public FrameTest(Controlleur ctrl)
 	{
 		this.setTitle("Test");
 		this.setSize(1000, 1000);
 
+		this.ctrl = ctrl;
 		
-		ArrayList<Ressource> lstRes = new ArrayList<Ressource>();
-		lstRes.add(new Ressource("Math"));
-		lstRes.add(new Ressource("Algo"));
-		lstRes.add(new Ressource("Francais"));
-		lstRes.add(new Ressource("Communication"));
-		lstRes.add(new Ressource("Anglais Technique"));
-		lstRes.add(new Ressource("Anglais Technique"));
-		lstRes.add(new Ressource("Anglais Technique"));
-		lstRes.add(new Ressource("Anglais Technique"));
-		lstRes.add(new Ressource("Anglais Technique"));
 
-
-
-		this.panel = new PanelRessource(lstRes);
+		this.acceuil = new PanelAcceuil(this.ctrl, this);
 		this.add(this.panel);
 
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
-	public static void main(String[] args) {
-		new FrameTest();
+	public void majIhm()
+	{
+		this.remove(this.panel);
+		this.add(new PanelRessource(ctrl, this));
+		this.revalidate();
+		this.repaint();
+	}
+
+	public void ressourceToChapitre(Ressource ressource)
+	{
+		this.remove(this.panel);
+		this.add(new PanelChapitre(this.ctrl, ressource,this));
+		this.revalidate();
+		this.repaint();
 	}
 }

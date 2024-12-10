@@ -1,49 +1,45 @@
-/**
- * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Théo Wychowski
- * @date 09/12/2024
- */
 package IHM;
+
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
 import Controlleur.Controlleur;
 import Metier.Chapitre;
 import Metier.Ressource;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-public class FrameCreation extends JFrame implements ActionListener
+public class FrameModification extends JFrame implements ActionListener
 {
 	private Controlleur ctrl;
 	private JTextField  txtName;
 	private JButton     btnVald;
 	private JButton     btnCancel;
 	private String      operation;
-	private String      ressource;
-	private FramePrincipal   frame;
+	private Ressource   ressource;
+	private Chapitre    chapitre ;
 
-	//operation = soit chapitre soit ressource
-	public FrameCreation(Controlleur ctrl, String operation, String ressource, FramePrincipal frame)
+	public FrameModification(Controlleur ctrl, String operation, Ressource ressource, Chapitre chapitre)
 	{
-		this.setTitle("Creation de " + operation);
+		this.setTitle("Modification de Ressource");
 		this.setLayout(new GridLayout(2, 1));
 		this.setSize(400, 500);
 
-		this.ctrl 	   = ctrl;
-		this.frame     = frame;
+		this.ctrl      = ctrl     ;
 		this.operation = operation;
 		this.ressource = ressource;
+		this.chapitre  = chapitre ;
 
 		/****************************/
 		/*	Création des composant  */
 		/****************************/
 
-		this.txtName = new JTextField();
+		this.txtName = new JTextField(ressource.getNom());
 
 		JPanel panelBtn = new JPanel();
 		panelBtn.setLayout(new GridLayout(1,2));
@@ -94,17 +90,21 @@ public class FrameCreation extends JFrame implements ActionListener
 			String name = this.txtName.getText();
 			if (this.operation.equals("Ressource")) 
 			{
-				this.ctrl.creerDossier(name); 
-				this.ctrl.addRessource(new Ressource(name));
-				this.frame.refreshRessource();
+				if (this.ctrl.rechercheRessource(name) == null) 
+				{
+					this.ressource.setNom(name);	
+					//methodes pour changer le nom du dossier de la ressource
+				}
 			}
-			else 
+			else
 			{
-				this.ctrl.creerDossier(this.ressource + "/" + name); 
-				Ressource res = this.ctrl.rechercheRessource(this.ressource);
-				res.addChap(new Chapitre(name, null));
-				this.frame.afficheChapitre(res);
+				if (this.ressource.rechercheChapitre(name) == null) 
+				{
+					this.chapitre.setNom(name);
+					//methodes pour changer le nom du dossier de la ressource
+				}
 			}
+
 			this.dispose();	
 		}
 
