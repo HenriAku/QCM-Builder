@@ -1,3 +1,7 @@
+/**
+ * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Wychowski Théo
+ * @date 09/12/2024
+ */
 package IHM;
 
 import javax.swing.*;
@@ -14,7 +18,7 @@ public class PanelAcceuil extends JPanel implements ActionListener
 
     public PanelAcceuil(Controlleur ctrl, FramePrincipal frame) 
     {
-        this.ctrl = ctrl;
+        this.ctrl  = ctrl;
         this.frame = frame;
 
         // Configuration du layout principal
@@ -114,7 +118,7 @@ public class PanelAcceuil extends JPanel implements ActionListener
             JButton btn = (JButton) e.getSource();
             if("Créer question".equals(btn.getText()))
             {
-                System.out.println("test1");
+                new FrameCreationQuestion(frame, ctrl);
             }
 
             if("Créer questionnaire".equals(btn.getText()))

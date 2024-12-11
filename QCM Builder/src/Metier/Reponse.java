@@ -1,5 +1,5 @@
 /**
- * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Théo Wychowski
+ * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Wychowski Théo
  * @date 09/12/2024
  */
 
@@ -12,14 +12,14 @@ public class Reponse
 {
 	private String  reponse     ;
 	private boolean valeur      ;
-	private int     ordreEnveler;
+	private int     ordreEnlever;
 	private ArrayList<Reponse> lstReponsesAsso; 
 
-	public Reponse(String reponse, boolean valeur, int ordreEnveler) 
+	public Reponse(String reponse, boolean valeur, int ordreEnlever) 
 	{
 		this.reponse      = reponse     ;
 		this.valeur       = valeur      ;
-		this.ordreEnveler = ordreEnveler;
+		this.ordreEnlever = ordreEnlever;
 	}
 
 	public Reponse(String reponse) 
@@ -43,7 +43,7 @@ public class Reponse
 
 	public String  getReponse     () {return reponse     ;}
 	public boolean isValeur       () {return valeur      ;}
-	public int     getOrdreEnveler() {return ordreEnveler;}
+	public int     getOrdreEnleverordreEnlever() {return ordreEnlever;}
 
 	public String  getReponseAsso () 
 	{
@@ -68,7 +68,7 @@ public class Reponse
 
 	public void setReponse     (String  reponse     ) {this.reponse      = reponse     ;}
 	public void setValeur      (boolean valeur      ) {this.valeur       = valeur      ;}
-	public void setOrdreEnveler(int     ordreEnveler) {this.ordreEnveler = ordreEnveler;}
+	public void setOrdreEnleverordreEnlever(int     ordreEnlever) {this.ordreEnlever = ordreEnlever;}
 
 	/***********************/
 	/*		SETTEURS	   */
@@ -83,15 +83,37 @@ public class Reponse
 			System.out.print("Entrez la réponse : ");
 			String reponse = sc.nextLine();
 
-			System.out.print("Est-ce la bonne réponse ? (true/false) : ");
-			Boolean valeur = sc.nextBoolean();
-			sc.nextLine();
+			// Demande si la réponse est la bonne réponse tant que la réponse n'est pas oui ou non, prend un boolean
+			String reponseValeur;
+			boolean valeur;
+			do
+			{
+				System.out.print("Est-ce la bonne réponse ? (oui/non) : ");
+				reponseValeur = sc.nextLine();
+			}
+			while (!reponseValeur.equalsIgnoreCase("oui") && !reponseValeur.equalsIgnoreCase("non"));
 
-			System.out.print("Entrez l'ordre d'enlèvement de la réponse : ");
-			int ordreEnveler = sc.nextInt();
-			sc.nextLine();
-
-			return new Reponse(reponse, valeur, ordreEnveler);
+			if (reponseValeur.equalsIgnoreCase("oui"))
+				valeur = true;
+			else
+				valeur = false;
+			
+			// Demande l'ordre d'enlèvement de la réponse tant que ce n'est pas un entier
+			int ordreEnlever;
+			do
+			{
+				System.out.print("Entrez l'ordre d'enlèvement de la réponse : ");
+				while (!sc.hasNextInt()) 
+				{
+					System.out.print("Veuillez entrer un nombre entier : ");
+					sc.next();
+				}
+				ordreEnlever = sc.nextInt();
+				sc.nextLine();
+			}
+			while (ordreEnlever <= 0);
+			
+			return new Reponse(reponse, valeur, ordreEnlever);
 		}
 		catch (Exception e) 
 		{
@@ -104,13 +126,13 @@ public class Reponse
 	@Override
 	public String toString() 
 	{
-		return "Reponse [reponse=" + reponse + ", valeur=" + valeur + ", ordreEnveler=" + ordreEnveler + "]";
+		return "Reponse [reponse=" + reponse + ", valeur=" + valeur + ", ordreEnlever=" + ordreEnlever + "]";
 	}
 
 	//methode afficher réponse dans le terminal
 	public String afficherReponse()
 	{
-		return "Reponse : " + reponse + " | Valeur : " + valeur + " | Ordre : " + ordreEnveler  + "\n";
+		return "Reponse : " + reponse + " | Valeur : " + valeur + " | Ordre : " + ordreEnlever  + "\n";
 	}
 
 	

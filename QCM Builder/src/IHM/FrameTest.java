@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 
 import Controlleur.Controlleur;
-import Metier.Chapitre;
+import Metier.Notion;
 import Metier.Question;
 import Metier.Ressource;
 
@@ -38,10 +38,10 @@ public class FrameTest extends JFrame
 		this.repaint();
 	}
 
-	public void ressourceToChapitre(Ressource ressource)
+	public void ressourceToNotion(Ressource ressource)
 	{
 		this.remove(this.panel);
-		this.add(new PanelChapitre(this.ctrl, ressource,this));
+		this.add(new PanelNotion(this.ctrl, ressource,this));
 		this.revalidate();
 		this.repaint();
 	}

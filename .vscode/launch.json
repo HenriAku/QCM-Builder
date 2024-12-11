@@ -6,6 +6,20 @@
 	"configurations": [
 		{
 			"type": "java",
+			"name": "TestPage",
+			"request": "launch",
+			"mainClass": "testWeb.TestPage",
+			"projectName": "QCM-Builder_16d12e32"
+		},
+		{
+			"type": "java",
+			"name": "FrameAssociation",
+			"request": "launch",
+			"mainClass": "IHM.FrameAssociation",
+			"projectName": "QCM-Builder_16d12e32"
+		},
+		{
+			"type": "java",
 			"name": "Controlleur",
 			"request": "launch",
 			"mainClass": "Controlleur.Controlleur",

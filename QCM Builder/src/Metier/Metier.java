@@ -1,5 +1,5 @@
 /**
- * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Théo Wychowski
+ * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Wychowski Théo
  * @date 09/12/2024
  */
 
@@ -9,37 +9,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
-import Controlleur.Controlleur;
-
 public class Metier 
 {
-	private Controlleur     ctrl;
 	private List<Ressource> lstRessources;
 	private Lire lecteur;
 	private Ecriture ecriture;
 
-	public Metier(Controlleur ctrl)
+	public Metier()
 	{
-		this.ctrl = ctrl;
 		this.lstRessources = new ArrayList<>();
 		this.lecteur  = new Lire("QCM Builder\\\\ressources/");
 		this.ecriture = new Ecriture("QCM Builder\\ressources/");
 		this.init();
 	}
 
-	public Metier()
-	{
-		this.ctrl = null;
-		this.lstRessources = new ArrayList<>();
-		this.lecteur  = new Lire("QCM Builder\" + File.separator + \"ressources\" + File.separator");
-		this.ecriture = new Ecriture("QCM Builder\" + File.separator + \"ressources\" + File.separator");
-		this.init();
-	}
-
-
 	/**
-	 * Initialise les ressources et leurs chapitres à partir des dossiers et fichiers présents
+	 * Initialise les ressources et leurs notions à partir des dossiers et fichiers présents
 	 * dans le répertoire 'ressources'.
 	 */
 	public void init() {
@@ -48,19 +33,19 @@ public class Metier
 	
 		for (int i = 0; i < nomsRessources.size(); i++) 
 		{
-			ArrayList<Chapitre> lstChapitre   = new ArrayList<Chapitre>();
-			ArrayList<String  > nomsChapitres = getLecteur().lireDossier(nomsRessources.get(i));
+			ArrayList<Notion> lstNotion   = new ArrayList<Notion>();
+			ArrayList<String  > nomsNotion = getLecteur().lireDossier(nomsRessources.get(i));
 	
-			for (int j = 0; j < nomsChapitres.size(); j++) 
+			for (int j = 0; j < nomsNotion.size(); j++) 
 			{
 				ArrayList<Question> lstQuestions = new ArrayList<>();
-				String cheminQuestion = lecteur.getEmplacementRessources() + nomsRessources.get(i) + "/" + nomsChapitres.get(j);
+				String cheminQuestion = lecteur.getEmplacementRessources() + nomsRessources.get(i) + "/" + nomsNotion.get(j);
 	
 				lstQuestions = getLecteur().lireQuestion(cheminQuestion);
-				lstChapitre.add(new Chapitre(nomsChapitres.get(j), lstQuestions));
+				lstNotion.add(new Notion(nomsNotion.get(j), lstQuestions));
 			}
 	
-			lstRessources.add(new Ressource(nomsRessources.get(i), lstChapitre));
+			lstRessources.add(new Ressource(nomsRessources.get(i), lstNotion));
 		}
 	
 		setLstRessource(lstRessources);
@@ -88,19 +73,19 @@ public class Metier
 	}
 
 	/**
-	 * Cherche un chapitre dans une ressource
+	 * Cherche une notion dans une ressource
 	 * @param nomR le nom d'une ressource
-	 * @param nomC le nom d'un chapitre
-	 * @return un "Chapitre"
+	 * @param nomN le nom d'un notion
+	 * @return une "Notion"
 	 */
-	public Chapitre rechercheChap(String nomR, String nomC)
+	public Notion rechercheNotion(String nomR, String nomN)
 	{
 		for (Ressource ressource : this.lstRessources) 
 		{
-			for (Chapitre chap : ressource.getChapitres()) 
+			for (Notion notion : ressource.getNotions()) 
 			{
-				if (ressource.getNom().equals(nomR) && chap.getNom().equals(nomC))
-					return chap;
+				if (ressource.getNom().equals(nomR) && notion.getNom().equals(nomN))
+					return notion;
 			}
 		}
 		return null;
@@ -121,11 +106,98 @@ public class Metier
 		this.lstRessources.add(res);
 	}
 
+	//creer les questions
+	public String creerQuestion(String r, String c, String question, String type, String explication, String difficulte, int point, float temps)
+	{
+		//associer r à la ressource portant le même nom dans la liste
+		Ressource ressource = null;
+		for (Ressource res : this.lstRessources)
+		{
+			if (res.getNom().equals(r))
+				ressource = res;
+		}
+
+		String erreur = "";
+		//question
+		if (question.equals(""))
+			erreur += "La question ne peut pas être vide\n";
+
+		//type
+		if (!type.equalsIgnoreCase("QCM") && !type.equalsIgnoreCase("Association"))
+			erreur += "Le type doit être QCM ou Association\n";
+
+		//explication
+		if (explication.equals(""))
+			erreur += "L'explication ne peut pas être vide\n";
+
+		//difficulte
+		if (!difficulte.equalsIgnoreCase("facile") && !difficulte.equalsIgnoreCase("moyen") && !difficulte.equalsIgnoreCase("difficile"))
+			erreur += "La difficulté doit être facile, moyen ou difficile\n";
+			//transformer la string en un enum difficulte
+
+
+
+			
+
+			
+
+		//point
+		if (point < 0)
+			erreur += "Le nombre de points doit être positif ou 0\n";
+
+		//temps
+		if (temps < 0)
+			erreur += "Le temps doit être positif ou 0\n";
+		
+		//si il n'y a pas d'erreur appeler la methode ajouterQuestion de la ressource
+		if (erreur.equals(""))
+		{
+			ressource.ajouterQuestion(c, question,type, explication, difficulte, point, temps);
+			/*if (type.equalsIgnoreCase("QCM"))
+				return r.ajouterQuestion(c, new QCM(question, explication, difficulte, point, timeMin, timeSec, nbRep));
+			else
+				return r.ajouterQuestion(c, new Association(question, explication, difficulte, point, timeMin, timeSec, nbRep));
+			*/
+		}
+		return erreur;
+	}
+
+
 	//generer un questionnaire
 	public Questionnaire genererQCM(Scanner sc)
 	{
-
 		return Questionnaire.genererQuestionnaire(sc, this);
+	}
+
+	public boolean renommerDossier(String ancienNom, String nouveauNom)
+	{
+		return this.ecriture.renommerDossier(ancienNom, nouveauNom);
+	}
+
+	public boolean supprimerDossier(String nomDossier)
+	{
+		return this.ecriture.supprimerDossier(nomDossier);
+	}
+
+	public String[] getNomRessources()
+	{
+		String[] noms = new String[this.lstRessources.size()];
+		for (int i=0; i<this.lstRessources.size(); i++) 
+		{
+			noms[i] = this.lstRessources.get(i).getNom();
+		}
+		return noms;
+	}
+
+	public String[] getNomNotion(String res)
+	{
+		Ressource ressource = this.rechercheRessource(res);
+		String[] noms = new String[ressource.getNotions().size()];
+		for (int i=0; i<ressource.getNotions().size(); i++) 
+		{
+			noms[i] = ressource.getNotions().get(i).getNom();
+		}
+		return noms;
 	}
 
 	/** 

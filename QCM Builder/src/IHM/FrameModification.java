@@ -1,3 +1,7 @@
+/**
+ * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Wychowski Théo
+ * @date 09/12/2024
+ */
 package IHM;
 
 import java.awt.GridLayout;
@@ -11,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import Controlleur.Controlleur;
-import Metier.Chapitre;
+import Metier.Notion;
 import Metier.Ressource;
 
 public class FrameModification extends JFrame implements ActionListener
@@ -22,24 +26,29 @@ public class FrameModification extends JFrame implements ActionListener
 	private JButton     btnCancel;
 	private String      operation;
 	private Ressource   ressource;
-	private Chapitre    chapitre ;
+	private Notion    	notion ;
+	private FramePrincipal frame;
 
-	public FrameModification(Controlleur ctrl, String operation, Ressource ressource, Chapitre chapitre)
+	public FrameModification(Controlleur ctrl, FramePrincipal frame, String operation, Ressource ressource, Notion notion)
 	{
-		this.setTitle("Modification de Ressource");
+		this.setTitle("Modification de " + operation);
 		this.setLayout(new GridLayout(2, 1));
 		this.setSize(400, 500);
 
 		this.ctrl      = ctrl     ;
 		this.operation = operation;
 		this.ressource = ressource;
-		this.chapitre  = chapitre ;
+		this.notion    = notion   ;
+		this.frame     = frame    ;
 
 		/****************************/
 		/*	Création des composant  */
 		/****************************/
 
-		this.txtName = new JTextField(ressource.getNom());
+		if (this.operation.equals("Ressource")) 
+			this.txtName = new JTextField(ressource.getNom());
+		else
+			this.txtName = new JTextField(notion.getNom());
 
 		JPanel panelBtn = new JPanel();
 		panelBtn.setLayout(new GridLayout(1,2));
@@ -92,17 +101,19 @@ public class FrameModification extends JFrame implements ActionListener
 			{
 				if (this.ctrl.rechercheRessource(name) == null) 
 				{
-					this.ressource.setNom(name);	
-					//methodes pour changer le nom du dossier de la ressource
+					this.ctrl.renommerDossier(this.ressource.getNom(), name);
+					this.ressource.setNom(name);
 				}
+				this.frame.refreshRessource();
 			}
 			else
 			{
-				if (this.ressource.rechercheChapitre(name) == null) 
+				if (this.ressource.rechercheNotion(name) == null) 
 				{
-					this.chapitre.setNom(name);
-					//methodes pour changer le nom du dossier de la ressource
+					this.ctrl.renommerDossier(this.ressource.getNom() + "/" + this.notion.getNom(), this.ressource.getNom() + "/" + name);
+					this.notion.setNom(name);
 				}
+				this.frame.refreshNotion(ressource);
 			}
 
 			this.dispose();	

@@ -5,32 +5,34 @@
 package IHM;
 
 import javax.swing.*;
+
 import Controlleur.Controlleur;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
+import java.util.ArrayList;
 
+import Metier.Notion;
 import Metier.Ressource;
 
-public class PanelRessource extends JPanel implements ActionListener 
+public class PanelNotion extends JPanel implements ActionListener 
 {
-	private Controlleur ctrl;
+	private Controlleur ctrl  ;
 	private JButton[][] tabBtn;
-	private JButton btnAdd;
-	private List<Ressource> lstRes;
-	private JScrollPane scrollPane;
+	private JButton     btnAdd;
+	private ArrayList<Notion> lstN;
+	private Ressource ressource;
 	private FramePrincipal frame;
+	private JScrollPane scrollPane;
 
-	public PanelRessource(Controlleur ctrl, FramePrincipal frame) 
+	public PanelNotion(Controlleur ctrl, Ressource ressource, FramePrincipal frame) 
 	{
-		this.ctrl = ctrl;
-		this.frame = frame;
-
-		// Récupérer les ressources
-		this.lstRes = this.ctrl.getLstRessource();
-		int tailleLst = this.lstRes.size();
+		this.ctrl      = ctrl     ;
+		this.frame     = frame    ;
+		this.ressource = ressource;
+		this.lstN      = ressource.getNotions();
+		int tailleLst  = this.lstN.size      ();
 
 		// Récupérer la taille de l'écran
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -47,7 +49,7 @@ public class PanelRessource extends JPanel implements ActionListener
 		panelAjout.setLayout(null);
 		panelAjout.setBounds((screenWidth - 600) / 2, 20, 600, 70);
 
-		JLabel lblTitre = new JLabel("Ressource");
+		JLabel lblTitre = new JLabel("Notion");
 		lblTitre.setBounds(0, 10, 400, 50);
 
 		this.btnAdd = new JButton(new ImageIcon(
@@ -79,7 +81,7 @@ public class PanelRessource extends JPanel implements ActionListener
 			contentPanel.add(panelRes);
 
 			// Boutons pour chaque ressource
-			this.tabBtn[i][0] = new JButton(this.lstRes.get(i).getNom());
+			this.tabBtn[i][0] = new JButton(this.lstN.get(i).getNom());
 			this.tabBtn[i][0].setBounds(0, 10, 400, 50);
 			panelRes.add(this.tabBtn[i][0]);
 
@@ -99,12 +101,14 @@ public class PanelRessource extends JPanel implements ActionListener
 		scrollPane.setBounds(0, 100, screenWidth, screenHeight - 150); // Position et taille du JScrollPane
 		this.add(scrollPane);
 
+
 		/*********************************/
-		/* Activation des composants     */
+		/*	Activation des composants    */
 		/*********************************/
+
 		this.btnAdd.addActionListener(this);
 
-		for (int i = 0; i < this.tabBtn.length; i++) 
+		for(int i=0; i<this.tabBtn.length; i++)
 		{
 			this.tabBtn[i][0].addActionListener(this);
 			this.tabBtn[i][1].addActionListener(this);
@@ -115,30 +119,30 @@ public class PanelRessource extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e) 
 	{
-		//affiche une frame pour crée une ressource
 		if (e.getSource() == this.btnAdd) 
 		{
-			new FrameCreation(this.ctrl, "Ressource", "", frame);
+			new FrameCreation(this.ctrl, "Notion",this.ressource.getNom(),this.frame);
+			this.repaint();
 		}
 
 		for (int i = 0; i < this.tabBtn.length; i++) 
 		{
-			//Affiche les notions de la ressource
+			//Affiche les question des notions
 			if (e.getSource() == this.tabBtn[i][0]) 
 			{
-				frame.afficheNotion(this.lstRes.get(i));
+				//affiche les question
 			}
-			//supprime la ressource de la ligne
+			//supprime la notion de la ligne
 			if (e.getSource() == this.tabBtn[i][1]) 
 			{
-				this.ctrl.supprimerDossier(this.tabBtn[i][0].getText());
-				this.ctrl.getLstRessource().remove(i);
-				this.frame.refreshRessource();
+				this.ctrl.supprimerDossier(this.ressource.getNom()+"/"+this.tabBtn[i][0].getText());
+				this.ressource.getNotions().remove(i);
+				this.frame.refreshNotion(ressource);
 			}
-			//modifie le nom de la ressource de la ligne
+			//modifie le nom de la notion de la ligne
 			if (e.getSource() == this.tabBtn[i][2]) 
 			{
-				new FrameModification(this.ctrl, this.frame ,"Ressource", this.lstRes.get(i),null);
+				new FrameModification(this.ctrl, this.frame ,"Notion", this.ressource,this.lstN.get(i));
 			}
 		}
 	}

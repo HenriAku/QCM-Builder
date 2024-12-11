@@ -1,27 +1,29 @@
 /**
- * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Théo Wychowski
+ * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Wychowski Théo
  * @date 09/12/2024
  */
 
 package Metier;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
-public class Chapitre
+public class Notion
 {
-
-	private String chapitre;
+	//changer les list pour une
+	private String notion;
 	//private Ressource ressource;
 	private ArrayList<Question> lstQuestionsFacile;
 	private ArrayList<Question> lstQuestionsMoyenne;
 	private ArrayList<Question> lstQuestionsDifficile;
 	private ArrayList<Question> lstQuestionsTresFacile;
 
+	private ArrayList<Question> lstQuestions;
 	
-	public Chapitre(String chapitre, /*Ressource ressource,*/ ArrayList<Question> lstQuestions)
+	public Notion(String notion, /*Ressource ressource,*/ ArrayList<Question> lstQuestions)
 	{
-		this.chapitre = chapitre;
+		this.notion = notion;
 		//this.ressource = ressource;
 
 		this.lstQuestionsFacile     = new ArrayList<Question>();
@@ -29,21 +31,23 @@ public class Chapitre
 		this.lstQuestionsDifficile  = new ArrayList<Question>();
 		this.lstQuestionsTresFacile = new ArrayList<Question>();
 
+		this.lstQuestions = lstQuestions;
+
 
 		Ecriture ef = new Ecriture("../ressources/" );
-		ef.creerDossier(chapitre);
+		ef.creerDossier(notion);
 
 		if (lstQuestions != null) 
 			initQuestion(lstQuestions);
 	}
 
-	//methode creerChapitre en demandant les informations à l'utilisateur
-	public static Chapitre creerChapitre(Scanner sc)
+	//methode creerNotion en demandant les informations à l'utilisateur
+	public static Notion creerNotion(Scanner sc)
 	//"sc" utilisation de scanner pour récupérer les informations de l'utilisateur en version console
 	{
-		// Demande le nom du chapitre
-		System.out.print("Entrez le nom du chapitre : ");
-		String chapitre = sc.nextLine();
+		// Demande le nom du notion
+		System.out.print("Entrez le nom du notion : ");
+		String notion = sc.nextLine();
 
 		ArrayList<Question> lstQuestions = new ArrayList<Question>();
 		
@@ -85,7 +89,13 @@ public class Chapitre
 				lstQuestions.add(question);
 			}
 		}
-		return new Chapitre(chapitre, lstQuestions);
+		return new Notion(notion, lstQuestions);
+	}
+
+	//ajouter une question
+	public void ajouterQuestion(String question, String type, String explication, String difficulte, int point, float temps)
+	{
+		this.addQuestion(Question.creerQuestion(question, type, explication, difficulte, point, temps));
 	}
 
 
@@ -108,7 +118,7 @@ public class Chapitre
 					this.lstQuestionsFacile.add(question);
 					break;
 				
-				case "Moyenne":
+				case "Moyen":
 					this.lstQuestionsMoyenne.add(question);
 					break;
 				
@@ -123,88 +133,24 @@ public class Chapitre
 	}
 	
 
-	/**
-	 * Ajoute une question dnas la bonne list
-	 * @param q une question
-	 */
+
 	public void addQuestion(Question q)
 	{
-		if (q.getDifficulte().equals("Difficile")) 
-		{
-			for (Question question : this.lstQuestionsDifficile) 
-			{
-				if (!question.equals(q)) 
-					this.lstQuestionsDifficile.add(q);
-			}
-		}
-		else if (q.getDifficulte().equals("Facile")) 
-		{
-			for (Question question : this.lstQuestionsFacile) 
-			{
-				if (!question.equals(q)) 
-					this.lstQuestionsFacile.add(q);
-			}
-		}
-		else if (q.getDifficulte().equals("Très Facile")) 
-		{
-			for (Question question : this.lstQuestionsTresFacile) 
-			{
-				if (!question.equals(q)) 
-					this.lstQuestionsTresFacile.add(q);
-			}
-		}
-		else 
-		{
-			for (Question question : this.lstQuestionsMoyenne) 
-			{
-				if (!question.equals(q)) 
-					this.lstQuestionsMoyenne.add(q);
-			}
-		}
+		this.lstQuestions.add(q);
+		Collections.sort(this.lstQuestions);
 	}
 
-	/**
+	/** //TODO: Ptt a changer
 	 * Supprime une question d'une list
 	 * @param nom la question 
 	 * @param difficulte de la question
 	 */
-	public void supprQuestion(String nom, String difficulte)
+	public void supprQuestion(Question question)
 	{
-		if (difficulte.equals("Difficile")) 
-		{
-			for (Question question : this.lstQuestionsDifficile) 
-			{
-				if (question.getQuestion().equals(nom)) 
-					this.lstQuestionsDifficile.remove(question);
-			}
-		}
-		else if (difficulte.equals("Facile")) 
-		{
-			for (Question question : this.lstQuestionsFacile) 
-			{
-				if (question.getQuestion().equals(nom)) 
-					this.lstQuestionsFacile.remove(question);
-			}
-		}
-		else if (difficulte.equals("Très Facile")) 
-		{
-			for (Question question : this.lstQuestionsTresFacile) 
-			{
-				if (question.getQuestion().equals(nom)) 
-					this.lstQuestionsTresFacile.remove(question);
-			}
-		}
-		else 
-		{
-			for (Question question : this.lstQuestionsMoyenne) 
-			{
-				if (question.getQuestion().equals(nom)) 
-					this.lstQuestionsMoyenne.remove(question);
-			}
-		}
+		this.lstQuestions.remove(question);
 	}
 
-	public ArrayList<Question> aleaQuestions(int nbQuestionFacile, int nbQuestionMoyenne, int nbQuestionDifficile)
+	public ArrayList<Question> oldaleaQuestions(int nbQuestionFacile, int nbQuestionMoyenne, int nbQuestionDifficile)
 	{
 		// Entrée : Nombre de question facile, moyenne et difficiles
 		// Sortie : Une arraylist avec les questions choisis aléatoirement
@@ -283,6 +229,18 @@ public class Chapitre
 		return lstQuest;
 	}
 
+	public ArrayList<Question> aleaQuestions(int nbQuestionFacile, int nbQuestionMoyenne, int nbQuestionDifficile)
+	{
+		int idFinQuestionTresFacile;
+		int idFinQuestionFacile;
+		int idFinQuestionMoyenne;
+
+		for(int i=0; i<this.lstQuestions.size(); i++)
+		{
+			
+		}
+	}
+
 	//aleaQuestionsSimple qui prend un nombre de question et renvoie une liste de question aléatoire
 	public ArrayList<Question> aleaQuestionsSimple(int nbQuestion)
 	{
@@ -314,16 +272,21 @@ public class Chapitre
 		return lstQuest;
 	}
 
-	public String getNom(		   ) { return this.chapitre; }
-	public void   setNom(String nom) { this.chapitre = nom ; }
+	public String getNom(		   ) { return this.notion; }
+	public void   setNom(String nom) { this.notion = nom ; }
+
+	public int getNbQuestions()
+	{
+		return this.lstQuestionsFacile.size() + this.lstQuestionsMoyenne.size() + this.lstQuestionsDifficile.size() + this.lstQuestionsTresFacile.size();
+	} 
 
 	
 	//public Ressource getRessource() { return this.ressource; }
 
-	//affiche le chapitre et ses questions
-	public String afficherChapitre()
+	//affiche le notion et ses questions
+	public String afficherNotion()
 	{
-		String str = "Chapitre : "+this.chapitre+"\n";
+		String str = "Notion : "+this.notion+"\n";
 
 		str += "Questions Faciles : \n";
 		for (Question question : this.lstQuestionsFacile) 

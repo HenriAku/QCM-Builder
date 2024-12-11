@@ -1,5 +1,5 @@
 /**
- * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Théo Wychowski
+ * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Wychowski Théo
  * @date 09/12/2024
  */
 
@@ -9,46 +9,62 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class Question
+public class Question implements Comparable<Question>
 {
-	private String   question    ;
-	private String   type        ;
-	private String   explication ;
-	private String   difficulte  ;
-	private int      point       ;
-	private int      timeMin     ;
-	private int      timeSec     ;
+	private String       question    ;
+	private String       type        ;
+	private String       explication ;
+	private Difficulte   difficulte  ;
+	private int          point       ;
+	private float        temps        ;
+	//private int      timeMin     ;
+	//private int      timeSec     ;
 	private List<Reponse> lstRep ;
 
-	public Question(String question, String type, String explication, String difficulte, int point, int timeMin,
-			int timeSec, List<Reponse> lstRep) 
+	public Question(String question, String type, String explication, Difficulte difficulte, int point, float temps, List<Reponse> lstRep) 
 	{
 		this.question     = question    ;
 		this.type         = type        ;
 		this.explication  = explication ;
 		this.difficulte   = difficulte  ;
 		this.point        = point       ;
-		this.timeMin      = timeMin     ;
-		this.timeSec      = timeSec     ;
+		this.temps		  = temps       ;
+		//this.timeMin      = timeMin     ;
+		//this.timeSec      = timeSec     ;
 		this.lstRep       = lstRep      ;
 	}
 
-	public boolean equals(Question q)
+	public Question(String question, String type, String explication, Difficulte difficulte, int point, float temps) 
 	{
-		return this.question.equals(q.question) && this.difficulte == q.difficulte;
+		this.question     = question    ;
+		this.type         = type        ;
+		this.explication  = explication ;
+		this.difficulte   = difficulte  ;
+		this.point        = point       ;
+		this.temps		  = temps       ;
+		//this.timeMin      = timeMin     ;
+		//this.timeSec      = timeSec     ;
+		this.lstRep       = null        ;
+	}
+
+	// Compare les difficultés
+	public int compareTo(Question autreQuestion)
+	{
+		return this.difficulte.getPoint() - autreQuestion.difficulte.getPoint();
 	}
 
 	/***********************/
 	/*		GETTEURS	   */
 	/***********************/
 
-	public String getQuestion     () {return question    ;}
-	public String getType         () {return type        ;}
-	public String getExplication  () {return explication ;}
-	public String getDifficulte   () {return difficulte  ;}
-	public int    getPoint        () {return point       ;}
-	public int    getTimeMin      () {return timeMin     ;}
-	public int    getTimeSec      () {return timeSec     ;}
+	public String     getQuestion     () {return question    ;}
+	public String     getType         () {return type        ;}
+	public String     getExplication  () {return explication ;}
+	public Difficulte getDifficulte   () {return difficulte  ;}
+	public int        getPoint        () {return point       ;}
+	public float      getTemps        () {return temps       ;}
+	//public int    getTimeMin      () {return timeMin     ;}
+	//public int    getTimeSec      () {return timeSec     ;}
 	public List<Reponse> getLstRep() {return lstRep      ;}
 
 	
@@ -59,10 +75,11 @@ public class Question
 	public void setQuestion    (String question    ) {this.question     = question    ;}
 	public void setType        (String type        ) {this.type         = type        ;}
 	public void setExplication (String explication ) {this.explication  = explication ;}
-	public void setDifficulte  (String difficulte  ) {this.difficulte   = difficulte  ;}
+	public void setDifficulte  (Difficulte difficulte  ) {this.difficulte   = difficulte  ;}
 	public void setPoint       (int    point       ) {this.point        = point       ;}
-	public void setTimeMin     (int    timeMin     ) {this.timeMin      = timeMin     ;}
-	public void setTimeSec     (int    timeSec     ) {this.timeSec      = timeSec     ;}
+	public void setTemps       (float  temps       ) {this.temps        = temps       ;}
+	//public void setTimeMin     (int    timeMin     ) {this.timeMin      = timeMin     ;}
+	//public void setTimeSec     (int    timeSec     ) {this.timeSec      = timeSec     ;}
 	public void setLstRep(List<Reponse> lstRep) {this.lstRep = lstRep;}
 
 	/***********************/
@@ -93,6 +110,13 @@ public class Question
 		{
 			System.out.print("Type (QCM, Association) : ");
 			type = sc.nextLine();
+			//mettre majuscule pour "QCM" et mettre une majuscule puis en minuscule pour "Association"
+			type = type.toUpperCase();
+			if (type.equalsIgnoreCase("Association"))
+				type = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
+			
+			if (!type.equalsIgnoreCase("QCM") && !type.equalsIgnoreCase("Association"))
+				System.out.println("Type incorrect");
 		}
 		while (!type.equalsIgnoreCase("QCM") && !type.equalsIgnoreCase("Association"));
 
@@ -103,43 +127,97 @@ public class Question
 
 		//difficulte
 		//recuperation de la difficulte tant qu'elle n'est pas "facile", "moyen" ou "difficile"
-		String difficulte;
+		Difficulte difficulte;
+		String stringDifficulter;
 		do
 		{
 			System.out.print("Difficulte (facile, moyen, difficile) : ");
-			difficulte = sc.nextLine();
+			stringDifficulter = sc.nextLine();
+			//mettre une majuscule au début et le reste en minuscule
+			stringDifficulter = stringDifficulter.substring(0, 1).toUpperCase() + stringDifficulter.substring(1).toLowerCase();
+			//message d'erreur
+			if (!stringDifficulter.equalsIgnoreCase("facile") && !stringDifficulter.equalsIgnoreCase("moyen") && !stringDifficulter.equalsIgnoreCase("difficile"))
+				System.out.println("Difficulte incorrecte");
+			
+			switch (stringDifficulter) {
+				case "Très facile": difficulte = Difficulte.TF;
+					break;
+				case "Facile": difficulte = Difficulte.F;
+					break;
+				case "Moyen": difficulte = Difficulte.M;
+					break;
+				case "Difficile": difficulte = Difficulte.D;
+					break;
+			
+				default:
+					break;
+			}
 		}
-		while (!difficulte.equalsIgnoreCase("facile") && !difficulte.equalsIgnoreCase("moyen") && !difficulte.equalsIgnoreCase("difficile"));
+		while (!stringDifficulter.equalsIgnoreCase("facile") && !stringDifficulter.equalsIgnoreCase("moyen") && !stringDifficulter.equalsIgnoreCase("difficile"));
 		
 		//point
-		//recuperation des points tant qu'ils sont positifs
+		//recuperation des points tant qu'ils sont positifs et tant que ce n'est pas un entier
 		int point;
 		do
 		{
-			System.out.print("Points : ");
+			System.out.print("Point : ");
+			while (!sc.hasNextInt())
+			{
+				System.out.print("Ce n'est pas un entier, réessayez : ");
+				sc.next();
+			}
 			point = sc.nextInt();
+			sc.nextLine();
+
+			if (point < 0)
+				System.out.println("Le nombre de points doit être positif ou 0");
+
 		}
 		while (point < 0);
+	
 
-		//temps
-		//recuperation du temps tant qu'il est positif et cohérent
-		int timeMin;
-		int timeSec;
+		//temps en secondes
+		//recuperation du temps en secondes tant qu'il est positif et cohérent
+		float temps;
 		do
 		{
-			System.out.println("Temps : ");
-			System.out.print("Min : ");
-			timeMin = sc.nextInt();
-			System.out.print("Sec : ");
-			timeSec = sc.nextInt();
+			System.out.print("Temps (en secondes) : ");
+			while (!sc.hasNextFloat())
+			{
+				System.out.print("Ce n'est pas un nombre, réessayez : ");
+				sc.next();
+			}
+			temps = sc.nextFloat();
+			sc.nextLine();
+
+			if (temps < 0)
+				System.out.println("Le temps doit être positif ou 0");
+
 		}
-		while (timeMin < 0 || timeSec < 0 || timeSec > 59);
+		while (temps < 0);
+		
 
 		//reponses
-		//recuperation du nombre de reponses
-		System.out.print("Combien de reponses ? : ");
-		int nbRep = sc.nextInt();
-		sc.nextLine();
+		//recuperation du nombre de reponses tant qu'il est positif et que c'est un entier
+		int nbRep;
+		do
+		{
+			System.out.print("Nombre de reponses : ");
+			while (!sc.hasNextInt())
+			{
+				System.out.print("Ce n'est pas un entier, réessayez : ");
+				sc.next();
+			}
+			nbRep = sc.nextInt();
+			sc.nextLine();
+
+			if (nbRep <= 0)
+				System.out.println("Le nombre de reponses doit être positif");
+
+		}
+		while (nbRep <= 0);
+
+		//creation de la liste de reponses
 		List<Reponse> lstRep = Arrays.asList(new Reponse[nbRep]);
 		for (int i = 0; i < nbRep; i++)
 		{
@@ -147,8 +225,16 @@ public class Question
 			lstRep.set(i, Reponse.creerReponse(sc));
 		}
 
-		return new Question(question, type, explication, difficulte, point, timeMin, timeSec, lstRep);
+		return new Question(question, type, explication, difficulte, point, temps, lstRep);
 	}
+
+	//creer question en récuérant les valeurs de chaque element
+	public static Question creerQuestion(String question, String type, String explication, Difficulte difficulte, int point, float temps)
+	{
+		return new Question(question, type, explication, difficulte, point, temps);
+	}
+
+	
 
 
 	/***********************/
@@ -157,7 +243,7 @@ public class Question
 	public String toString() 
 	{
 		return "Question [question=" + question + ", type=" + type + ", explication=" + explication + ", difficulte="
-				+ difficulte + ", point=" + point + ", timeMin=" + timeMin + ", timeSec=" + timeSec + ", ordreEnveler=" + "]";
+				+ difficulte + ", point=" + point + ", ordreEnveler=" + "]";
 	}
 	
 	public String afficherQuestion()
@@ -169,11 +255,14 @@ public class Question
 		str += "Explication : " + explication + "\n";
 		str += "Difficulte : " + difficulte + "\n";
 		str += "Point : " + point + "\n";
-		str += "Temps : " + timeMin + " min " + timeSec + " sec" + "\n";
 		str += "Reponses :\n";
-		for (Reponse r : lstRep)
+		//afficher les reponses si elles existent
+		if (lstRep != null)
 		{
-			str += r.afficherReponse();
+			for (Reponse rep : lstRep)
+			{
+				str += rep.afficherReponse();
+			}
 		}
 
 		return str + "\n";

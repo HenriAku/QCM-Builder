@@ -1,6 +1,5 @@
 package Metier;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -73,65 +72,65 @@ class TestObjet
         
 
         ///////////////////////////////////
-        //test objets Chapitre et Ressource
+        //test objets Notions et Ressource
         ///////////////////////////////////
         /// 
         //création de ressource
         Ressource rscAlgo           = new Ressource("Algo");
-        Ressource rscchapBado       = new Ressource("Bado");
+        Ressource rscBado            = new Ressource("Bado");
         Ressource rscCrypto         = new Ressource("Crypto");
         Ressource rscFrancais       = new Ressource("Francais");
         Ressource rscMath           = new Ressource("Math");
         Ressource rscHistoire       = new Ressource("Histoire");
         Ressource rscTest           = new Ressource("Test");
 
-        //création liste de chapitres
-        ArrayList<Chapitre> chapitresA = new ArrayList<Chapitre>();
-        ArrayList<Chapitre> chapitresB = new ArrayList<Chapitre>();
-        ArrayList<Chapitre> chapitresC = new ArrayList<Chapitre>();
-        ArrayList<Chapitre> chapitresF = new ArrayList<Chapitre>();
-        ArrayList<Chapitre> chapitresM = new ArrayList<Chapitre>();
-        ArrayList<Chapitre> chapitresH = new ArrayList<Chapitre>();
-        ArrayList<Chapitre> chapitresT = new ArrayList<Chapitre>();
+        //création liste de notion
+        ArrayList<Notion> notionsA = new ArrayList<Notion>();
+        ArrayList<Notion> notionsB = new ArrayList<Notion>();
+        ArrayList<Notion> notionsC = new ArrayList<Notion>();
+        ArrayList<Notion> notionsF = new ArrayList<Notion>();
+        ArrayList<Notion> notionsM = new ArrayList<Notion>();
+        ArrayList<Notion> notionsH = new ArrayList<Notion>();
+        ArrayList<Notion> notionsT = new ArrayList<Notion>();
 
-        //création de chapitres
-        Chapitre chapAlgo1       = new Chapitre("Algo", /*rsc,*/ questionsA);
-        Chapitre chapBado1       = new Chapitre("Bado", /*rsc,*/ questionsB);
-        Chapitre chapCrypto1     = new Chapitre("Crypto", /*rsc,*/ questionsC);
-        Chapitre chapFrancais1   = new Chapitre("Francais", /*rsc,*/ questionsF);
-        Chapitre chapMath1       = new Chapitre("Math", /*rsc,*/ questionsM);
-        Chapitre chapHistoire1   = new Chapitre("Histoire", /*rsc,*/ questionsH1);
-        Chapitre chapTest1       = new Chapitre("Test1", /*rsc,*/ questionsT1);
-        Chapitre chapTest2       = new Chapitre("Test2", /*rsc,*/ questionsT2);
+        //création de notions
+        Notion notAlgo1       = new Notion("Algo", /*rsc,*/ questionsA);
+        Notion notBado1       = new Notion("Bado", /*rsc,*/ questionsB);
+        Notion notCrypto1     = new Notion("Crypto", /*rsc,*/ questionsC);
+        Notion notFrancais1   = new Notion("Francais", /*rsc,*/ questionsF);
+        Notion notMath1       = new Notion("Math", /*rsc,*/ questionsM);
+        Notion notHistoire1   = new Notion("Histoire", /*rsc,*/ questionsH1);
+        Notion notTest1       = new Notion("Test1", /*rsc,*/ questionsT1);
+        Notion notTest2       = new Notion("Test2", /*rsc,*/ questionsT2);
 
-        //ajout de chapitres aux listes
-        chapitresA.add(chapAlgo1);
-        chapitresB.add(chapBado1);
-        chapitresC.add(chapCrypto1);
-        chapitresF.add(chapFrancais1);
-        chapitresM.add(chapMath1);
-        chapitresH.add(chapHistoire1);
-        chapitresT.add(chapTest1);
-        chapitresT.add(chapTest2);
+        //ajout de notions aux listes
+        notionsA.add(notAlgo1);
+        notionsB.add(notBado1);
+        notionsC.add(notCrypto1);
+        notionsF.add(notFrancais1);
+        notionsM.add(notMath1);
+        notionsH.add(notHistoire1);
+        notionsT.add(notTest1);
+        notionsT.add(notTest2);
 
-        //ajout de chapitres aux ressources
-        rscAlgo.setChapitres(chapitresA);
-        rscchapBado.setChapitres(chapitresB);
-        rscCrypto.setChapitres(chapitresC);
-        rscFrancais.setChapitres(chapitresF);
-        rscMath.setChapitres(chapitresM);
-        rscHistoire.setChapitres(chapitresH);
-        rscTest.setChapitres(chapitresT);
+        //ajout de notions aux ressources
+        rscAlgo.    setNotions(notionsA);
+        rscBado.    setNotions(notionsB);
+        rscCrypto.  setNotions(notionsC);
+        rscFrancais.setNotions(notionsF);
+        rscMath.    setNotions(notionsM);
+        rscHistoire.setNotions(notionsH);
+        rscTest.    setNotions(notionsT);
         
 
-        //test ajout de chapitr
+        //test ajout de notion
         /* 
-        Chapitre chapTest3 = new Chapitre("Histoire",/*rsc,*/ /* questionsT);
-        rscTest.ajouterChapitres(chapTest3);
+        Notion notTest3 = new Notion("Histoire",/*rsc,*/ /* questionsT);
+        rscTest.ajouterNotions(notTest3);
         */
 
         //System.out.println(rsc.toString());
-        System.out.println("Ressource et ses chapitres crées");
+        System.out.println("Ressource et ses notions crées");
 
 
         ///////////////////////
@@ -143,13 +142,16 @@ class TestObjet
         Metier m = new Metier();
 
         m.addRessource(rscAlgo);
-        m.addRessource(rscchapBado);
+        m.addRessource(rscBado);
         m.addRessource(rscCrypto);
         m.addRessource(rscFrancais);
         m.addRessource(rscMath);
         m.addRessource(rscHistoire);
         m.addRessource(rscTest);
-        
+
+        //test creation d'une question
+        System.out.println(m.creerQuestion("Algo", "Algo", "On est quel jour ?", "qcm","oui exactement, nous somme un mercredi", "Facile", 5, "5:30", 7));
+
         //tester creerQuestionnaire
         Questionnaire qst = Questionnaire.genererQuestionnaire(sc,m);
 

@@ -1,5 +1,5 @@
 /**
- * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Théo Wychowski
+ * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Wychowski Théo
  * @date 09/12/2024
  */
 
@@ -16,7 +16,7 @@ public class Ressource
 	*/
 
 	private String nom;
-	private ArrayList<Chapitre> chapitres;
+	private ArrayList<Notion> notions;
 
 	/*
 	 * CONSTRUCTEUR
@@ -25,46 +25,46 @@ public class Ressource
 	public Ressource(String nom)
 	{
 		this.nom = nom;
-		this.chapitres = new ArrayList<>(); 
+		this.notions = new ArrayList<>(); 
 		Ecriture ef = new Ecriture("../ressources/");
 		ef.creerDossier(nom);
 	}
 
-	public Ressource(String nom, ArrayList<Chapitre> chapitres)
+	public Ressource(String nom, ArrayList<Notion> notions)
 	{
 		this.nom = nom;
-		this.chapitres = chapitres; 
+		this.notions = notions; 
 		Ecriture ef = new Ecriture("../ressources/");
 		ef.creerDossier(nom);
 	}
 
-	//ajout d'un chapitre dans la liste en vérifaint s'il n'existe pas encore
-	public void addChap(Chapitre chap)
+	//ajout d'une notion dans la liste en vérifaint s'il n'existe pas encore
+	public void addNotion(Notion not)
 	{
 		boolean existe = false;
-		System.out.println("ajout du chapitre");
-		for (Chapitre chapitre : this.chapitres) 
+		System.out.println("ajout du notion");
+		for (Notion notion : this.notions) 
 		{
-			if (chapitre.getNom().equals(chap.getNom())) 
+			if (notion.getNom().equals(not.getNom())) 
 			{
 				existe = true;
-				System.out.println("Chapitre déja existant");
+				System.out.println("Notion déja existante");
 				break;
 			}
 		}
 		if (!existe) 
 		{
-			this.chapitres.add(chap);
-			System.out.println("Chapitre ajouté");
+			this.notions.add(not);
+			System.out.println("Notion ajouté");
 		}
 	}
 
-	public Chapitre rechercheChapitre(String nom)
+	public Notion rechercheNotion(String nom)
 	{
-		for (Chapitre chapitre : chapitres) 
+		for (Notion notion : notions) 
 		{
-			if (chapitre.getNom().equals(nom))
-				return chapitre;
+			if (notion.getNom().equals(nom))
+				return notion;
 		}
 		return null;
 	}
@@ -77,12 +77,25 @@ public class Ressource
 
 	public void setNom(String nom) {this.nom = nom;}
 
-	public ArrayList<Chapitre> getChapitres() {return this.chapitres;}
+	public ArrayList<Notion> getNotions() {return this.notions;}
 
-	public void ajouterChapitres(Chapitre chap) {this.chapitres.add(chap);}
+	public void ajouterNotions(Notion not) {this.notions.add(not);}
 
-	public void setChapitres(ArrayList<Chapitre> chapitres) {this.chapitres = chapitres;}
+	public void setNotions(ArrayList<Notion> notions) {this.notions = notions;}
 
+	//methode getNbNotions qui retourne le nombre de notions
+	public int getNbNotions() {return this.notions.size();}
+
+	//methode getNbQuestions qui retourne le nombre de questions totales
+	public int getNbQuestions()
+	{
+		int nbQuestions = 0;
+		for (Notion not : notions) 
+		{
+			nbQuestions += not.getNbQuestions();
+		}
+		return nbQuestions;
+	}
 	/* */
 
 	//methode creerRessource en demandant les informations à l'utilisateur
@@ -98,39 +111,94 @@ public class Ressource
 	public String toString ()
 	{
 		String 	str ="Ressource : " +this.nom +"\n";
-				str += "Liste des Chapitres :\n";
-		for (Chapitre chap : chapitres) 
+				str += "Liste des Notions :\n";
+		for (Notion not : notions) 
 		{
-			str += " - " + chap.getNom() + "\n";
+			str += " - " + not.getNom() + "\n";
 		}
 
 		return str;
 	}
 
-	//affiche la resource et ses chapitres
+	//ajouter ressources
+	public void ajouterNotions(Scanner sc)
+	{
+		//demander si on creer la liste des notions, tant que la réponse n'est pas oui ou non
+		String reponse;
+		do
+		{
+			System.out.print("Voulez-vous ajouter des notions ? (oui/non) : ");
+			reponse = sc.nextLine();
+		}
+		while (!reponse.equalsIgnoreCase("oui") && !reponse.equalsIgnoreCase("non"));
+		
+		//si oui on demande le nombre et on les ajoute
+		if (reponse.equalsIgnoreCase("oui")) 
+		{
+			//on demande le nombre de notions tant que le nombre n'est pas positif et entier
+			int nbNot;
+			do
+			{
+				System.out.print("Combien de notions voulez-vous ajouter ? ");
+				while (!sc.hasNextInt()) 
+				{
+					System.out.print("Veuillez entrer un nombre entier : ");
+					sc.next();
+				}
+				nbNot = sc.nextInt();
+				sc.nextLine();
+			}
+			while (nbNot <= 0);
+
+			//on crée les notions
+			for (int i=0; i<nbNot; i++)
+			{	
+				System.out.println("\nCréation du notion "+(i+1)+" : ");
+				Notion not = Notion.creerNotion(sc);
+				this.addNotion(not);
+			}
+		}
+	}
+
+	//ajouter question
+	public void ajouterQuestion(String c, String question, String type, String explication, String difficulte, int point, float temps)
+	{
+		//on récupère le notion dans lstNotions
+		for (Notion not : this.notions) 
+		{
+			if (not.getNom().equals(c)) 
+			{
+				not.ajouterQuestion(question, type, explication, difficulte, point, temps);
+			}
+		}
+
+
+	}
+
+	//affiche la resource et ses notions
 	public String afficherRessource()
 	{
 		String 	str ="Ressource : " +this.nom +"\n";
-				str += "Liste des Chapitres :\n";
+				str += "Liste des Notions :\n";
 
-		for (Chapitre chap : chapitres) 
+		for (Notion not : notions) 
 		{
-			str += " - " + chap.getNom() + "\n";
+			str += " - " + not.getNom() + "\n";
 		}
 
 		return str;
 	}
 
-	//affiche la ressource et le détail de ses chapitres
+	//affiche la ressource et le détail de ses notions
 	public String afficherRessourceDetail()
 	{
-		String 	str ="Ressource : " +this.nom +"\n";
-				str += "Liste des Chapitres :\n";
+		String 	str ="\nRessource : " +this.nom +"\n";
+				str += "Liste des Notions :\n";
 
-		for (Chapitre chap : chapitres) 
+		for (Notion not : notions) 
 		{
-			str += " - " + chap.getNom() + "\n";
-			str += "\t"+ chap.afficherChapitre();
+			str += " - " + not.getNom() + "\n";
+			str += "\t"+ not.afficherNotion();
 		}
 
 		return str;

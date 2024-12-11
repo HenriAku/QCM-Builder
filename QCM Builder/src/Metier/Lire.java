@@ -1,3 +1,8 @@
+/**
+ * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Wychowski Théo
+ * @date 09/12/2024
+ */
+
 package Metier;
 
 import java.util.*;
@@ -55,7 +60,7 @@ public class Lire
 
 
 	/*
-		chapitre5	A	qst
+		notion5	A	qst
 			Reponse
 			rep1 	
 			rep2 	
@@ -68,7 +73,7 @@ public class Lire
 			rep4	rep1	rep2	rep3
 		FIN
 
-		chapitre7	Q	qst	
+		notion7	Q	qst	
 			rep1	vrai
 			rep2	faux
 			rep3	vrai
@@ -82,13 +87,13 @@ public class Lire
 	{
 		ArrayList<Question> lstQuestion = new ArrayList<Question>();
 
-        File dossierChapitre = new File(emplacementFichier);
+        File dossierNotion = new File(emplacementFichier);
 
 		//vérifier que l'endroit indiqué est bien un dossier
-        if (dossierChapitre.exists() && dossierChapitre.isDirectory()) 
+        if (dossierNotion.exists() && dossierNotion.isDirectory()) 
 		{
-			//récupérer tout les dossiers questions dans le dossier chapitreX 
-			File[] dossierQuestions = dossierChapitre.listFiles();
+			//récupérer tout les dossiers questions dans le dossier notionX 
+			File[] dossierQuestions = dossierNotion.listFiles();
 
             if (dossierQuestions != null) 
 			{
@@ -110,7 +115,6 @@ public class Lire
 									{
 										String contenu = Files.readString(fichier.toPath());
 										lstQuestion.add(creerQuestion(contenu));
-										
                                     } 
 									catch (IOException e) 
 									{
@@ -140,11 +144,11 @@ public class Lire
 	private Question creerQuestion(String qst)
 	{
 		//première ligne
-		String type = "";
-		String question = "";
+		String type        = "";
+		String question    = "";
 		String explication = "";
-		String difficulte = "";
-		int point  = -1;
+		String difficulte  = "";
+		int point    = -1;
 		int timeMin  = -1;
 		int timeSec  = -1;
 
@@ -152,12 +156,12 @@ public class Lire
 		
 		String[] premiereLigne = lines[0].split("\t");
 		
-		type = premiereLigne[1];
-		question = premiereLigne[2];
+		type        = premiereLigne[1];
+		question    = premiereLigne[2];
 		explication = premiereLigne[3];
-		difficulte = premiereLigne[4]; 
+		difficulte  = premiereLigne[4]; 
 
-		point = Integer.parseInt(premiereLigne[5]);
+		point   = Integer.parseInt(premiereLigne[5]        );
 		timeMin = Integer.parseInt(premiereLigne[6].strip());
 		timeSec = Integer.parseInt(premiereLigne[7].strip());
 

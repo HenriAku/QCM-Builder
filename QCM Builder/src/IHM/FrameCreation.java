@@ -1,5 +1,5 @@
 /**
- * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Théo Wychowski
+ * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Wychowski Théo
  * @date 09/12/2024
  */
 package IHM;
@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import Controlleur.Controlleur;
-import Metier.Chapitre;
+import Metier.Notion;
 import Metier.Ressource;
 
 import java.awt.GridLayout;
@@ -27,7 +27,7 @@ public class FrameCreation extends JFrame implements ActionListener
 	private String      ressource;
 	private FramePrincipal   frame;
 
-	//operation = soit chapitre soit ressource
+	//operation = soit notion soit ressource
 	public FrameCreation(Controlleur ctrl, String operation, String ressource, FramePrincipal frame)
 	{
 		this.setTitle("Creation de " + operation);
@@ -102,8 +102,8 @@ public class FrameCreation extends JFrame implements ActionListener
 			{
 				this.ctrl.creerDossier(this.ressource + "/" + name); 
 				Ressource res = this.ctrl.rechercheRessource(this.ressource);
-				res.addChap(new Chapitre(name, null));
-				this.frame.afficheChapitre(res);
+				res.addNotion(new Notion(name, null));
+				this.frame.afficheNotion(res);
 			}
 			this.dispose();	
 		}
