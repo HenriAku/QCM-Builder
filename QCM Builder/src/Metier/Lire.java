@@ -144,26 +144,25 @@ public class Lire
 	private Question creerQuestion(String qst)
 	{
 		//première ligne
-		String type        = "";
-		String question    = "";
-		String explication = "";
-		String difficulte  = "";
-		int point    = -1;
-		int timeMin  = -1;
-		int timeSec  = -1;
+		String type              = "";
+		String question          = "";
+		String explication       = "";
+		String stringdifficulte  = "";
+		int   point    = -1;
+		Float time     = 0.00f;
+
 
 		String[] lines = qst.split("\n");
 		
 		String[] premiereLigne = lines[0].split("\t");
-		
-		type        = premiereLigne[1];
-		question    = premiereLigne[2];
-		explication = premiereLigne[3];
-		difficulte  = premiereLigne[4]; 
+		      
+		type              = premiereLigne[1];
+		question          = premiereLigne[2];
+		explication       = premiereLigne[3];
+		stringdifficulte  = premiereLigne[4]; 
 
 		point   = Integer.parseInt(premiereLigne[5]        );
-		timeMin = Integer.parseInt(premiereLigne[6].strip());
-		timeSec = Integer.parseInt(premiereLigne[7].strip());
+		time    = Float.parseFloat(premiereLigne[6].strip());
 
 		ArrayList<Reponse> lstRep = new ArrayList<Reponse>();
 
@@ -191,27 +190,20 @@ public class Lire
 				for(int i = 0; i<lines.length; i++)
 				{
 					String[] contenuLigne = lines[i].split("\t");
-					if(lines[i].equals("FIN"))
-					{
+					if(lines[i].equals("FIN"))								
 						break;
-					}
-					
+				
 					if(lines[i].strip().equals("Reponse".strip()))
-					{
 						etape = "reponse";
-					}
+
 					else
 					{
 						if(lines[i].strip().equals("Association".strip()))
-						{	
 							etape = "Association";
-						}
 						else
 						{
 							if(etape.equals("reponse"))
-							{
 								lstReponsesAsso.add(new Reponse(contenuLigne[0]));
-							}
 							else
 							{
 								if(etape.equals("Association"))
@@ -219,9 +211,7 @@ public class Lire
 									for (Reponse reponse : lstReponsesAsso) 
 									{
 										if (reponse.getReponse().strip().equals(contenuLigne[0].strip())) 
-										{
 											indiceTabAsso = lstRep.indexOf(reponse);
-										}	
 									}
 
 									for(int asso = 1; asso < contenuLigne.length; asso++)
@@ -229,28 +219,40 @@ public class Lire
 										for (Reponse reponse : lstReponsesAsso) 
 										{
 											if (reponse.getReponse().strip().equals(contenuLigne[asso].strip())) 
-											{
 												lstReponsesAsso.get(indiceTabAsso).associerReponse(reponse);
-											}	
 										}
-
 									}
 								}								
 							}
-							
 						}
 					}
-					
 					lstRep = lstReponsesAsso;
-
 				}
 				break;
-
 			default:
 				break;
 		}
 
-		Question qstRet = new Question(question, type, explication, difficulte, point, timeMin, timeSec, lstRep);
+		Difficulte difficulte = Difficulte.TF;
+		switch (stringdifficulte.toLowerCase()) 
+        {
+            case "très facile": difficulte = Difficulte.TF;
+                break;
+                
+            case "facile"     : difficulte = Difficulte.F;
+                break;
+
+            case "moyen"      : difficulte = Difficulte.M;
+                break;
+
+            case "difficile"  : difficulte = Difficulte.D;
+                break;
+        
+            default:
+                break;
+        }
+
+		Question qstRet = new Question(question, type, explication, difficulte, point, time, lstRep);
 		
 		return qstRet;
 	}

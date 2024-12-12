@@ -39,9 +39,9 @@ public class FrameAssociation extends JFrame implements ActionListener
         // Ajout initial d'un panel de réponse
         this.addNewPanelRep();
 
-        JPanel panelBtn = new JPanel(new GridLayout(1, 3, 5, 5));
-        this.btnAdd = new JButton("add");
-        this.btnModif = new JButton("Modif");
+        JPanel panelBtn     = new JPanel (new GridLayout(1, 3, 5, 5));
+        this.btnAdd         = new JButton("add"        );
+        this.btnModif       = new JButton("Modif"      );
         this.btnEnregistrer = new JButton("Enregistrer");
 
         /**********************************/
@@ -50,7 +50,8 @@ public class FrameAssociation extends JFrame implements ActionListener
 
         this.add(new JLabel("Question"));
         this.add(this.txtQuestion);
-        for (PanelRep panel : this.lstRep) {
+        for (PanelRep panel : this.lstRep) 
+        {
             this.add(panel);
         }
 
@@ -62,8 +63,8 @@ public class FrameAssociation extends JFrame implements ActionListener
         /**********************************/
         /*  Activation des composants     */
         /**********************************/
-        this.btnAdd.addActionListener(this);
-        this.btnModif.addActionListener(this);
+        this.btnAdd        .addActionListener(this);
+        this.btnModif      .addActionListener(this);
         this.btnEnregistrer.addActionListener(this);
 
         this.setVisible(true);
@@ -71,9 +72,15 @@ public class FrameAssociation extends JFrame implements ActionListener
 
     private void addNewPanelRep() 
 	{
-        PanelRep panel = new PanelRep(this.lstRep);
+        PanelRep panel = new PanelRep(this.lstRep,this);
         this.lstRep.add(panel);
         this.add(panel);
+        this.revalidate();
+        this.repaint();
+    }
+
+    public void majIHM()
+    {
         this.revalidate();
         this.repaint();
     }
@@ -100,18 +107,20 @@ public class FrameAssociation extends JFrame implements ActionListener
 	{
 		private static int nbPanel = 0;
 
-        private JButton  btnSuppr1;
+        private JButton    btnSuppr1;
         private JTextField txtRep1;
         private JTextField txtRep2;
-        private JButton  btnSuppr2;
+        private JButton    btnSuppr2;
 		private ArrayList<PanelRep> lstRep;
+        private FrameAssociation    frame;
 
-        public PanelRep(ArrayList<PanelRep> lstRep) 
+        public PanelRep(ArrayList<PanelRep> lstRep, FrameAssociation frame) 
 		{
             this.setLayout(new GridLayout(1, 4, 5, 5));
 
 			PanelRep.nbPanel++;
 			this.lstRep = lstRep;
+            this.frame = frame;
 
             this.btnSuppr1 = new JButton("suppr");
             this.txtRep1 = new JTextField();
@@ -132,7 +141,8 @@ public class FrameAssociation extends JFrame implements ActionListener
 		{
 			if (e.getSource() == this.btnSuppr1) 
 			{
-				this.lstRep.remove(nbPanel);
+				this.lstRep.remove(nbPanel-1);
+                this.frame.majIHM();
 			}
 		}
 

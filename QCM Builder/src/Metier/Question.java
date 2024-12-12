@@ -7,6 +7,7 @@ package Metier;
 import java.util.Scanner; 
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 
 
 public class Question implements Comparable<Question>
@@ -15,13 +16,13 @@ public class Question implements Comparable<Question>
 	private String       type        ;
 	private String       explication ;
 	private Difficulte   difficulte  ;
-	private int          point       ;
+	private double          point       ;
 	private float        temps        ;
 	//private int      timeMin     ;
 	//private int      timeSec     ;
 	private List<Reponse> lstRep ;
 
-	public Question(String question, String type, String explication, Difficulte difficulte, int point, float temps, List<Reponse> lstRep) 
+	public Question(String question, String type, String explication, Difficulte difficulte, double point, float temps, List<Reponse> lstRep) 
 	{
 		this.question     = question    ;
 		this.type         = type        ;
@@ -34,14 +35,14 @@ public class Question implements Comparable<Question>
 		this.lstRep       = lstRep      ;
 	}
 
-	public Question(String question, String type, String explication, Difficulte difficulte, int point, float temps) 
+	public Question(String question, String type, String explication, Difficulte difficulte, double point, float temps) 
 	{
 		this.question     = question    ;
 		this.type         = type        ;
 		this.explication  = explication ;
 		this.difficulte   = difficulte  ;
-		this.point        = point       ;
 		this.temps		  = temps       ;
+		this.point	 	  = point       ;
 		//this.timeMin      = timeMin     ;
 		//this.timeSec      = timeSec     ;
 		this.lstRep       = null        ;
@@ -61,7 +62,7 @@ public class Question implements Comparable<Question>
 	public String     getType         () {return type        ;}
 	public String     getExplication  () {return explication ;}
 	public Difficulte getDifficulte   () {return difficulte  ;}
-	public int        getPoint        () {return point       ;}
+	public double        getPoint        () {return point       ;}
 	public float      getTemps        () {return temps       ;}
 	//public int    getTimeMin      () {return timeMin     ;}
 	//public int    getTimeSec      () {return timeSec     ;}
@@ -127,26 +128,27 @@ public class Question implements Comparable<Question>
 
 		//difficulte
 		//recuperation de la difficulte tant qu'elle n'est pas "facile", "moyen" ou "difficile"
-		Difficulte difficulte;
+		Difficulte difficulte = Difficulte.TF;
 		String stringDifficulter;
 		do
 		{
-			System.out.print("Difficulte (facile, moyen, difficile) : ");
+			System.out.print("Difficulte (très facile, facile, moyen, difficile) : ");
 			stringDifficulter = sc.nextLine();
 			//mettre une majuscule au début et le reste en minuscule
 			stringDifficulter = stringDifficulter.substring(0, 1).toUpperCase() + stringDifficulter.substring(1).toLowerCase();
 			//message d'erreur
-			if (!stringDifficulter.equalsIgnoreCase("facile") && !stringDifficulter.equalsIgnoreCase("moyen") && !stringDifficulter.equalsIgnoreCase("difficile"))
+			if (!stringDifficulter.equalsIgnoreCase("très facile") && !stringDifficulter.equalsIgnoreCase("facile") && !stringDifficulter.equalsIgnoreCase("moyen") && !stringDifficulter.equalsIgnoreCase("difficile"))
 				System.out.println("Difficulte incorrecte");
 			
-			switch (stringDifficulter) {
-				case "Très facile": difficulte = Difficulte.TF;
+			switch (stringDifficulter) 
+			{
+				case "très facile": difficulte = Difficulte.TF;
 					break;
-				case "Facile": difficulte = Difficulte.F;
+				case "facile": difficulte = Difficulte.F;
 					break;
-				case "Moyen": difficulte = Difficulte.M;
+				case "moyen": difficulte = Difficulte.M;
 					break;
-				case "Difficile": difficulte = Difficulte.D;
+				case "difficile": difficulte = Difficulte.D;
 					break;
 			
 				default:
@@ -229,13 +231,10 @@ public class Question implements Comparable<Question>
 	}
 
 	//creer question en récuérant les valeurs de chaque element
-	public static Question creerQuestion(String question, String type, String explication, Difficulte difficulte, int point, float temps)
+	public static Question creerQuestion(String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<Reponse> lstRep)
 	{
-		return new Question(question, type, explication, difficulte, point, temps);
+		return new Question(question, type, explication, difficulte, point, temps, lstRep);
 	}
-
-	
-
 
 	/***********************/
 	/*		String		   */

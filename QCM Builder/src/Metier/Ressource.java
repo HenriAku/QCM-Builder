@@ -161,14 +161,14 @@ public class Ressource
 	}
 
 	//ajouter question
-	public void ajouterQuestion(String c, String question, String type, String explication, String difficulte, int point, float temps)
+	public void ajouterQuestion(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<Reponse> reponses)
 	{
 		//on récupère le notion dans lstNotions
 		for (Notion not : this.notions) 
 		{
-			if (not.getNom().equals(c)) 
+			if (not.getNom().equals(notion)) 
 			{
-				not.ajouterQuestion(question, type, explication, difficulte, point, temps);
+				not.ajouterQuestion(question, type, explication, difficulte,point, temps, reponses);
 			}
 		}
 

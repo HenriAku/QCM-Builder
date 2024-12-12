@@ -15,6 +15,13 @@ public class Reponse
 	private int     ordreEnlever;
 	private ArrayList<Reponse> lstReponsesAsso; 
 
+	public Reponse(String reponse, boolean valeur) 
+	{
+		this.reponse      = reponse     ;
+		this.valeur       = valeur      ;
+		this.ordreEnlever = 0;
+	}
+
 	public Reponse(String reponse, boolean valeur, int ordreEnlever) 
 	{
 		this.reponse      = reponse     ;

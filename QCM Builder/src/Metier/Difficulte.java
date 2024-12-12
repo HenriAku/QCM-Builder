@@ -39,13 +39,10 @@ public enum Difficulte
         this.point = point;
     }
 
-    public String getDifficulte()
-    {
-        return this.dif;
-    }
-
-    public int getPoint()
-    {
-        return this.point;
-    }
+    //getters
+    public String getDifficulte(){return this.dif;}
+    public int getPoint(){return this.point;}
+    
+    //setters
+    public void setPoint (int p){this.point = p;}
 } 

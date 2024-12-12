@@ -5,8 +5,10 @@
 package Controlleur;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import IHM.FramePrincipal;
+import Metier.Difficulte;
 import Metier.Metier;
 import Metier.Ressource;
 
@@ -42,9 +44,14 @@ public class Controlleur
 	}
 
 	//cration d'une question
-	public String creerQuestion(String r, String c, String question, String type, String explication, String difficulte, int point, float temps, int nbRep)
+	public String validerQuestion (String ressource, String notion, String type, String difficulte, double point, String temps)
 	{
-		return (this.metier.creerQuestion(r, c, question, type, explication, difficulte, point, temps, nbRep));
+		return this.metier.validerQuestion(ressource, notion, type, difficulte, point, temps);
+	}
+
+	public String creerQuestion(String r, String c, String question, String type, String explication, String difficulte, int point, String temps, ArrayList<String> reponses ,  ArrayList<Boolean> validite)
+	{
+		return (this.metier.creerQuestion(r, c, question, type, explication, difficulte, point, temps, reponses, validite));
 	}
 
 	/**

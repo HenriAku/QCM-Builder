@@ -11,10 +11,11 @@ public class Ecriture
 
 	private String emplacementRessources;
 
-	public Ecriture(String emplacementRessources) 
-	{
-		this.emplacementRessources = emplacementRessources;
-	}
+	public Ecriture(String emplacementRessources) {this.emplacementRessources = emplacementRessources;}
+
+	//////////////////
+	// DOSSIERS		//
+	//////////////////
 
 	/**
 	 * crée un dossier dans 'ressources/nomFichier'
@@ -26,36 +27,9 @@ public class Ecriture
 		File dossier = new File(emplacementRessources + nomDossier);
 
 		if (!dossier.exists()) 
-		{
 			return dossier.mkdirs(); // mkdirs() crée le dossier et tous ses parents si nécessaires
-		} 
+
 		return false; // Le dossier existe déjà	
-	}
-
-	/**
-	 * crée un dossier dans 'ressources/nomFichier'
-	 * @param nomFichier l'emplacement audans lequel le fichier va être créé, comprend son nom
-	 * @return true si le fichier à bien été crée
-	 */
-	public boolean creerFichier(String nomFichier)
-	{
-
-		File fichier = new File(emplacementRessources + nomFichier);
-		try 
-		{
-			if (!fichier.exists()) 
-			{
-				fichier.getParentFile().mkdirs(); // Crée les dossiers parents si nécessaires
-				fichier.createNewFile(); // Crée le fichier
-			}
-		} 
-		catch (IOException e) 
-		{
-			System.err.println("Erreur lors de la création du fichier : " + e.getMessage());
-			return false;
-		}
-		return true;
-
 	}
 
 	/**
@@ -68,9 +42,7 @@ public class Ecriture
 		File dossier = new File( "./ressources/" + ressource.getNom() );
 
 		if (!dossier.exists())
-		{
 			return dossier.mkdirs();
-		}
 
 		return false;
 	}
@@ -83,28 +55,12 @@ public class Ecriture
 	 */
 	public boolean creerDossierNotion(Ressource ressource, Notion notion)
 	{
-		{
-			File dossier = new File( "./ressources/" + ressource.getNom() + "" + notion.getNom() );
+		File dossier = new File( "./ressources/" + ressource.getNom() + "" + notion.getNom() );
 
-			if (!dossier.exists())
-			{
-				return dossier.mkdirs();
-			}
+		if (!dossier.exists())
+			return dossier.mkdirs();
 
-			return false;
-		}
-	}
-
-	/**
-	 * crée un dossier dans 'ressources/ressource'
-	 * @param ressource la ressource qui correspond au dossier
-	 * @param notion  le notion qui correspond au dossier
-	 * @param question  la question qui va être créée dans le fichier texte
-	 * @return true si le dossier à bien été crée
-	 */
-	public boolean creerTxtQuestion(Ressource ressource, Notion notion,Question question)
-	{
-		return true;
+		return false;
 	}
 
 	/**
@@ -132,9 +88,7 @@ public class Ecriture
             }
         } 
         else 
-        {
             System.out.println("Le dossier à renommer n'existe pas.");
-        }
 
         return false; 
     }
@@ -147,8 +101,47 @@ public class Ecriture
 	public boolean supprimerDossier(String nomDossier)
     {
         File dossier = new File(emplacementRessources + File.separator + nomDossier);
-
-        return dossier.delete();
+		 return dossier.delete();
     }
 
+	//////////////////
+	// FICHIERS		//
+	//////////////////
+
+	/**
+	 * crée un dossier dans 'ressources/nomFichier'
+	 * @param nomFichier l'emplacement audans lequel le fichier va être créé, comprend son nom
+	 * @return true si le fichier à bien été crée
+	 */
+	public boolean creerFichier(String nomFichier)
+	{
+
+		File fichier = new File(emplacementRessources + nomFichier);
+		try 
+		{
+			if (!fichier.exists()) 
+			{
+				fichier.getParentFile().mkdirs(); // Crée les dossiers parents si nécessaires
+				fichier.createNewFile(); // Crée le fichier
+			}
+		} 
+		catch (IOException e) 
+		{
+			System.err.println("Erreur lors de la création du fichier : " + e.getMessage());
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * crée un dossier dans 'ressources/ressource'
+	 * @param ressource la ressource qui correspond au dossier
+	 * @param notion  le notion qui correspond au dossier
+	 * @param question  la question qui va être créée dans le fichier texte
+	 * @return true si le dossier à bien été crée
+	 */
+	public boolean creerTxtQuestion(Ressource ressource, Notion notion,Question question)
+	{
+		return true;
+	}
 }

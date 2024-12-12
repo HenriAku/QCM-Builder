@@ -46,12 +46,12 @@ class TestObjet
         ArrayList<Question> questionsT1 = new ArrayList<Question>();
         ArrayList<Question> questionsT2 = new ArrayList<Question>();
 
-        Question qT1_1 = new Question("1+1 = ?", "QCM", "logique", "Facile", 40, 3, 0, reponsesT1_1);
-        Question qT1_2 = new Question("12-11 = ?", "QCM", "logique", "Dificile", 4, 3, 0, reponsesT1_2);
+        Question qT1_1 = new Question("1+1 = ?", "QCM", "logique", Difficulte.F, 40, 80, reponsesT1_1);
+        Question qT1_2 = new Question("12-11 = ?", "QCM", "logique", Difficulte.D, 30, 80, reponsesT1_2);
 
-        Question qT2_1 = new Question("Quelle est la capitale de la République de Djibouti ?", "QCM", "Explication", "Facile", 2, 1, 30, reponsesT2_1);
+        Question qT2_1 = new Question("Quelle est la capitale de la République de Djibouti ?", "QCM", "Explication", Difficulte.F, 2, 30, reponsesT2_1);
 
-        Question qH1_1 = new Question("annee de sortie Tianic ?", "QCM", "logique", "Dificile", 4, 3, 0, reponsesH1_1);
+        Question qH1_1 = new Question("annee de sortie Tianic ?", "QCM", "logique", Difficulte.D, 4, 80, reponsesH1_1);
 
         questionsT1.add(qT1_1);
         questionsT1.add(qT1_2);
@@ -150,7 +150,21 @@ class TestObjet
         m.addRessource(rscTest);
 
         //test creation d'une question
-        System.out.println(m.creerQuestion("Algo", "Algo", "On est quel jour ?", "qcm","oui exactement, nous somme un mercredi", "Facile", 5, "5:30", 7));
+        System.out.println(m.validerQuestion("Algo", "Algo", "qcm", "Facile", 5, "5:30"));
+        ArrayList<String> reponses = new ArrayList<String>();
+        ArrayList<Boolean> validite= new ArrayList<Boolean>();
+        reponses.add("lundi");
+        validite.add(false);
+        reponses.add("mardi");
+        validite.add(false);
+        reponses.add("mercredi");
+        validite.add(true);
+        reponses.add("jeudi");
+        validite.add(false);
+        reponses.add("vendredi");
+        validite.add(false);
+
+        System.out.println(m.creerQuestion("Algo", "Algo", "On est quel jour ?", "qcm","oui exactement, nous somme un mercredi", "Facile", 5, "5:30", reponses, validite));
 
         //tester creerQuestionnaire
         Questionnaire qst = Questionnaire.genererQuestionnaire(sc,m);

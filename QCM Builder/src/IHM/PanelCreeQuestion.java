@@ -13,9 +13,12 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Enumeration;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import IHM.FramePrincipal;
+
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -52,7 +55,8 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 
 	private boolean boutonCouleurEditable;
 
-	private FramePrincipal frame;
+	private FrameAjoutQuestion frameAjoutQuestion;
+
 	private Controlleur    ctrl ;
 
 	public PanelCreeQuestion(Controlleur ctrl, FramePrincipal frame)
@@ -60,7 +64,7 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 		this.setLayout(new GridLayout(5,1));
 
 		this.ctrl  = ctrl ;
-		this.frame = frame;
+		this.frameAjoutQuestion = new FrameAjoutQuestion(this.ctrl);
 
 		this.btnCouleurSelectionner = -1;
 		this.boutonCouleurEditable  = false;
@@ -224,107 +228,52 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 		}
 		if (e.getSource() == this.btnCreeQuestion)
 		{
-			String erreur = "";
-			boolean estValide = true;
-			double nbPoints = 0.0;
-			int minute = 0;
-			int seconde = 0;
-	
-	
-			/* Vérification des textfield */
-			// Nombre de points
-			if (this.txtNbPoints.getText().length() == 0)
+			String ressource = (String)(this.ddlstRessource.getSelectedItem());
+			String notion    = (String)(this.ddlstNotion   .getSelectedItem());
+			String type      = "";
+			String difficulte = "";
+			double point = -1;
+
+			switch (this.btnCouleurSelectionner)
 			{
-				estValide = false;
-				erreur += "Le champs \"nombre de points\" est vide\n";
-			}
+				case 1:
+					difficulte = "Tres Facile";
+					break;
+				
+				case 2:
+					difficulte = "Facile";
+					break;
+
+				case 3:
+					difficulte = "Moyenne";
+					break;
+
+				case 4:
+					difficulte = "Difficile";
+					break;
 			
+				default:
+					break;
+			}
 			try
 			{
-				nbPoints = Double.parseDouble(this.txtNbPoints.getText());
-				if (nbPoints <= 0)
-				{
-					erreur += "Le nombre de points doit être superieur à 0\n";
-					estValide = false;
-				}
-			}
-			catch (Exception err)
-			{
-				if (erreur.length() == 0)
-				{
-					erreur += "Saisie du nombre de points invalide\n";
-					estValide = false;
-				}
-			}
-	
-			// Temps de réponse
-			boolean erreurVide = false;
-			if (this.txtTempsReponse.getText().length() == 0)
-			{
-				estValide = false;
-				erreurVide = true;
-				erreur += "Le champs \"temps de réponse\" est vide\n";
-			}
+				point = Double.parseDouble(this.txtNbPoints.getText());
+			} catch (Exception err) {}
+
+			String temps = this.txtTempsReponse.getText();
 			
-			try
-			{
-				minute  = Integer.parseInt(this.txtTempsReponse.getText().substring(0, this.txtTempsReponse.getText().indexOf(":")));
-				seconde = Integer.parseInt(this.txtTempsReponse.getText().substring(this.txtTempsReponse.getText().indexOf(":")+1));
-	
-				if (minute <= 0)
-				{
-					erreur += "Le nombre de minute doit être superieur à 0\n";
-					estValide = false;
-				}
-				if (seconde <= 0)
-				{
-					erreur += "Le nombre de seconde doit être superieur à 0\n";
-					estValide = false;
-				}
-			}
-			catch (Exception err)
-			{
-				if (! erreurVide)
-				{
-					erreur += "Saisie du temps invalide, le format doit être min:sec\n";
-					estValide = false;
-				}
-			}
-	
-			/* Verification des drop down list */
-			// Liste ressources
-			if (this.ddlstRessource.getSelectedItem() == null)
-			{
-				erreur += "Aucune ressources sélectionner\n";
-				estValide = false;
-			}
-
-			// Liste notion
-			if (this.ddlstNotion.getSelectedItem() == null)
-			{
-				erreur += "Aucune notion sélectionner\n";
-				estValide = false;
-			}
-
-			/* Verification du niveau */
-			if (this.btnCouleurSelectionner == -1)
-			{
-				erreur += "Aucun niveau sélectionner\n";
-				estValide = false;
-			}
-
-			/* Verification type de question */
-			if (this.rbQcmUnique  .isSelected() == false && this.rbQcmMulti   .isSelected() == false &&
-				this.rbAssociation.isSelected() == false && this.rbElimination.isSelected() == false)
-			{
-				erreur += "Aucun type de question sélectionner\n";
-				estValide = false;
-			}
+			if (this.rbQcmUnique  .isSelected()) type = this.rbQcmUnique  .getText();
+			if (this.rbQcmMulti   .isSelected()) type = this.rbQcmMulti   .getText();
+			if (this.rbAssociation.isSelected()) type = this.rbAssociation.getText();
+			if (this.rbElimination.isSelected()) type = this.rbElimination.getText();
 			
-			estValide = true;
-			if (estValide)
+
+
+			String erreur = this.ctrl.validerQuestion(ressource, notion, type, difficulte, point, temps);
+			System.out.println(erreur);
+			if (erreur.length() == 0)
 			{
-				//this.frame.setVisible(true); Ouvre la frame pour mettre l'énnoncé et les réponses
+				this.frameAjoutQuestion.setVisible(true);
 			}
 			else
 				JOptionPane.showMessageDialog(null, erreur, "Erreur", JOptionPane.ERROR_MESSAGE);

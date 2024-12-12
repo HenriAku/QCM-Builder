@@ -36,9 +36,6 @@ public class Notion
 
 		Ecriture ef = new Ecriture("../ressources/" );
 		ef.creerDossier(notion);
-
-		if (lstQuestions != null) 
-			initQuestion(lstQuestions);
 	}
 
 	//methode creerNotion en demandant les informations à l'utilisateur
@@ -93,45 +90,10 @@ public class Notion
 	}
 
 	//ajouter une question
-	public void ajouterQuestion(String question, String type, String explication, String difficulte, int point, float temps)
+	public void ajouterQuestion(String question, String type, String explication, Difficulte difficulte, double point, float temps, ArrayList<Reponse> lstReponses)
 	{
-		this.addQuestion(Question.creerQuestion(question, type, explication, difficulte, point, temps));
+		this.addQuestion(Question.creerQuestion(question, type, explication, difficulte,point, temps, lstReponses));
 	}
-
-
-	/**
-	 * Ajoute les questions dans la bonne list
-	 * @param lstQuestions List de question
-	 */
-	public void initQuestion(ArrayList<Question> lstQuestions)
-	{
-		// Initialise les questions
-		for (Question question:lstQuestions)
-		{
-			switch (question.getDifficulte())
-			{
-				case "Très Facile":
-					this.lstQuestionsTresFacile.add(question);
-					break;
-
-				case "Facile":
-					this.lstQuestionsFacile.add(question);
-					break;
-				
-				case "Moyen":
-					this.lstQuestionsMoyenne.add(question);
-					break;
-				
-				case "Difficile":
-					this.lstQuestionsDifficile.add(question);
-					break;
-			
-				default:
-					break;
-			}
-		}
-	}
-	
 
 
 	public void addQuestion(Question q)
@@ -229,16 +191,100 @@ public class Notion
 		return lstQuest;
 	}
 
-	public ArrayList<Question> aleaQuestions(int nbQuestionFacile, int nbQuestionMoyenne, int nbQuestionDifficile)
+	// TODO: A Tester
+	public ArrayList<Question> aleaQuestions(int nbQuestionTresFacile, int nbQuestionFacile, int nbQuestionMoyenne, int nbQuestionDifficile)
 	{
-		int idFinQuestionTresFacile;
-		int idFinQuestionFacile;
-		int idFinQuestionMoyenne;
+		int idFinQuestionTresFacile = -1;
+		int idFinQuestionFacile     = -1;
+		int idFinQuestionMoyenne    = -1;
 
 		for(int i=0; i<this.lstQuestions.size(); i++)
 		{
-			
+			if (this.lstQuestions.get(i).getDifficulte().equals(Difficulte.F) && idFinQuestionTresFacile == -1)
+			{
+				idFinQuestionTresFacile = i-1;
+			}
+			if (this.lstQuestions.get(i).getDifficulte().equals(Difficulte.M) && idFinQuestionFacile     == -1)
+			{
+				idFinQuestionFacile = i-1;
+			}
+			if (this.lstQuestions.get(i).getDifficulte().equals(Difficulte.D) && idFinQuestionMoyenne    == -1)
+			{
+				idFinQuestionMoyenne = i-1;
+			}
 		}
+
+		ArrayList<Question> lstQuestionsAlea = new ArrayList<Question>();
+
+		for (int i=0; i<nbQuestionTresFacile; i++)
+		{
+			Question questionAlea = this.lstQuestions.get((int)(Math.random()*idFinQuestionTresFacile+1));
+
+			boolean questionDejaDansLaListe = false;
+			for (Question question:lstQuestionsAlea)
+			{
+				if (question.equals(questionAlea))
+					questionDejaDansLaListe = true;
+			}
+
+			if (questionDejaDansLaListe)
+				i--;
+			else
+				lstQuestionsAlea.add(questionAlea);
+		}
+
+		for (int i=0; i<nbQuestionFacile; i++)
+		{
+			Question questionAlea = this.lstQuestions.get(idFinQuestionTresFacile + 1 + (int)(Math.random()*(idFinQuestionFacile-idFinQuestionTresFacile)));
+
+			boolean questionDejaDansLaListe = false;
+			for (Question question:lstQuestionsAlea)
+			{
+				if (question.equals(questionAlea))
+					questionDejaDansLaListe = true;
+			}
+
+			if (questionDejaDansLaListe)
+				i--;
+			else
+				lstQuestionsAlea.add(questionAlea);
+		}
+
+		for (int i=0; i<nbQuestionMoyenne; i++)
+		{
+			Question questionAlea = this.lstQuestions.get(idFinQuestionFacile + 1 + (int)(Math.random()*(idFinQuestionMoyenne-idFinQuestionFacile)));
+
+			boolean questionDejaDansLaListe = false;
+			for (Question question:lstQuestionsAlea)
+			{
+				if (question.equals(questionAlea))
+					questionDejaDansLaListe = true;
+			}
+
+			if (questionDejaDansLaListe)
+				i--;
+			else
+				lstQuestionsAlea.add(questionAlea);
+		}
+
+		for (int i=0; i<nbQuestionDifficile; i++)
+		{
+			Question questionAlea = this.lstQuestions.get(idFinQuestionMoyenne + (int)(Math.random()*(this.lstQuestions.size()-idFinQuestionMoyenne)));
+
+			boolean questionDejaDansLaListe = false;
+			for (Question question:lstQuestionsAlea)
+			{
+				if (question.equals(questionAlea))
+					questionDejaDansLaListe = true;
+			}
+
+			if (questionDejaDansLaListe)
+				i--;
+			else
+				lstQuestionsAlea.add(questionAlea);
+		}
+
+		return lstQuestionsAlea;
 	}
 
 	//aleaQuestionsSimple qui prend un nombre de question et renvoie une liste de question aléatoire
@@ -277,7 +323,7 @@ public class Notion
 
 	public int getNbQuestions()
 	{
-		return this.lstQuestionsFacile.size() + this.lstQuestionsMoyenne.size() + this.lstQuestionsDifficile.size() + this.lstQuestionsTresFacile.size();
+		return this.lstQuestions.size();
 	} 
 
 	

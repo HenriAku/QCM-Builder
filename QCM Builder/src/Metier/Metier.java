@@ -5,6 +5,7 @@
 
 package Metier;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,8 +19,8 @@ public class Metier
 	public Metier()
 	{
 		this.lstRessources = new ArrayList<>();
-		this.lecteur  = new Lire("QCM Builder\\\\ressources/");
-		this.ecriture = new Ecriture("QCM Builder\\ressources/");
+		this.lecteur  = new Lire("QCM Builder" + File.separator + "ressources/");
+		this.ecriture = new Ecriture("QCM Builder" + File.separator + "ressources/");
 		this.init();
 	}
 
@@ -56,6 +57,10 @@ public class Metier
 	{
 		return this.ecriture.creerDossier(nomRes);
 	}
+
+	///////////////
+	// RESSORCES //
+	///////////////
 
 	/**
 	 * Cherche une ressource
@@ -107,13 +112,51 @@ public class Metier
 	}
 
 	//creer les questions
-	public String creerQuestion(String r, String c, String question, String type, String explication, String difficulte, int point, float temps)
+	public String validerQuestion (String ressource, String notion, String type, String difficulte, double point, String temps)
+	{
+		String erreur = "";
+		//verifier si la ressource existe
+		if (rechercheRessource(ressource) == null)
+			erreur += "La ressource n'existe pas\n";
+		//verifier si la notion existe
+		if (rechercheNotion(ressource, notion) == null)
+			erreur += "La notion n'existe pas\n";
+		//verifier si le type est QCM ou Association
+		if (!type.equalsIgnoreCase("QCM") && !type.equalsIgnoreCase("Association"))
+			erreur += "Le type doit être QCM ou Association\n";
+		//verifier si la difficulté est tres facile, facile, moyen ou difficile
+		if (!difficulte.equalsIgnoreCase("Tres facile") && !difficulte.equalsIgnoreCase("Facile") && !difficulte.equalsIgnoreCase("Moyen") && !difficulte.equalsIgnoreCase("Difficile"))
+			erreur += "La difficulté doit être Tres facile, Facile, Moyen ou Difficile\n";
+		//verifier si le point est positif
+		if (point < 0)
+			erreur += "Le point doit être positif ou 0\n";
+		//verifier si le temps est coherrant
+		if (temps.equals(""))
+			erreur += "Le temps ne peut pas être vide\n";
+		if (temps.indexOf(":") == -1)
+			erreur += "Le temps doit être sous la forme mm:ss\n";
+		//vérifier si secondes > 60
+		else
+		{
+			String[] tab = temps.split(":");
+			int timeMin = Integer.parseInt(tab[0]);
+			int timeSec = Integer.parseInt(tab[1]);
+			if (timeMin < 0 || timeSec < 0)
+				erreur += "Le temps doit être positif\n";
+			if (timeSec >= 60)
+				erreur += "Les secondes doivent être inférieures à 60\n";
+		}
+		//retourne les erreurs si il y en a, sinon retourne une chaine vide
+		return erreur;
+	}
+
+	public String creerQuestion(String Sressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> lstRep, ArrayList<Boolean> validite)
 	{
 		//associer r à la ressource portant le même nom dans la liste
 		Ressource ressource = null;
 		for (Ressource res : this.lstRessources)
 		{
-			if (res.getNom().equals(r))
+			if (res.getNom().equals(Sressource))
 				ressource = res;
 		}
 
@@ -131,28 +174,68 @@ public class Metier
 			erreur += "L'explication ne peut pas être vide\n";
 
 		//difficulte
-		if (!difficulte.equalsIgnoreCase("facile") && !difficulte.equalsIgnoreCase("moyen") && !difficulte.equalsIgnoreCase("difficile"))
+		Difficulte diff = null;
+		//mettre en minuscule la difficulté
+		difficulte = difficulte.toLowerCase();
+		//associer le string difficulté à un objet Difficulte
+		if (difficulte.equals("tres facile"))
+			diff = Difficulte.TF;
+		else if (difficulte.equals("facile"))
+			diff = Difficulte.F;
+		else if (difficulte.equals("moyen"))
+			diff = Difficulte.M;
+		else if (difficulte.equals("difficile"))
+			diff = Difficulte.D;
+		else if (difficulte.equals(""))
+			erreur += "La difficulté ne peut pas être vide\n";
+		else
 			erreur += "La difficulté doit être facile, moyen ou difficile\n";
-			//transformer la string en un enum difficulte
-
-
-
-			
-
-			
 
 		//point
 		if (point < 0)
-			erreur += "Le nombre de points doit être positif ou 0\n";
-
+			erreur += "Le point doit être positif ou 0\n";
+			
 		//temps
-		if (temps < 0)
-			erreur += "Le temps doit être positif ou 0\n";
+		//transofrmer le temps (mm::ss) en minutes a virgule
+		//si le temps est négatif ou égal à 0
+		int timeMin =0;
+		int timeSec =0;
+		if (temps.equals(""))
+			erreur += "Le temps ne peut pas être vide\n";
+		if (temps.indexOf(":") == -1)
+			erreur += "Le temps doit être sous la forme mm:ss\n";
+		//vérifier si secondes > 60
+		else
+		{
+			String[] tab = temps.split(":");
+			timeMin = Integer.parseInt(tab[0]);
+			timeSec = Integer.parseInt(tab[1]);
+			if (timeMin < 0 || timeSec < 0)
+				erreur += "Le temps doit être positif\n";
+			if (timeSec >= 60)
+				erreur += "Les secondes doivent être inférieures à 60\n";
+		}
+		//calculer le temps en en numérique 1h30 = 1,5h
+		float tempsS = timeMin + (timeSec/60);
+
+		//creer la liste de reponses par la list de string entree en paremetre
+		ArrayList<Reponse> lstReponses = new ArrayList<Reponse>();
+		//vérifier si la liste de reponses est vide
+		if (lstRep.size() == 0)
+			erreur += "Il faut au moins une réponse\n";
+		else
+		{
+			for (int i=0; i<lstRep.size(); i++)
+			{
+			lstReponses.add(new Reponse(lstRep.get(i), validite.get(i)));
+			}
+		}
+		
 		
 		//si il n'y a pas d'erreur appeler la methode ajouterQuestion de la ressource
 		if (erreur.equals(""))
 		{
-			ressource.ajouterQuestion(c, question,type, explication, difficulte, point, temps);
+			ressource.ajouterQuestion(notion, question,type, explication, diff, point,  tempsS , lstReponses);
 			/*if (type.equalsIgnoreCase("QCM"))
 				return r.ajouterQuestion(c, new QCM(question, explication, difficulte, point, timeMin, timeSec, nbRep));
 			else

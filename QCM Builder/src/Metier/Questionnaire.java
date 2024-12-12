@@ -33,16 +33,15 @@ public class Questionnaire
 		 * on a des ressources contenant des Notion contenant des questions
 		 */
 
-		// on affiche les ressources, le nombre de notion à l'interieur et le nombre de
-		// questions total
+		// on affiche les ressources, le nombre de notion à l'interieur et le nombre de questions total
 		System.out.println("Création d'un questionnaire : \n");
-
 		for (int i = 0; i < m.getLstRessource().size(); i++) 
 		{
 			System.out.println((i + 1) + " : " + m.getLstRessource().get(i).getNom() + " ("
-					+ m.getLstRessource().get(i).getNbNotions() + " Notion, "
+					+ m.getLstRessource().get(i).getNotions().size() + " notions, "
 					+ m.getLstRessource().get(i).getNbQuestions() + " questions)");
 		}
+	 	
 		// on demande de choisir la ressource pour le questionnaire tant que le choix
 		// n'est pas valide
 		int choixRessource;

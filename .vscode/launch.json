@@ -6,6 +6,20 @@
 	"configurations": [
 		{
 			"type": "java",
+			"name": "FrameAjoutQuestionAsso",
+			"request": "launch",
+			"mainClass": "IHM.FrameAjoutQuestionAsso",
+			"projectName": "QCM-Builder_16d12e32"
+		},
+		{
+			"type": "java",
+			"name": "FrameAjoutQuestion",
+			"request": "launch",
+			"mainClass": "IHM.FrameAjoutQuestion",
+			"projectName": "QCM-Builder_16d12e32"
+		},
+		{
+			"type": "java",
 			"name": "TestPage",
 			"request": "launch",
 			"mainClass": "testWeb.TestPage",

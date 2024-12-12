@@ -10,6 +10,7 @@ import Controlleur.Controlleur;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.List;
 
 import Metier.Ressource;
@@ -51,7 +52,7 @@ public class PanelRessource extends JPanel implements ActionListener
 		lblTitre.setBounds(0, 10, 400, 50);
 
 		this.btnAdd = new JButton(new ImageIcon(
-				new ImageIcon("QCM Builder\\img\\Ajout.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
+				new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "Ajout.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
 		this.btnAdd.setBounds(450, 10, 30, 30);
 
 		panelAjout.add(lblTitre);
@@ -84,12 +85,12 @@ public class PanelRessource extends JPanel implements ActionListener
 			panelRes.add(this.tabBtn[i][0]);
 
 			this.tabBtn[i][1] = new JButton(new ImageIcon(
-					new ImageIcon("QCM Builder\\img\\LogoSuppr.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
+					new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoSuppr.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
 			this.tabBtn[i][1].setBounds(410, 10, 30, 30);
 			panelRes.add(this.tabBtn[i][1]);
 
 			this.tabBtn[i][2] = new JButton(new ImageIcon(
-					new ImageIcon("QCM Builder\\img\\LogoModif.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
+					new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoModif.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
 			this.tabBtn[i][2].setBounds(450, 10, 30, 30);
 			panelRes.add(this.tabBtn[i][2]);
 		}
