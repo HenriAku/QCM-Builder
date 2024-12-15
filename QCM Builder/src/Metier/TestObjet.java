@@ -12,29 +12,24 @@ class TestObjet
         /////////////////////
 
         //reponses
-        ArrayList<Reponse> reponsesA = new ArrayList<Reponse>();
-        ArrayList<Reponse> reponsesB = new ArrayList<Reponse>();
-        ArrayList<Reponse> reponsesC = new ArrayList<Reponse>();
-        ArrayList<Reponse> reponsesF = new ArrayList<Reponse>();
-        ArrayList<Reponse> reponsesM = new ArrayList<Reponse>();
-        ArrayList<Reponse> reponsesH1_1 = new ArrayList<Reponse>();
-        ArrayList<Reponse> reponsesT1_1 = new ArrayList<Reponse>();
-        ArrayList<Reponse> reponsesT1_2 = new ArrayList<Reponse>();
-        ArrayList<Reponse> reponsesT2_1 = new ArrayList<Reponse>();
-        ArrayList<Reponse> reponsesT2_2 = new ArrayList<Reponse>();
+        ArrayList<ReponseQcm> reponsesH1_1 = new ArrayList<ReponseQcm>();
+        ArrayList<ReponseQcm> reponsesT1_1 = new ArrayList<ReponseQcm>();
+        ArrayList<ReponseQcm> reponsesT1_2 = new ArrayList<ReponseQcm>();
+        ArrayList<ReponseQcm> reponsesT2_1 = new ArrayList<ReponseQcm>();
+        ArrayList<ReponseQcm> reponsesT2_2 = new ArrayList<ReponseQcm>();
 
-        reponsesT1_1.add(new Reponse("2", true, 2));
-        reponsesT1_1.add(new Reponse("3", false, 1));
+        reponsesT1_1.add(new ReponseQcm("2", true));
+        reponsesT1_1.add(new ReponseQcm("3", false));
 
-        reponsesT1_2.add(new Reponse("1", true, 1));
-        reponsesT1_2.add(new Reponse("8", false, 2));
+        reponsesT1_2.add(new ReponseQcm("1", true));
+        reponsesT1_2.add(new ReponseQcm("8", false));
 
-        reponsesT2_2.add(new Reponse("1997", false, 1));
-        reponsesT2_2.add(new Reponse("1998", false, 2));
+        reponsesT2_2.add(new ReponseQcm("1997", false));
+        reponsesT2_2.add(new ReponseQcm("1998", false));
 
-        reponsesH1_1.add(new Reponse("Montréal", false, 1));
-        reponsesH1_1.add(new Reponse("Paris", false, 2));
-        reponsesH1_1.add(new Reponse("Djibouti", true, 3));
+        reponsesH1_1.add(new ReponseQcm("Montréal", false));
+        reponsesH1_1.add(new ReponseQcm("Paris", false));
+        reponsesH1_1.add(new ReponseQcm("Djibouti", true));
 
         //questions
         ArrayList<Question> questionsA = new ArrayList<Question>();
@@ -46,12 +41,12 @@ class TestObjet
         ArrayList<Question> questionsT1 = new ArrayList<Question>();
         ArrayList<Question> questionsT2 = new ArrayList<Question>();
 
-        Question qT1_1 = new Question("1+1 = ?", "QCM", "logique", Difficulte.F, 40, 80, reponsesT1_1);
-        Question qT1_2 = new Question("12-11 = ?", "QCM", "logique", Difficulte.D, 30, 80, reponsesT1_2);
+        Question qT1_1 = new QCM("1+1 = ?", "logique", Difficulte.F, 40, 80, reponsesT1_1);
+        Question qT1_2 = new QCM("12-11 = ?", "logique", Difficulte.D, 30, 80, reponsesT1_2);
 
-        Question qT2_1 = new Question("Quelle est la capitale de la République de Djibouti ?", "QCM", "Explication", Difficulte.F, 2, 30, reponsesT2_1);
+        Question qT2_1 = new QCM("Quelle est la capitale de la République de Djibouti ?", "Explication", Difficulte.F, 2, 30, reponsesT2_1);
 
-        Question qH1_1 = new Question("annee de sortie Tianic ?", "QCM", "logique", Difficulte.D, 4, 80, reponsesH1_1);
+        Question qH1_1 = new QCM("annee de sortie Tianic ?", "logique", Difficulte.D, 4, 80, reponsesH1_1);
 
         questionsT1.add(qT1_1);
         questionsT1.add(qT1_2);
@@ -94,7 +89,7 @@ class TestObjet
         ArrayList<Notion> notionsT = new ArrayList<Notion>();
 
         //création de notions
-        Notion notAlgo1       = new Notion("Algo", /*rsc,*/ questionsA);
+        Notion notAlgo1       = new Notion("Algo1", /*rsc,*/ questionsA);
         Notion notBado1       = new Notion("Bado", /*rsc,*/ questionsB);
         Notion notCrypto1     = new Notion("Crypto", /*rsc,*/ questionsC);
         Notion notFrancais1   = new Notion("Francais", /*rsc,*/ questionsF);
@@ -131,6 +126,7 @@ class TestObjet
 
         //System.out.println(rsc.toString());
         System.out.println("Ressource et ses notions crées");
+        System.out.println(rscTest.afficherRessourceDetail());
 
 
         ///////////////////////
@@ -141,6 +137,7 @@ class TestObjet
 
         Metier m = new Metier();
 
+        System.out.println("ajout des ressources");
         m.addRessource(rscAlgo);
         m.addRessource(rscBado);
         m.addRessource(rscCrypto);
@@ -164,15 +161,14 @@ class TestObjet
         reponses.add("vendredi");
         validite.add(false);
 
-        System.out.println(m.creerQuestion("Algo", "Algo", "On est quel jour ?", "qcm","oui exactement, nous somme un mercredi", "Facile", 5, "5:30", reponses, validite));
+        System.out.println("ajout de la question");
+        System.out.println(m.creerQuestionQCM("Algo", "Algo1", "On est quel jour ?", "qcm","oui exactement, nous somme un mercredi", "Facile", 5, "5:30", reponses, validite));
 
         //tester creerQuestionnaire
+        System.out.println("generer questionnaire");
         Questionnaire qst = Questionnaire.genererQuestionnaire(sc,m);
 
-        for (Question q : qst.getQuestions())
-        {
-            System.out.println(q.afficherQuestion());
-        }
+        System.out.println(qst.afficherQuestionnaire());
 
         //tester Utiliser un questionnaire
         

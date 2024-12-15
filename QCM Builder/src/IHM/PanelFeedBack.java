@@ -19,4 +19,9 @@ public class PanelFeedBack extends JPanel
 		this.add(new JLabel("FeedBack"), BorderLayout.NORTH);
 		this.add(this.txtFeedBack);
 	}
+
+	public String getFeedback()
+	{
+		return this.txtFeedBack.getText();
+	}
 }

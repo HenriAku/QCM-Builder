@@ -11,7 +11,7 @@ class TestQuestion
         //Question q1 = Question.creerQuestion("question", "type", "explication", "difficulte", -20, "20:80", -5);
         //Question q1 = Question.creerQuestion("question", "qcm", "explication", "difficile", 2, "20:2", 2);
 
-        Question q2 = Question.creerQuestion(sc);
+        Question q2 = Question.creerQuestionQCM(sc);
 
         //si q1 est bien créé on affiche les informations
         

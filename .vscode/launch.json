@@ -6,6 +6,20 @@
 	"configurations": [
 		{
 			"type": "java",
+			"name": "TestMetier",
+			"request": "launch",
+			"mainClass": "Metier.TestMetier",
+			"projectName": "QCM-Builder_16d12e32"
+		},
+		{
+			"type": "java",
+			"name": "Ecriture",
+			"request": "launch",
+			"mainClass": "Metier.Ecriture",
+			"projectName": "QCM-Builder_16d12e32"
+		},
+		{
+			"type": "java",
 			"name": "FrameAjoutQuestionAsso",
 			"request": "launch",
 			"mainClass": "IHM.FrameAjoutQuestionAsso",

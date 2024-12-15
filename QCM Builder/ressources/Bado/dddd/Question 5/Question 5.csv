@@ -1,0 +1,8 @@
+Question 5	A	Associ objet		très facile	5,00	5,00
+Reponse
+pomme
+jaune
+Association
+pomme	pomme[jaune]
+jaune	jaune[pomme]
+FIN

@@ -8,7 +8,6 @@ package Metier;
 import java.util.*;
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class Lire 
 {
@@ -51,7 +50,7 @@ public class Lire
 			{
 				this.contenuFichier += sc.nextLine() + "\n"; 
 			}
-
+			sc.close();
 		}
 		catch(Exception e) { e.getStackTrace();}
 
@@ -128,16 +127,6 @@ public class Lire
             }
         }
 
-		for(int z = 0; z < lstQuestion.size(); z++)
-		{
-			System.out.println(lstQuestion.get(z).getQuestion());
-			for (Reponse question : lstQuestion.get(z).getLstRep()) 
-			{
-//				System.out.println((question.getLstRep() == null) ? question.afficherReponse() : "rep : " + question.getReponseAsso() );
-//				System.out.println(question.afficherReponse());
-			}
-		}
-
 		return null;
 	}
 
@@ -148,27 +137,27 @@ public class Lire
 		String question          = "";
 		String explication       = "";
 		String stringdifficulte  = "";
-		int   point    = -1;
+		double   point    = -1;
 		Float time     = 0.00f;
-
 
 		String[] lines = qst.split("\n");
 		
 		String[] premiereLigne = lines[0].split("\t");
-		      
 		type              = premiereLigne[1];
 		question          = premiereLigne[2];
 		explication       = premiereLigne[3];
 		stringdifficulte  = premiereLigne[4]; 
 
-		point   = Integer.parseInt(premiereLigne[5]        );
-		time    = Float.parseFloat(premiereLigne[6].strip());
+		point = Double.parseDouble(premiereLigne[5].replace(",", "."));
+		time = Float.parseFloat(premiereLigne[6].strip().replace(",", "."));
 
-		ArrayList<Reponse> lstRep = new ArrayList<Reponse>();
+		ArrayList<ReponseQcm> repQ = null;
+		ArrayList<ReponseAsso> repA = null;
 
 		switch(type)
 		{
 			case "Q":
+				ArrayList<ReponseQcm> lstRep = new ArrayList<ReponseQcm>();
 				for(int i = 1; i<lines.length; i++)
 				{
 					if(lines[i].equals("FIN"))
@@ -176,16 +165,16 @@ public class Lire
 						break;
 					}
 					String[] contenuLigne = lines[i].split("\t");
-					lstRep.add(new Reponse(contenuLigne[0], (contenuLigne[1].equals("vrai")) ? true : false, Integer.parseInt(contenuLigne[2].strip())));
+					lstRep.add(new ReponseQcm(contenuLigne[0], (contenuLigne[1].equals("vrai")) ? true : false));
 				}
+				repQ = lstRep;
 				break;
 
 			case "A":
-				
 				int indiceTabAsso = -1;
 				int indiceTabTest = -1;
 				String etape = "";
-				ArrayList<Reponse> lstReponsesAsso = new ArrayList<Reponse>();
+				ArrayList<ReponseAsso> lstReponsesAsso = new ArrayList<ReponseAsso>();
 				
 				for(int i = 0; i<lines.length; i++)
 				{
@@ -203,31 +192,31 @@ public class Lire
 						else
 						{
 							if(etape.equals("reponse"))
-								lstReponsesAsso.add(new Reponse(contenuLigne[0]));
+								lstReponsesAsso.add(new ReponseAsso(contenuLigne[0]));
 							else
 							{
 								if(etape.equals("Association"))
 								{
-									for (Reponse reponse : lstReponsesAsso) 
+									for (ReponseAsso reponse : lstReponsesAsso) 
 									{
 										if (reponse.getReponse().strip().equals(contenuLigne[0].strip())) 
-											indiceTabAsso = lstRep.indexOf(reponse);
+											indiceTabAsso = lstReponsesAsso.indexOf(reponse);
 									}
 
 									for(int asso = 1; asso < contenuLigne.length; asso++)
 									{
-										for (Reponse reponse : lstReponsesAsso) 
+										for (ReponseAsso reponse : lstReponsesAsso) 
 										{
 											if (reponse.getReponse().strip().equals(contenuLigne[asso].strip())) 
-												lstReponsesAsso.get(indiceTabAsso).associerReponse(reponse);
+												lstReponsesAsso.get(indiceTabAsso).setAssocie(reponse);
 										}
 									}
 								}								
 							}
 						}
 					}
-					lstRep = lstReponsesAsso;
 				}
+				repA = lstReponsesAsso;
 				break;
 			default:
 				break;
@@ -252,9 +241,14 @@ public class Lire
                 break;
         }
 
-		Question qstRet = new Question(question, type, explication, difficulte, point, time, lstRep);
-		
-		return qstRet;
+		if(type.equals("Q"))
+			return new QCM(question, explication, difficulte, point, time, repQ);
+		if(type.equals("A"))
+		{
+			return new Association(question, explication, difficulte, point, time, repA);
+		}
+
+		return null;
 	}
 
 	public void setEmplacementRessources(String e)

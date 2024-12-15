@@ -19,4 +19,9 @@ public class FrameFeedBack extends JFrame
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 	}
 
+	public String getFeedback()
+	{
+		return this.panelFeedBack.getFeedback();
+	}
+
 }

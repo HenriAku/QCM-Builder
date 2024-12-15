@@ -4,48 +4,24 @@
  */
 
 package Metier;
-import java.util.Scanner; 
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
 
+import java.util.Scanner;
 
-public class Question implements Comparable<Question>
+public abstract class Question implements Comparable<Question>
 {
 	private String       question    ;
-	private String       type        ;
 	private String       explication ;
 	private Difficulte   difficulte  ;
-	private double          point       ;
+	private double		 point       ;
 	private float        temps        ;
-	//private int      timeMin     ;
-	//private int      timeSec     ;
-	private List<Reponse> lstRep ;
 
-	public Question(String question, String type, String explication, Difficulte difficulte, double point, float temps, List<Reponse> lstRep) 
+	public Question(String question, String explication, Difficulte difficulte, double point, float temps) 
 	{
 		this.question     = question    ;
-		this.type         = type        ;
 		this.explication  = explication ;
 		this.difficulte   = difficulte  ;
 		this.point        = point       ;
 		this.temps		  = temps       ;
-		//this.timeMin      = timeMin     ;
-		//this.timeSec      = timeSec     ;
-		this.lstRep       = lstRep      ;
-	}
-
-	public Question(String question, String type, String explication, Difficulte difficulte, double point, float temps) 
-	{
-		this.question     = question    ;
-		this.type         = type        ;
-		this.explication  = explication ;
-		this.difficulte   = difficulte  ;
-		this.temps		  = temps       ;
-		this.point	 	  = point       ;
-		//this.timeMin      = timeMin     ;
-		//this.timeSec      = timeSec     ;
-		this.lstRep       = null        ;
 	}
 
 	// Compare les difficultés
@@ -59,42 +35,57 @@ public class Question implements Comparable<Question>
 	/***********************/
 
 	public String     getQuestion     () {return question    ;}
-	public String     getType         () {return type        ;}
 	public String     getExplication  () {return explication ;}
 	public Difficulte getDifficulte   () {return difficulte  ;}
-	public double        getPoint        () {return point       ;}
+	public double     getPoint        () {return point       ;}
 	public float      getTemps        () {return temps       ;}
-	//public int    getTimeMin      () {return timeMin     ;}
-	//public int    getTimeSec      () {return timeSec     ;}
-	public List<Reponse> getLstRep() {return lstRep      ;}
 
-	
 	/***********************/
 	/*		Setteurs	   */
 	/***********************/
-
-	public void setQuestion    (String question    ) {this.question     = question    ;}
-	public void setType        (String type        ) {this.type         = type        ;}
-	public void setExplication (String explication ) {this.explication  = explication ;}
+    
+	public void setQuestion    (String question        ) {this.question     = question    ;}
+	public void setExplication (String explication     ) {this.explication  = explication ;}
 	public void setDifficulte  (Difficulte difficulte  ) {this.difficulte   = difficulte  ;}
-	public void setPoint       (int    point       ) {this.point        = point       ;}
-	public void setTemps       (float  temps       ) {this.temps        = temps       ;}
-	//public void setTimeMin     (int    timeMin     ) {this.timeMin      = timeMin     ;}
-	//public void setTimeSec     (int    timeSec     ) {this.timeSec      = timeSec     ;}
-	public void setLstRep(List<Reponse> lstRep) {this.lstRep = lstRep;}
-
+	public void setPoint       (int    point           ) {this.point        = point       ;}
+	public void setTemps       (float  temps           ) {this.temps        = temps       ;}
+	
 	/***********************/
 	/*		Methodes	   */
 	/***********************/
 
-	//reponses
-	public void addReponse(Reponse r)
-	{lstRep.add(r);}
-	public void removeReponse(Reponse r)
-	{lstRep.remove(r);}
-	public void removeReponse(int index)
-	{lstRep.remove(index);}
+	
+	/***********************/
+	/*		String		   */
+	/***********************/
+	public String toString() 
+	{
+		return question;
+	}
+	
+	public String afficherQuestion()
+	{	
+		String str = "";
 
+		str += "Question : " + question +"\n";
+		str += "Explication : " + explication + "\n";
+		str += "Difficulte : " + difficulte + "\n";
+		str += "Point : " + point + "\n";
+	
+		return str + "\n";
+	}
+
+	/////////
+	// CUI //
+	/////////
+
+	//creer question qcm en demandant chaque element (terminal)
+	public static Question creerQuestionQCM(Scanner sc)
+	{
+		return QCM.creerQCM(sc);
+	}
+
+	/*
 	//creer question en demandant chaque element (terminal)
 	public static Question creerQuestion(Scanner sc)
 	//"sc" utilisation de scanner pour récupérer les informations de l'utilisateur en version console
@@ -229,43 +220,9 @@ public class Question implements Comparable<Question>
 
 		return new Question(question, type, explication, difficulte, point, temps, lstRep);
 	}
+	*/
 
-	//creer question en récuérant les valeurs de chaque element
-	public static Question creerQuestion(String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<Reponse> lstRep)
-	{
-		return new Question(question, type, explication, difficulte, point, temps, lstRep);
-	}
 
-	/***********************/
-	/*		String		   */
-	/***********************/
-	public String toString() 
-	{
-		return "Question [question=" + question + ", type=" + type + ", explication=" + explication + ", difficulte="
-				+ difficulte + ", point=" + point + ", ordreEnveler=" + "]";
-	}
-	
-	public String afficherQuestion()
-	{	
-		String str = "";
-
-		str += "Question : " + question +"\n";
-		str += "Type : " + type + "\n";
-		str += "Explication : " + explication + "\n";
-		str += "Difficulte : " + difficulte + "\n";
-		str += "Point : " + point + "\n";
-		str += "Reponses :\n";
-		//afficher les reponses si elles existent
-		if (lstRep != null)
-		{
-			for (Reponse rep : lstRep)
-			{
-				str += rep.afficherReponse();
-			}
-		}
-
-		return str + "\n";
-	}
 	
 }
  

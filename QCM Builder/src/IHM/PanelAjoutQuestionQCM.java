@@ -16,18 +16,20 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.text.rtf.RTFEditorKit;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-public class PanelAjoutQuestion extends JPanel implements ActionListener
+public class PanelAjoutQuestionQCM extends JPanel implements ActionListener
 {
 	private Controlleur ctrl;
 
-	private JPanel panelHaut;
-	private JPanel panelCentre;
-	private JPanel panelBas;
+	private boolean reponseMultiple;
+	private JPanel  panelHaut;
+	private JPanel  panelCentre;
+	private JPanel  panelBas;
 
 	private JEditorPane txtQuestion;
 
@@ -45,15 +47,34 @@ public class PanelAjoutQuestion extends JPanel implements ActionListener
 
 	private FrameFeedBack frameFeedBack;
 
-	public PanelAjoutQuestion(Controlleur ctrl)
+	/* Paramètre question */
+	private String ressource;
+	private String notion;
+	private String type;
+	private String diffuculte;
+	private String temps;
+	private double point;
+	
+	public PanelAjoutQuestionQCM(Controlleur ctrl, boolean reponseMultiple)
 	{
 		this.ctrl = ctrl;
+		this.reponseMultiple = reponseMultiple;
+
+		this.frameFeedBack = new FrameFeedBack();
 
 		this.setLayout(new BorderLayout());
-		
+
+		/* Initialisation des paramètre de la question à null */
+		this.ressource  = null;
+		this.notion     = null;
+		this.type       = null;
+		this.diffuculte = null;
+		this.temps      = null;
+		this.point      = -1;
+
 		/* Panel Haut */
 		this.txtQuestion = new JEditorPane();
-		this.txtQuestion.setEditorKit(new RTFEditorKit());
+		//this.txtQuestion.setEditorKit(new RTFEditorKit());
 		this.txtQuestion.setMargin(new java.awt.Insets(5, 5, 5, 5)); // Ajout de marges pour l'esthétique
 
 		/* Panel Bas */
@@ -134,6 +155,16 @@ public class PanelAjoutQuestion extends JPanel implements ActionListener
 		this.add(this.panelBas, BorderLayout.SOUTH);
 	}
 
+	public void setParametres(String ressource, String notion, String type, String difficulte, String temps, double point)
+	{
+		this.ressource  = ressource;
+		this.notion     = notion;
+		this.type       = type;
+		this.diffuculte = difficulte;
+		this.temps      = temps;
+		this.point      = point;
+	}
+
 	public void majIHM()
 	{
 		this.panelCentre.revalidate();
@@ -183,7 +214,26 @@ public class PanelAjoutQuestion extends JPanel implements ActionListener
 		if (e.getSource().equals(this.btnEnregistrer))
 		{
 			// Appelle controlleur ajoute la question
-			//this.ctrl.
+			ArrayList<String>  lstReponse  = new ArrayList<String >();
+			ArrayList<Boolean> lstValidite = new ArrayList<Boolean>();
+
+			for (int i=0; i<this.lstTxtReponse.size(); i++)
+			{
+				lstReponse.add(this.lstTxtReponse.get(i).getText());
+				if (this.lstBtnReponseValide.get(i).getIcon() == null)
+					lstValidite.add(false);
+				else
+					lstValidite.add(true);
+			}
+			String erreur = this.ctrl.creerQuestionQCM(this.ressource, this.notion, this.txtQuestion.getText(), this.type, this.frameFeedBack.getFeedback(), this.diffuculte, this.point, this.temps, lstReponse, lstValidite);
+			if (erreur.length() > 0)
+			{
+				JOptionPane.showMessageDialog(null, erreur, "Erreur", JOptionPane.ERROR_MESSAGE);
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(null, "La question à été crée", "Question crée", JOptionPane.INFORMATION_MESSAGE);
+			}
 		}
 		
 		for (int i=0; i<this.lstBtnSupprimer.size(); i++)
@@ -201,10 +251,21 @@ public class PanelAjoutQuestion extends JPanel implements ActionListener
 			{
 				// Met une image de fleche verte dans le btn
 				// Rend la reponse valide
-				if (btnRepValide.getIcon() == null)
-					btnRepValide.setIcon(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoValide.png"));
+				if (this.reponseMultiple)
+				{
+					if (btnRepValide.getIcon() == null)
+						btnRepValide.setIcon(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoValide.png"));
+					else
+						btnRepValide.setIcon(null);
+				}
 				else
-					btnRepValide.setIcon(null);
+				{
+					for (JButton btn:this.lstBtnReponseValide)
+						btn.setIcon(null);
+
+					btnRepValide.setIcon(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoValide.png"));
+				}
+
 			}
 		}
 	}

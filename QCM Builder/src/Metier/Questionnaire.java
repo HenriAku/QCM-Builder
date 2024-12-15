@@ -17,6 +17,10 @@ public class Questionnaire
 	private ArrayList<Question> lstQuestions;
 	private int nbQuestion;
 
+	///////////////////
+	// CONSTRUCTEURS //
+	///////////////////
+
 	public Questionnaire(Ressource r, ArrayList<Notion> lstN, ArrayList<Question> lstQ) 
 	{
 		this.ressource = r;
@@ -24,6 +28,45 @@ public class Questionnaire
 		this.lstQuestions = lstQ;
 		this.nbQuestion = lstQ.size();
 	}
+
+	/////////////////
+	// METHODES    //
+	/////////////////
+
+	/////////////////
+	// GETTERS     //
+	/////////////////
+
+	public ArrayList<Question> getQuestions() {return this.lstQuestions;}
+	public Ressource getRessource() {return this.ressource;}
+	public ArrayList<Notion> getNotions() {return this.lstNotions;}
+	public int getNbQuestion() {return this.nbQuestion;}
+
+	//////////////
+	// STRING   //
+	//////////////
+	
+	//afficher questionnaire
+	public String afficherQuestionnaire()
+	{
+		String str = "Questionnaire : \n";
+		str += "Ressource : " + this.ressource.getNom() + "\n";
+		str += "Notions : \n";
+		for (Notion not : this.lstNotions)
+		{
+			str += " - " + not.getNom() + "\n";
+		}
+		str += "Questions : \n";
+		for (Question q : this.lstQuestions)
+		{
+			str += q.afficherQuestion();
+		}
+		return str;
+	}
+
+	/////////
+	// CUI //
+	/////////
 
 	public static Questionnaire genererQuestionnaire(Scanner sc, Metier m) 
 	{
@@ -146,11 +189,6 @@ public class Questionnaire
 		}
 		// creer un questionnaire
 		return new Questionnaire(ressource, lstNotion, lstQuestions);
-	}
-
-	public ArrayList<Question> getQuestions() 
-	{
-		return this.lstQuestions;
 	}
 
 }

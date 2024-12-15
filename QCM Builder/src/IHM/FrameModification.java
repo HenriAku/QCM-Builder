@@ -77,7 +77,6 @@ public class FrameModification extends JFrame implements ActionListener
 
 
 		this.setVisible(true);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	@Override

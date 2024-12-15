@@ -15,12 +15,16 @@ import Metier.Ressource;
 public class Controlleur
 {
 	private Metier         metier;
-	private FramePrincipal frame ;
+	private FramePrincipal frame;
 	public Controlleur()
 	{
 		this.metier = new Metier   		(    );
 		this.frame  = new FramePrincipal(this);
 	}
+
+	/////////////
+	// DOSIERS //
+	/////////////
 
 	public boolean creerDossier(String nomRes)
 	{
@@ -37,21 +41,13 @@ public class Controlleur
 		return this.metier.supprimerDossier(nomDossier);
 	}
 
+	////////////////
+	// RESSOURCES //
+	////////////////
 
 	public void addRessource(Ressource ressource)
 	{
 		this.metier.addRessource(ressource);
-	}
-
-	//cration d'une question
-	public String validerQuestion (String ressource, String notion, String type, String difficulte, double point, String temps)
-	{
-		return this.metier.validerQuestion(ressource, notion, type, difficulte, point, temps);
-	}
-
-	public String creerQuestion(String r, String c, String question, String type, String explication, String difficulte, int point, String temps, ArrayList<String> reponses ,  ArrayList<Boolean> validite)
-	{
-		return (this.metier.creerQuestion(r, c, question, type, explication, difficulte, point, temps, reponses, validite));
 	}
 
 	/**
@@ -59,12 +55,45 @@ public class Controlleur
 	 * @param nom d'une ressource
 	 * @return Une "Ressource"
 	 */
-	public Ressource rechercheRessource(String nom){return this.metier.rechercheRessource(nom);}
+	public Ressource rechercheRessource(String nom)	{return this.metier.rechercheRessource(nom);}
 
-	public List<Ressource> getLstRessource() {return this.metier.getLstRessource();}
+	public List<Ressource>	 getLstRessource() 		{return this.metier.getLstRessource();}
 
-	public String[] getNomRessources(          ) {return this.metier.getNomRessources(   );}
-	public String[] getNomNotion    (String res) {return this.metier.getNomNotion    (res);}
+	public String[] 		getNomRessources() 		{return this.metier.getNomRessources(   );}
+
+	//////////////
+	// NOTIONS  //
+	//////////////
+	
+	public String[] getNomNotion (String res) {return this.metier.getNomNotion    (res);}
+
+	//////////////
+	// QUESTION //
+	//////////////
+
+	//cration d'une question
+	public String validerQuestion (String ressource, String notion, String type, String difficulte, double point, String temps)
+	{
+		return this.metier.validerQuestion(ressource, notion, type, difficulte, point, temps);
+	}
+
+	public String creerQuestionQCM(String r, String c, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses ,  ArrayList<Boolean> validite)
+	{
+		return (this.metier.creerQuestionQCM(r, c, question, type, explication, difficulte, point, temps, reponses, validite));
+	}
+
+	
+	public String creerQuestionAsso(String r, String c, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses)
+	{
+		return (this.metier.creerQuestionAsso(r, c, question, type, explication, difficulte, point, temps, reponses));
+	}
+
+	/* 
+	public String creerQuestionEnlever(String r, String c, String question, String type, String explication, String difficulte, int point, String temps, ArrayList<String> reponses ,  ArrayList<int> ordreElever)
+	{
+		return (this.metier.creerQuestion(r, c, question, type, explication, difficulte, point, temps, reponses, ordreElever));
+	}
+ 	*/
 
 	public static void main(String[] args) 
 	{

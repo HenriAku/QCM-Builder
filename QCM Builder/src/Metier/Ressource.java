@@ -11,16 +11,16 @@ import java.util.Scanner;
 public class Ressource
 {
 
-	/*
-	 * VARIABLES
-	*/
+	///////////////
+	// ATTRIBUTS //
+	///////////////
 
 	private String nom;
 	private ArrayList<Notion> notions;
 
-	/*
-	 * CONSTRUCTEUR
-	*/
+	///////////////////
+	// CONSTRUCTEURS //
+	///////////////////
 
 	public Ressource(String nom)
 	{
@@ -37,6 +37,10 @@ public class Ressource
 		Ecriture ef = new Ecriture("../ressources/");
 		ef.creerDossier(nom);
 	}
+
+	/////////////
+	// NOTIONS //
+	/////////////
 
 	//ajout d'une notion dans la liste en vérifaint s'il n'existe pas encore
 	public void addNotion(Notion not)
@@ -59,6 +63,8 @@ public class Ressource
 		}
 	}
 
+	public void ajouterNotions(Notion not) {this.notions.add(not);}
+
 	public Notion rechercheNotion(String nom)
 	{
 		for (Notion notion : notions) 
@@ -68,20 +74,58 @@ public class Ressource
 		}
 		return null;
 	}
+	
 
-	/**
-	 * GETTERS ET SETTERS
-	 */
+	///////////////
+	// QUESTIONS //
+	///////////////
+
+	/************************************/
+	/* Ajout des question dans la list  */
+	/************************************/
+	public QCM ajouterQuestionQCM(String notion, String question, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseQcm> reponses)
+	{
+		//on récupère le notion dans lstNotions
+		for (Notion not : this.notions) 
+		{
+			if (not.getNom().equals(notion)) 
+				return not.ajouterQuestionQCM(question, explication, difficulte,point, temps, reponses);
+		}
+		return null;
+	}
+
+	public Association ajouterQuestionAsso(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseAsso> reponses)
+	{
+		//on récupère le notion dans lstNotions
+		for (Notion not : this.notions) 
+		{
+			if (not.getNom().equals(notion)) 
+			{
+				System.out.println("Test1");
+				return not.ajouterQuestionAsso(question, explication, difficulte, point, temps, reponses);
+			}
+		}
+		return null;
+	}
+
+	public Enlevement ajouterQuestionAssoEnleve(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseEnlevement> reponses)
+	{
+		//on récupère le notion dans lstNotions
+		for (Notion not : this.notions) 
+		{
+			if (not.getNom().equals(notion)) 
+				return not.ajouterQuestionEnleve(question, explication, difficulte, point, temps, reponses);
+		}
+		return null;
+	}
+
+	/////////////
+	// GETTERS //
+	/////////////
 
 	public String getNom() {return this.nom;}
 
-	public void setNom(String nom) {this.nom = nom;}
-
 	public ArrayList<Notion> getNotions() {return this.notions;}
-
-	public void ajouterNotions(Notion not) {this.notions.add(not);}
-
-	public void setNotions(ArrayList<Notion> notions) {this.notions = notions;}
 
 	//methode getNbNotions qui retourne le nombre de notions
 	public int getNbNotions() {return this.notions.size();}
@@ -96,18 +140,19 @@ public class Ressource
 		}
 		return nbQuestions;
 	}
-	/* */
 
-	//methode creerRessource en demandant les informations à l'utilisateur
-	public static Ressource creerRessource(Scanner sc) 
-	//"sc" utilisation de scanner pour récupérer les informations de l'utilisateur en version console
-	{
-		System.out.print("Entrez le nom de la ressource : ");
-		String nom = sc.nextLine();
+	/////////////
+	// SETTERS //
+	/////////////
 
-		return new Ressource(nom);
-	}
+	public void setNom(String nom) {this.nom = nom;}
 
+	public void setNotions(ArrayList<Notion> notions) {this.notions = notions;}
+
+	////////////
+	// STRING //
+	////////////
+	
 	public String toString ()
 	{
 		String 	str ="Ressource : " +this.nom +"\n";
@@ -120,7 +165,51 @@ public class Ressource
 		return str;
 	}
 
-	//ajouter ressources
+	//affiche la resource et ses notions
+	public String afficherRessource()
+	{
+		String 	str ="Ressource : " +this.nom +"\n";
+				str += "Liste des Notions :\n";
+
+		for (Notion not : notions) 
+		{
+			str += " - " + not.getNom() + "\n";
+		}
+
+		return str;
+	}
+
+	//affiche la ressource et le détail de ses notions
+	public String afficherRessourceDetail()
+	{
+		String 	str ="\nRessource : " +this.nom +"\n";
+				str += "Liste des Notions :\n";
+
+		for (Notion not : this.notions) 
+		{
+			str += " - " + not.getNom() + "\n";
+			str += "\t"+ not.afficherNotion();
+		}
+
+		return str;
+	}
+
+	/////////
+	// CUI //
+	/////////
+
+	//methode creerRessource en demandant les informations à l'utilisateur
+	public static Ressource creerRessource(Scanner sc) 
+	//"sc" utilisation de scanner pour récupérer les informations de l'utilisateur en version console
+	{
+		System.out.print("Entrez le nom de la ressource : ");
+		String nom = sc.nextLine();
+
+		return new Ressource(nom);
+	}
+
+	
+	//ajouter notions
 	public void ajouterNotions(Scanner sc)
 	{
 		//demander si on creer la liste des notions, tant que la réponse n'est pas oui ou non
@@ -158,49 +247,5 @@ public class Ressource
 				this.addNotion(not);
 			}
 		}
-	}
-
-	//ajouter question
-	public void ajouterQuestion(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<Reponse> reponses)
-	{
-		//on récupère le notion dans lstNotions
-		for (Notion not : this.notions) 
-		{
-			if (not.getNom().equals(notion)) 
-			{
-				not.ajouterQuestion(question, type, explication, difficulte,point, temps, reponses);
-			}
-		}
-
-
-	}
-
-	//affiche la resource et ses notions
-	public String afficherRessource()
-	{
-		String 	str ="Ressource : " +this.nom +"\n";
-				str += "Liste des Notions :\n";
-
-		for (Notion not : notions) 
-		{
-			str += " - " + not.getNom() + "\n";
-		}
-
-		return str;
-	}
-
-	//affiche la ressource et le détail de ses notions
-	public String afficherRessourceDetail()
-	{
-		String 	str ="\nRessource : " +this.nom +"\n";
-				str += "Liste des Notions :\n";
-
-		for (Notion not : notions) 
-		{
-			str += " - " + not.getNom() + "\n";
-			str += "\t"+ not.afficherNotion();
-		}
-
-		return str;
 	}
 }

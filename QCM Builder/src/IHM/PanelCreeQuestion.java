@@ -64,7 +64,7 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 		this.setLayout(new GridLayout(5,1));
 
 		this.ctrl  = ctrl ;
-		this.frameAjoutQuestion = new FrameAjoutQuestion(this.ctrl);
+		this.frameAjoutQuestion = null;
 
 		this.btnCouleurSelectionner = -1;
 		this.boutonCouleurEditable  = false;
@@ -273,6 +273,8 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 			System.out.println(erreur);
 			if (erreur.length() == 0)
 			{
+				this.frameAjoutQuestion = new FrameAjoutQuestion(this.ctrl, type);
+				this.frameAjoutQuestion.setParametres(ressource, notion, type, difficulte, temps, point);
 				this.frameAjoutQuestion.setVisible(true);
 			}
 			else
