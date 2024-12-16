@@ -35,7 +35,6 @@ public class Association extends Question
 
     public void melanger()
     {
-        System.out.println(lstRep.size() + "          " + lstRepAsso.size());
         for(int i = 0; i < 20; i++)
         {
             intervertir(this.lstRep, (int) (Math.random() * this.lstRep.size()), (int) (Math.random() * this.lstRep.size()));

@@ -32,6 +32,6 @@ public class ReponseAsso extends Reponse
     @Override
     public String toString() 
     {
-        return super.toString() + "[" + this.reponseAsso.getReponse()+"]";
+        return super.toString();
     }
 }

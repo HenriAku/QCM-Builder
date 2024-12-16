@@ -108,7 +108,7 @@ public class Ressource
 		return null;
 	}
 
-	public Enlevement ajouterQuestionAssoEnleve(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseEnlevement> reponses)
+	public Enlevement ajouterQuestionEnleve(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseEnlevement> reponses)
 	{
 		//on récupère le notion dans lstNotions
 		for (Notion not : this.notions) 
@@ -118,6 +118,19 @@ public class Ressource
 		}
 		return null;
 	}
+
+	/*
+	////////////////
+	// Evaluation //
+	////////////////
+
+	//genererQuestionnaire(chrono, duree, notions, nbQuestions);
+	public String genererEvaluation(boolean chrono, float duree, ArrayList<String> notions, int nbQuestions)
+	{
+		return "Creation de l'évaluation";
+		//parmis les notions on récupère 
+	}
+	*/
 
 	/////////////
 	// GETTERS //

@@ -7,7 +7,7 @@ package Metier;
 
 import java.util.*;
 
-public class Questionnaire 
+public class Evaluation 
 {
 	// 0 = très facile; 1 = facile; 2 = moyen; 3 = difficile
 	// private int[] nbQuesParDificulté;
@@ -21,7 +21,7 @@ public class Questionnaire
 	// CONSTRUCTEURS //
 	///////////////////
 
-	public Questionnaire(Ressource r, ArrayList<Notion> lstN, ArrayList<Question> lstQ) 
+	public Evaluation(Ressource r, ArrayList<Notion> lstN, ArrayList<Question> lstQ) 
 	{
 		this.ressource = r;
 		this.lstNotions = lstN;
@@ -46,10 +46,10 @@ public class Questionnaire
 	// STRING   //
 	//////////////
 	
-	//afficher questionnaire
-	public String afficherQuestionnaire()
+	//afficher Evaluation
+	public String afficherEvaluation()
 	{
-		String str = "Questionnaire : \n";
+		String str = "Evaluation : \n";
 		str += "Ressource : " + this.ressource.getNom() + "\n";
 		str += "Notions : \n";
 		for (Notion not : this.lstNotions)
@@ -64,20 +64,25 @@ public class Questionnaire
 		return str;
 	}
 
+	public void genererEvaluationHTML()
+	{
+		
+	}
+
 	/////////
 	// CUI //
 	/////////
 
-	public static Questionnaire genererQuestionnaire(Scanner sc, Metier m) 
+	public static Evaluation genererEvaluation(Scanner sc, Metier m) 
 	{
 		/*
-		 * Generer un questionnaire avec un nombre de question total et demande le
+		 * Generer un Evaluation avec un nombre de question total et demande le
 		 * nombre de question par notion
 		 * on a des ressources contenant des Notion contenant des questions
 		 */
 
 		// on affiche les ressources, le nombre de notion à l'interieur et le nombre de questions total
-		System.out.println("Création d'un questionnaire : \n");
+		System.out.println("Création d'un Evaluation : \n");
 		for (int i = 0; i < m.getLstRessource().size(); i++) 
 		{
 			System.out.println((i + 1) + " : " + m.getLstRessource().get(i).getNom() + " ("
@@ -85,7 +90,7 @@ public class Questionnaire
 					+ m.getLstRessource().get(i).getNbQuestions() + " questions)");
 		}
 	 	
-		// on demande de choisir la ressource pour le questionnaire tant que le choix
+		// on demande de choisir la ressource pour le Evaluation tant que le choix
 		// n'est pas valide
 		int choixRessource;
 		do {
@@ -124,7 +129,7 @@ public class Questionnaire
 					+ ressource.getNotions().get(i).getNbQuestions() + " questions)");
 		}
 
-		// on demande de choisir les Notion sur lesquels on veut faire le questionnaire
+		// on demande de choisir les Notion sur lesquels on veut faire le Evaluation
 		String choixNotion;
 		String[] tabNotion;
 		boolean valide = false;
@@ -187,8 +192,8 @@ public class Questionnaire
 			totalQuestions += nbQues;
 			lstQuestions.addAll(notion.aleaQuestionsSimple(nbQues));
 		}
-		// creer un questionnaire
-		return new Questionnaire(ressource, lstNotion, lstQuestions);
+		// creer un Evaluation
+		return new Evaluation(ressource, lstNotion, lstQuestions);
 	}
 
 }

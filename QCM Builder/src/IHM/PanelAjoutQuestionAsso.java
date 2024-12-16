@@ -170,7 +170,7 @@ public class PanelAjoutQuestionAsso extends JPanel implements ActionListener
 			JPanel panelReponse = new JPanel();
 			panelReponse.setLayout(new GridLayout(1, 4, 5, 5));
 	
-			this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoSuppr.png")));
+			this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder"+ File.separator +"img"+File.separator+ "LogoSuppr.png")));
 			this.lstTxtReponseG .add(new JTextField());
 			this.lstTxtReponseD .add(new JTextField());
 
@@ -200,11 +200,19 @@ public class PanelAjoutQuestionAsso extends JPanel implements ActionListener
 		{
 			// Appelle controlleur ajoute la question
 			ArrayList<String> lstS = new ArrayList<String>();
-			System.out.println(this.lstTxtReponseG.size()+ "    test     " +this.lstTxtReponseD.size());
-			for(int i=0; i<this.lstTxtReponseG.size()+this.lstTxtReponseD.size()-2; i = i+2)
-			{
-				lstS.add(this.lstTxtReponseG.get(i  ).getText());
-				lstS.add(this.lstTxtReponseD.get(i+1).getText());
+			if (this.lstTxtReponseG.isEmpty() || this.lstTxtReponseD.isEmpty()) {
+				JOptionPane.showMessageDialog(null, "Aucune réponse n'a été ajoutée !", "Erreur", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+			if (this.lstTxtReponseG.size() != this.lstTxtReponseD.size()) {
+				JOptionPane.showMessageDialog(null, "Le nombre de réponses gauche et droite ne correspond pas !", "Erreur", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+			for (int i = 0; i < this.lstTxtReponseG.size(); i++) {
+				lstS.add(this.lstTxtReponseG.get(i).getText());
+				lstS.add(this.lstTxtReponseD.get(i).getText());
 			}
 			
 			String erreur = this.ctrl.creerQuestionAsso(this.ressource, this.notion, this.txtQuestion.getText(), this.type, this.frameFeedBack.getFeedback(), this.difficulte, this.point, this.temps, lstS);

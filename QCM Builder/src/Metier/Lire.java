@@ -22,7 +22,7 @@ public class Lire
 	// Retourne un tableau qui contient dans chaque case le nom des sous dossiers de nomDossier
 	public ArrayList<String> lireDossier(String nomDossier)
 	{
-		File dossier = new File(emplacementRessources + nomDossier);
+		File dossier = new File(emplacementRessources+ File.separator + nomDossier);
 		ArrayList<String> nomsSousDossiers = new ArrayList<>();
 		
 		if (dossier.exists() && dossier.isDirectory())
@@ -86,48 +86,48 @@ public class Lire
 	{
 		ArrayList<Question> lstQuestion = new ArrayList<Question>();
 
-        File dossierNotion = new File(emplacementFichier);
+		File dossierNotion = new File(emplacementFichier);
 
 		//vérifier que l'endroit indiqué est bien un dossier
-        if (dossierNotion.exists() && dossierNotion.isDirectory()) 
+		if (dossierNotion.exists() && dossierNotion.isDirectory()) 
 		{
 			//récupérer tout les dossiers questions dans le dossier notionX 
 			File[] dossierQuestions = dossierNotion.listFiles();
-
-            if (dossierQuestions != null) 
+			if (dossierQuestions != null) 
 			{
-				//pour chaque dossier questions on va récupérer les .data (soit les questions)
-                for (File dossierQuestion : dossierQuestions) 
+				//pour chaque dossier questions on va récupérer les .csv (soit les questions)
+				for (File dossierQuestion : dossierQuestions) 
 				{
-                    if (dossierQuestion.isDirectory()) 
+					if (dossierQuestion.isDirectory()) 
 					{
 						//récupération des fichier 
-                        File[] fichiers = dossierQuestion.listFiles();
-                        if (fichiers != null) 
+						File[] fichiers = dossierQuestion.listFiles();
+						if (fichiers != null) 
 						{
-                            for (File fichier : fichiers) 
+							for (File fichier : fichiers) 
 							{
-                                // Vérifier si c'est un fichier .data
-                                if (fichier.isFile() && fichier.getName().endsWith(".csv")) 
+								// Vérifier si c'est un fichier .data
+								if (fichier.isFile() && fichier.getName().endsWith(".csv")) 
 								{
-                                    try 
+									try 
 									{
 										String contenu = Files.readString(fichier.toPath());
 										lstQuestion.add(creerQuestion(contenu));
-                                    } 
+										
+									} 
 									catch (IOException e) 
 									{
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+										e.printStackTrace();
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 
-		return null;
+		return lstQuestion;
 	}
 
 	private Question creerQuestion(String qst)
@@ -153,6 +153,7 @@ public class Lire
 
 		ArrayList<ReponseQcm> repQ = null;
 		ArrayList<ReponseAsso> repA = null;
+		ArrayList<ReponseEnlevement> repE = new ArrayList<ReponseEnlevement>();
 
 		switch(type)
 		{
@@ -179,7 +180,7 @@ public class Lire
 				for(int i = 0; i<lines.length; i++)
 				{
 					String[] contenuLigne = lines[i].split("\t");
-					if(lines[i].equals("FIN"))								
+					if(lines[i].equals("FIN"))
 						break;
 				
 					if(lines[i].strip().equals("Reponse".strip()))
@@ -218,28 +219,45 @@ public class Lire
 				}
 				repA = lstReponsesAsso;
 				break;
+
+			case "E":
+				int i = 1;
+				while (i < lines.length && ! lines[i].equals("FIN"))
+				{
+					Scanner scannerLine = new Scanner(lines[i]);
+					scannerLine.useDelimiter("\t");
+					question = scannerLine.next();
+					boolean valide = (scannerLine.next().equals("vrai")) ? true : false;
+					int ordreElimination = Integer.parseInt(scannerLine.next());
+					double nbPointPerdu = Double.parseDouble(scannerLine.next());
+
+					repE.add(new ReponseEnlevement(question, ordreElimination, nbPointPerdu, valide));
+					scannerLine.close();
+					i++;
+				}
+				
 			default:
 				break;
 		}
 
 		Difficulte difficulte = Difficulte.TF;
 		switch (stringdifficulte.toLowerCase()) 
-        {
-            case "très facile": difficulte = Difficulte.TF;
-                break;
-                
-            case "facile"     : difficulte = Difficulte.F;
-                break;
+		{
+			case "très facile": difficulte = Difficulte.TF;
+				break;
+				
+			case "facile"     : difficulte = Difficulte.F;
+				break;
 
-            case "moyen"      : difficulte = Difficulte.M;
-                break;
+			case "moyen"      : difficulte = Difficulte.M;
+				break;
 
-            case "difficile"  : difficulte = Difficulte.D;
-                break;
-        
-            default:
-                break;
-        }
+			case "difficile"  : difficulte = Difficulte.D;
+				break;
+		
+			default:
+				break;
+		}
 
 		if(type.equals("Q"))
 			return new QCM(question, explication, difficulte, point, time, repQ);
@@ -247,6 +265,8 @@ public class Lire
 		{
 			return new Association(question, explication, difficulte, point, time, repA);
 		}
+		if(type.equals("E"))
+			return new Enlevement(question, explication, difficulte, point, time, repE);
 
 		return null;
 	}

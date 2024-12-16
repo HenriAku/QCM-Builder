@@ -35,6 +35,9 @@ public class FrameAjoutQuestion extends JFrame
 				this.add(this.panelAjoutQuestionAsso);
 				break;
 
+			case "question avec élimination de propositions de réponses": this.panelAjoutQuestionElimination= new PanelAjoutQuestionElimination(this.ctrl);
+				this.add(this.panelAjoutQuestionElimination);
+				break;
 
 		
 			default:

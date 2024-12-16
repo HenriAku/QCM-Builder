@@ -89,14 +89,14 @@ class TestObjet
         ArrayList<Notion> notionsT = new ArrayList<Notion>();
 
         //création de notions
-        Notion notAlgo1       = new Notion("Algo1", /*rsc,*/ questionsA);
-        Notion notBado1       = new Notion("Bado", /*rsc,*/ questionsB);
-        Notion notCrypto1     = new Notion("Crypto", /*rsc,*/ questionsC);
-        Notion notFrancais1   = new Notion("Francais", /*rsc,*/ questionsF);
-        Notion notMath1       = new Notion("Math", /*rsc,*/ questionsM);
-        Notion notHistoire1   = new Notion("Histoire", /*rsc,*/ questionsH1);
-        Notion notTest1       = new Notion("Test1", /*rsc,*/ questionsT1);
-        Notion notTest2       = new Notion("Test2", /*rsc,*/ questionsT2);
+        Notion notAlgo1       = new Notion("Algo1", questionsA);
+        Notion notBado1       = new Notion("Bado", questionsB);
+        Notion notCrypto1     = new Notion("Crypto", questionsC);
+        Notion notFrancais1   = new Notion("Francais", questionsF);
+        Notion notMath1       = new Notion("Math", questionsM);
+        Notion notHistoire1   = new Notion("Histoire", questionsH1);
+        Notion notTest1       = new Notion("Test1", questionsT1);
+        Notion notTest2       = new Notion("Test2", questionsT2);
 
         //ajout de notions aux listes
         notionsA.add(notAlgo1);
@@ -120,7 +120,7 @@ class TestObjet
 
         //test ajout de notion
         /* 
-        Notion notTest3 = new Notion("Histoire",/*rsc,*/ /* questionsT);
+        Notion notTest3 = new Notion("Histoire" /* questionsT);
         rscTest.ajouterNotions(notTest3);
         */
 
@@ -130,7 +130,7 @@ class TestObjet
 
 
         ///////////////////////
-        //test Questionnaire
+        //test Evaluation
         ///////////////////////
         
         Scanner sc = new Scanner(System.in);
@@ -164,13 +164,13 @@ class TestObjet
         System.out.println("ajout de la question");
         System.out.println(m.creerQuestionQCM("Algo", "Algo1", "On est quel jour ?", "qcm","oui exactement, nous somme un mercredi", "Facile", 5, "5:30", reponses, validite));
 
-        //tester creerQuestionnaire
-        System.out.println("generer questionnaire");
-        Questionnaire qst = Questionnaire.genererQuestionnaire(sc,m);
+        //tester creerEvaluation
+        System.out.println("generer Evaluation");
+        Evaluation qst = Evaluation.genererEvaluation(sc,m);
 
-        System.out.println(qst.afficherQuestionnaire());
+        System.out.println(qst.afficherEvaluation());
 
-        //tester Utiliser un questionnaire
+        //tester Utiliser un Evaluation
         
     }
 }

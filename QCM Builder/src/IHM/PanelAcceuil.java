@@ -33,9 +33,9 @@ public class PanelAcceuil extends JPanel implements ActionListener
         c.weighty = 0.1; // 10% de la hauteur totale
         c.gridx = 0;
         c.gridy = 0;
-        JPanel entete = new JPanel();
-        entete.setBackground(Color.ORANGE);
-        this.add(entete, c);
+        
+        PanelNavigation navigation = new PanelNavigation(frame, null);
+        this.add(navigation, c);
 
         // Contenu principal (Milieu)
         c.fill = GridBagConstraints.BOTH;
@@ -62,11 +62,11 @@ public class PanelAcceuil extends JPanel implements ActionListener
         JPanel creationQuestion = createPanel("Créer une question", "Créer question");
         contenuMilieu.add(creationQuestion, cmConstraints);
 
-        // Ajout de "Créer un questionnaire"
+        // Ajout de "Créer une evaluation"
         cmConstraints.gridx = 1; // Colonne 1
         cmConstraints.gridy = 0; // Ligne 0
-        JPanel creationQuestionnaire = createPanel("Créer un questionnaire", "Créer questionnaire");
-        contenuMilieu.add(creationQuestionnaire, cmConstraints);
+        JPanel creationEvaluation = createPanel("Créer une evaluation", "Créer evaluation");
+        contenuMilieu.add(creationEvaluation, cmConstraints);
 
         // Ajout de "Créer une ressource"
         cmConstraints.gridx = 2; // Colonne 2
@@ -99,7 +99,7 @@ public class PanelAcceuil extends JPanel implements ActionListener
         bouton.setPreferredSize(new Dimension(150, 40)); // Taille plus petite et plus rectangulaire
         
         // Enlever le fond du bouton et arrondir les bords
-        bouton.setBackground(Color.ORANGE); // Fond orange pour les boutons
+        bouton.setBackground(new Color(201,80,46)); // Fond orange pour les boutons
         bouton.setFocusPainted(false); // Enlever la surbrillance lorsqu'on clique sur le bouton
         bouton.setContentAreaFilled(true); // Remplir la zone de contenu du bouton
 
@@ -121,9 +121,9 @@ public class PanelAcceuil extends JPanel implements ActionListener
                 new FrameCreationQuestion(frame, ctrl);
             }
 
-            if("Créer questionnaire".equals(btn.getText()))
+            if("Créer evaluation".equals(btn.getText()))
             {
-                System.out.println("test2");
+                new FrameEvaluation(ctrl);
             }
 
             if("Créer ressource".equals(btn.getText()))

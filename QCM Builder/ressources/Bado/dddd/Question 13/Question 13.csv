@@ -1,0 +1,12 @@
+Question 13	A	associ les objet		très facile	5,00	2,00
+Reponse
+jaune
+pomme
+rouge
+banane
+Association
+jaune	banane[jaune]
+pomme	rouge[pomme]
+rouge	pomme[rouge]
+banane	jaune[banane]
+FIN

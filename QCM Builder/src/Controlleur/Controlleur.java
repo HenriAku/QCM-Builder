@@ -38,6 +38,7 @@ public class Controlleur
 
 	public boolean supprimerDossier(String nomDossier)
 	{
+		System.out.println(nomDossier);
 		return this.metier.supprimerDossier(nomDossier);
 	}
 
@@ -61,6 +62,8 @@ public class Controlleur
 
 	public String[] 		getNomRessources() 		{return this.metier.getNomRessources(   );}
 
+	public Metier getMetier() {return this.metier;}
+
 	//////////////
 	// NOTIONS  //
 	//////////////
@@ -77,9 +80,9 @@ public class Controlleur
 		return this.metier.validerQuestion(ressource, notion, type, difficulte, point, temps);
 	}
 
-	public String creerQuestionQCM(String r, String c, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses ,  ArrayList<Boolean> validite)
+	public String creerQuestionQCM(String r, String n, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses ,  ArrayList<Boolean> validite)
 	{
-		return (this.metier.creerQuestionQCM(r, c, question, type, explication, difficulte, point, temps, reponses, validite));
+		return (this.metier.creerQuestionQCM(r, n, question, type, explication, difficulte, point, temps, reponses, validite));
 	}
 
 	
@@ -88,12 +91,10 @@ public class Controlleur
 		return (this.metier.creerQuestionAsso(r, c, question, type, explication, difficulte, point, temps, reponses));
 	}
 
-	/* 
-	public String creerQuestionEnlever(String r, String c, String question, String type, String explication, String difficulte, int point, String temps, ArrayList<String> reponses ,  ArrayList<int> ordreElever)
+	public String creerQuestionElimination(String Sressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> ordreElimination, ArrayList<String> nbPointPerdu, ArrayList<String> lstRep, ArrayList<Boolean> validite)
 	{
-		return (this.metier.creerQuestion(r, c, question, type, explication, difficulte, point, temps, reponses, ordreElever));
+		return this.metier.creerQuestionElimination(Sressource, notion, question, type, explication, difficulte, point, temps, ordreElimination, nbPointPerdu, lstRep, validite);
 	}
- 	*/
 
 	public static void main(String[] args) 
 	{

@@ -6,6 +6,7 @@ package IHM;
 
 import javax.swing.*;
 import Controlleur.Controlleur;
+import Metier.Notion;
 import Metier.Ressource;
 import java.awt.*;
 
@@ -15,9 +16,11 @@ public class FramePrincipal extends JFrame
     private CardLayout  cardLayout; 
     private Controlleur ctrl      ;
 
-    private static final String PANEL_ACCEUIL   = "Acceuil"  ;
-    private static final String PANEL_RESSOURCE = "Ressource";
-    private static final String PANEL_NOTION    = "Notion" ;
+    private static final String PANEL_ACCEUIL    = "Acceuil"  ;
+    private static final String PANEL_RESSOURCE  = "Ressource";
+    private static final String PANEL_NOTION     = "Notion"   ;
+    private static final String PANEL_QUESTION   = "Question" ;
+
 
     public FramePrincipal(Controlleur ctrl) 
     {
@@ -37,7 +40,7 @@ public class FramePrincipal extends JFrame
         mainPanel = new JPanel(cardLayout);
 
         //Ajout des panneaux au conteneur principal
-        mainPanel.add(new PanelAcceuil(ctrl, this), PANEL_ACCEUIL);
+        mainPanel.add(new PanelAcceuil  (ctrl, this), PANEL_ACCEUIL  );
         mainPanel.add(new PanelRessource(ctrl, this), PANEL_RESSOURCE);
 
         //Ajout du conteneur principal à la fenêtre
@@ -86,6 +89,19 @@ public class FramePrincipal extends JFrame
         this.majIHM();
     }
 
+    public void refreshQuestion(Notion notion, Ressource ressource) 
+    {
+        mainPanel.remove(mainPanel.getComponent(3)); // Suppression par index notion
+        
+        // Ajouter un nouveau panneau de ressources
+        PanelQuestion panelQuestion = new PanelQuestion(ctrl, notion, ressource, this);
+        mainPanel.add(panelQuestion, PANEL_QUESTION);
+
+        // Afficher le panneau des ressources
+        cardLayout.show(mainPanel, PANEL_QUESTION);
+        this.majIHM();
+    }
+
     // Méthode pour afficher dynamiquement le panneau des notions
     public void afficheNotion(Ressource ressource) 
     {
@@ -94,6 +110,18 @@ public class FramePrincipal extends JFrame
 
         // Afficher le panneau des notions
         cardLayout.show(mainPanel, PANEL_NOTION);
+
+        // Rafraîchir l'interface
+        this.majIHM();
+    }
+
+    public void AfficheQuestion(Notion notion, Ressource ressource) 
+    {
+        PanelQuestion panelQuestion = new PanelQuestion(ctrl, notion, ressource, this);
+        mainPanel.add(panelQuestion, PANEL_QUESTION);
+
+        // Afficher le panneau des notions
+        cardLayout.show(mainPanel, PANEL_QUESTION);
 
         // Rafraîchir l'interface
         this.majIHM();

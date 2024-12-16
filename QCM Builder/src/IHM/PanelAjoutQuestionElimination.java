@@ -18,7 +18,6 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.text.rtf.RTFEditorKit;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
@@ -26,7 +25,6 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 {
 	private Controlleur ctrl;
 
-	private boolean reponseMultiple;
 	private JPanel  panelHaut;
 	private JPanel  panelCentre;
 	private JPanel  panelBas;
@@ -36,6 +34,8 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 	private ArrayList<JTextField> lstTxtReponse;
 	private ArrayList<JButton> lstBtnSupprimer;
 	private ArrayList<JButton> lstBtnReponseValide;
+	private ArrayList<JTextField> lstTxtOrdreElimination;
+	private ArrayList<JTextField> lstTxtNbPointPerdu;
 
 	private JScrollPane scrollPane;
 
@@ -87,6 +87,8 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 
 		this.lstBtnSupprimer = new ArrayList<JButton>();
 		this.lstBtnReponseValide = new ArrayList<JButton>();
+		this.lstTxtOrdreElimination = new ArrayList<JTextField>();
+		this.lstTxtNbPointPerdu= new ArrayList<JTextField>();
 
 		/* Ajout éléments panel haut */
 		JScrollPane scrollPaneHaut = new JScrollPane(this.txtQuestion);
@@ -110,16 +112,28 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 			JPanel panelReponse = new JPanel();
 			panelReponse.setLayout(new BorderLayout(10, 10));
 
-			this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoSuppr.png")));
+			this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder/img/LogoSuppr.png")));
+	
+			JPanel panelBtn = new JPanel();
+			panelBtn.setLayout(new GridLayout(2,2));
+
 			this.lstBtnReponseValide.add(new JButton(""));
 			this.lstBtnReponseValide.get(i).setPreferredSize(new Dimension(25,25));
 
 			this.lstBtnSupprimer.get(i).addActionListener(this);
 			this.lstBtnReponseValide.get(i).addActionListener(this);
 
+			this.lstTxtOrdreElimination.add(new JTextField(6));
+			this.lstTxtNbPointPerdu.add(new JTextField(6));
+
+			panelBtn.add(this.lstTxtOrdreElimination.get(i));
+			panelBtn.add(this.lstBtnReponseValide.get(i));
+			panelBtn.add(this.lstTxtNbPointPerdu.get(i));
+
 			panelReponse.add(this.lstBtnSupprimer    .get(i), BorderLayout.WEST);
 			panelReponse.add(this.lstTxtReponse      .get(i), BorderLayout.CENTER);
-			panelReponse.add(this.lstBtnReponseValide.get(i), BorderLayout.EAST);
+			panelReponse.add(panelBtn, BorderLayout.EAST);
+
 
 			this.lstPanelReponse.add(panelReponse);
 			this.panelCentre.add(panelReponse);
@@ -131,12 +145,12 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 		this.panelBas = new JPanel();
 		this.panelBas.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-		this.btnAjouter = new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "Ajout.png"));
+		this.btnAjouter = new JButton(new ImageIcon("QCM Builder/img/Ajout.png"));
 		this.btnAjouter.setBorderPainted(false);
 		this.btnAjouter.setContentAreaFilled(false);
 		this.btnAjouter.addActionListener(this);
 
-		this.btnExplication = new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoModif.png"));
+		this.btnExplication = new JButton(new ImageIcon("QCM Builder/img/LogoModif.png"));
 		this.btnExplication.setBorderPainted(false);
 		this.btnExplication.setContentAreaFilled(false);
 		this.btnExplication.addActionListener(this);
@@ -185,21 +199,33 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 	{
 		if (e.getSource().equals(this.btnAjouter))
 		{
-			this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoSuppr.png")));
+			JPanel panelBtn = new JPanel();
+			panelBtn.setLayout(new GridLayout(2,2));
+
+			//this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoSuppr.png")));
+			this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder/img/LogoSuppr.png")));
 			this.lstTxtReponse.add(new JTextField(""));
 			this.lstTxtReponse.get(this.lstTxtReponse.size()-1).setMargin(new java.awt.Insets(5, 5, 5, 5));
+
 			this.lstBtnReponseValide.add(new JButton(""));
 			this.lstBtnReponseValide.get(this.lstBtnSupprimer.size()-1).setPreferredSize(new Dimension(25,25));
 
 			this.lstBtnSupprimer.get(this.lstBtnSupprimer.size()-1).addActionListener(this);
 			this.lstBtnReponseValide.get(this.lstBtnReponseValide.size()-1).addActionListener(this);
 
+			this.lstTxtOrdreElimination.add(new JTextField(6));
+			this.lstTxtNbPointPerdu.add(new JTextField(6));
+
 			JPanel panelReponse = new JPanel();
 			panelReponse.setLayout(new BorderLayout(10, 10));
 	
-			panelReponse.add(this.lstBtnSupprimer    .get(this.lstBtnSupprimer    .size()-1), BorderLayout.WEST);
-			panelReponse.add(this.lstTxtReponse      .get(this.lstTxtReponse      .size()-1), BorderLayout.CENTER);
-			panelReponse.add(this.lstBtnReponseValide.get(this.lstBtnReponseValide.size()-1), BorderLayout.EAST);
+			panelBtn.add(this.lstTxtOrdreElimination.get(this.lstTxtOrdreElimination.size()-1));
+			panelBtn.add(this.lstBtnReponseValide.get(this.lstBtnReponseValide.size()-1));
+			panelBtn.add(this.lstTxtNbPointPerdu.get(this.lstTxtNbPointPerdu.size()-1));
+
+			panelReponse.add(this.lstBtnSupprimer    .get(this.lstBtnSupprimer.size()-1), BorderLayout.WEST);
+			panelReponse.add(this.lstTxtReponse      .get(this.lstTxtReponse  .size()-1), BorderLayout.CENTER);
+			panelReponse.add(panelBtn, BorderLayout.EAST);
 	
 			this.panelCentre.add(panelReponse);
 			this.lstPanelReponse.add(panelReponse);
@@ -215,6 +241,8 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 			// Appelle controlleur ajoute la question
 			ArrayList<String>  lstReponse  = new ArrayList<String >();
 			ArrayList<Boolean> lstValidite = new ArrayList<Boolean>();
+			ArrayList<String>  lstOrdreElimination = new ArrayList<String>();
+			ArrayList<String>  lstNbPointPerdu = new ArrayList<String>();
 
 			for (int i=0; i<this.lstTxtReponse.size(); i++)
 			{
@@ -224,7 +252,18 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 				else
 					lstValidite.add(true);
 			}
-			String erreur = this.ctrl.creerQuestionQCM(this.ressource, this.notion, this.txtQuestion.getText(), this.type, this.frameFeedBack.getFeedback(), this.diffuculte, this.point, this.temps, lstReponse, lstValidite);
+			
+			for (JTextField txtOrdreElimination:this.lstTxtOrdreElimination)
+			{
+				lstOrdreElimination.add(txtOrdreElimination.getText());
+			}
+
+			for (JTextField txtNbPointPerdu:this.lstTxtNbPointPerdu)
+			{
+				lstNbPointPerdu.add(txtNbPointPerdu.getText());
+			}
+
+			String erreur = this.ctrl.creerQuestionElimination(ressource, notion, this.txtQuestion.getText(), type, this.frameFeedBack.getFeedback(), diffuculte, point, temps, lstOrdreElimination, lstNbPointPerdu, lstReponse, lstValidite);
 			if (erreur.length() > 0)
 			{
 				JOptionPane.showMessageDialog(null, erreur, "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -250,10 +289,10 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 			{
 				// Met une image de fleche verte dans le btn
 				// Rend la reponse valide
-				if (btnRepValide.getIcon() == null)
-					btnRepValide.setIcon(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoValide.png"));
-				else
-					btnRepValide.setIcon(null);
+				for (JButton btn:this.lstBtnReponseValide)
+					btn.setIcon(null);
+
+				btnRepValide.setIcon(new ImageIcon("QCM Builder/img/LogoValide.png"));
 			}
 		}
 	}

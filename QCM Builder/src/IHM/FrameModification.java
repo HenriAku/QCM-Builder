@@ -7,6 +7,7 @@ package IHM;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -109,7 +110,7 @@ public class FrameModification extends JFrame implements ActionListener
 			{
 				if (this.ressource.rechercheNotion(name) == null) 
 				{
-					this.ctrl.renommerDossier(this.ressource.getNom() + "/" + this.notion.getNom(), this.ressource.getNom() + "/" + name);
+					this.ctrl.renommerDossier(this.ressource.getNom() + File.separator + this.notion.getNom(), this.ressource.getNom() + File.separator + name);
 					this.notion.setNom(name);
 				}
 				this.frame.refreshNotion(ressource);

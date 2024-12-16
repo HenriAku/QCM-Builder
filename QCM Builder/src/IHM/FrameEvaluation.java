@@ -8,25 +8,25 @@ import javax.swing.JFrame;
 
 import Controlleur.Controlleur;
 
-public class FrameQuestionnaire extends JFrame
+public class FrameEvaluation extends JFrame
 {
-	private PanelQuestionnaire   qst;
+	private PanelEvaluation   qst;
 	private Controlleur    ctrl   ;
 
     public static void main(String[] args) 
     {
-        new FrameQuestionnaire(new Controlleur());
+        new FrameEvaluation(new Controlleur());
     }
 
-	public FrameQuestionnaire(Controlleur ctrl)
+	public FrameEvaluation(Controlleur ctrl)
 	{
-		this.setTitle("Questionnaire");
-		this.setSize(1000, 1000);
+		this.setTitle("Evaluation");
+		this.setSize(400, 600);
 
 		this.ctrl = ctrl;
 		
 
-		this.qst = new PanelQuestionnaire(this.ctrl, this);
+		this.qst = new PanelEvaluation(this.ctrl, this);
 		this.add(this.qst);
 
 		this.setVisible(true);

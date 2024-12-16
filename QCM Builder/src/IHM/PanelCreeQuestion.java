@@ -13,12 +13,9 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Enumeration;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import IHM.FramePrincipal;
 
-import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -170,26 +167,6 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 		this.ddlstRessource .addActionListener(this);
 		this.ddlstNotion    .addActionListener(this);
 		this.btnCreeQuestion.addActionListener(this);
-	}
-
-	public String[] getRessources()
-	{
-		String[] tabRessources = new String[3];
-		tabRessources[0] = "R1.01 Dev";
-		tabRessources[1] = "R1.02 Bado";
-		tabRessources[2] = "R1.03 Prog Sys";
-
-		return tabRessources;
-	}
-
-	public String[] getNotions()
-	{
-		String[] tabNotions = new String[3];
-		tabNotions[0] = "Jointure";
-		tabNotions[1] = "Test";
-		tabNotions[2] = "TestTest";
-
-		return tabNotions;
 	}
 
 	public void actionPerformed(ActionEvent e)

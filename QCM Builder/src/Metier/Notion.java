@@ -20,14 +20,14 @@ public class Notion
 	// CONSTRUCTEUR //
 	//////////////////
 	
-	public Notion(String notion, /*Ressource ressource,*/ ArrayList<Question> lstQuestions)
+	public Notion(String notion, ArrayList<Question> lstQuestions)
 	{
 		this.notion = notion;
 		this.lstQuestions = lstQuestions;
 
 			if (this.lstQuestions == null)
 			this.lstQuestions = new ArrayList<Question>();
-
+;
 		Ecriture ef = new Ecriture("../ressources/" );
 		ef.creerDossier(notion);
 	}
@@ -77,21 +77,25 @@ public class Notion
 	// TODO: A Tester
 	public ArrayList<Question> aleaQuestions(int nbQuestionTresFacile, int nbQuestionFacile, int nbQuestionMoyenne, int nbQuestionDifficile)
 	{
+		ArrayList<Question> lstQuestionCopie = new ArrayList<Question>();
+		Collections.copy(lstQuestionCopie, lstQuestions);
+
 		int idFinQuestionTresFacile = -1;
 		int idFinQuestionFacile     = -1;
 		int idFinQuestionMoyenne    = -1;
+		int idFinQuestionDifficile  = lstQuestionCopie.size() -1;
 
-		for(int i=0; i<this.lstQuestions.size(); i++)
+		for(int i=0; i<lstQuestionCopie.size(); i++)
 		{
-			if (this.lstQuestions.get(i).getDifficulte().equals(Difficulte.F) && idFinQuestionTresFacile == -1)
+			if (lstQuestionCopie.get(i).getDifficulte().equals(Difficulte.F))
 			{
 				idFinQuestionTresFacile = i-1;
 			}
-			if (this.lstQuestions.get(i).getDifficulte().equals(Difficulte.M) && idFinQuestionFacile     == -1)
+			if (lstQuestionCopie.get(i).getDifficulte().equals(Difficulte.M))
 			{
 				idFinQuestionFacile = i-1;
 			}
-			if (this.lstQuestions.get(i).getDifficulte().equals(Difficulte.D) && idFinQuestionMoyenne    == -1)
+			if (lstQuestionCopie.get(i).getDifficulte().equals(Difficulte.D))
 			{
 				idFinQuestionMoyenne = i-1;
 			}
@@ -99,72 +103,51 @@ public class Notion
 
 		ArrayList<Question> lstQuestionsAlea = new ArrayList<Question>();
 
+		/**
+		 * Peut en faire une méthode pour réduire 3x le code ici
+		 */
+		int debut = 0;
 		for (int i=0; i<nbQuestionTresFacile; i++)
 		{
-			Question questionAlea = this.lstQuestions.get((int)(Math.random()*idFinQuestionTresFacile+1));
+			int nbRandom = (int)(Math.random()*idFinQuestionTresFacile+debut);
 
-			boolean questionDejaDansLaListe = false;
-			for (Question question:lstQuestionsAlea)
-			{
-				if (question.equals(questionAlea))
-					questionDejaDansLaListe = true;
-			}
+			Question questionAlea = lstQuestionCopie.get(nbRandom);
 
-			if (questionDejaDansLaListe)
-				i--;
-			else
-				lstQuestionsAlea.add(questionAlea);
+			lstQuestionCopie.remove(nbRandom);
+			lstQuestionsAlea.add(questionAlea);
 		}
 
-		for (int i=0; i<nbQuestionFacile; i++)
+		debut += idFinQuestionTresFacile;
+		for (int i=nbQuestionTresFacile; i<nbQuestionFacile; i++)
 		{
-			Question questionAlea = this.lstQuestions.get(idFinQuestionTresFacile + 1 + (int)(Math.random()*(idFinQuestionFacile-idFinQuestionTresFacile)));
+			int nbRandom = (int)(Math.random()*idFinQuestionFacile+debut);
 
-			boolean questionDejaDansLaListe = false;
-			for (Question question:lstQuestionsAlea)
-			{
-				if (question.equals(questionAlea))
-					questionDejaDansLaListe = true;
-			}
+			Question questionAlea = lstQuestionCopie.get(nbRandom);
 
-			if (questionDejaDansLaListe)
-				i--;
-			else
-				lstQuestionsAlea.add(questionAlea);
+			lstQuestionCopie.remove(nbRandom);
+			lstQuestionsAlea.add(questionAlea);
 		}
 
-		for (int i=0; i<nbQuestionMoyenne; i++)
+		debut += idFinQuestionFacile;
+		for (int i=nbQuestionFacile; i<nbQuestionMoyenne; i++)
 		{
-			Question questionAlea = this.lstQuestions.get(idFinQuestionFacile + 1 + (int)(Math.random()*(idFinQuestionMoyenne-idFinQuestionFacile)));
+			int nbRandom = (int)(Math.random()*idFinQuestionMoyenne+debut);
 
-			boolean questionDejaDansLaListe = false;
-			for (Question question:lstQuestionsAlea)
-			{
-				if (question.equals(questionAlea))
-					questionDejaDansLaListe = true;
-			}
+			Question questionAlea = lstQuestionCopie.get(nbRandom);
 
-			if (questionDejaDansLaListe)
-				i--;
-			else
-				lstQuestionsAlea.add(questionAlea);
+			lstQuestionCopie.remove(nbRandom);
+			lstQuestionsAlea.add(questionAlea);
 		}
 
-		for (int i=0; i<nbQuestionDifficile; i++)
+		debut += idFinQuestionMoyenne;
+		for (int i=nbQuestionMoyenne; i<nbQuestionDifficile; i++)
 		{
-			Question questionAlea = this.lstQuestions.get(idFinQuestionMoyenne + (int)(Math.random()*(this.lstQuestions.size()-idFinQuestionMoyenne)));
+			int nbRandom = (int)(Math.random()*idFinQuestionDifficile+debut);
 
-			boolean questionDejaDansLaListe = false;
-			for (Question question:lstQuestionsAlea)
-			{
-				if (question.equals(questionAlea))
-					questionDejaDansLaListe = true;
-			}
+			Question questionAlea = lstQuestionCopie.get(nbRandom);
 
-			if (questionDejaDansLaListe)
-				i--;
-			else
-				lstQuestionsAlea.add(questionAlea);
+			lstQuestionCopie.remove(nbRandom);
+			lstQuestionsAlea.add(questionAlea);
 		}
 
 		return lstQuestionsAlea;
@@ -195,11 +178,13 @@ public class Notion
 		return lstQuestionsAlea;
 	}
 
+
 	////////////
 	// GETTER //
 	////////////
 
-	public String getNom() { return this.notion; }
+	public String 			   getNom         (){return this.notion      ;}
+	public ArrayList<Question> getLstQuestions(){return this.lstQuestions;}
 
 	public int getNbQuestions()
 	{

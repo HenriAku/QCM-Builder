@@ -26,7 +26,7 @@ public class Ecriture
 	 */
 	public boolean creerDossier(String nomDossier)
 	{
-		File dossier = new File(emplacementRessources + nomDossier);
+		File dossier = new File(emplacementRessources + File.separator + nomDossier);
 
 		if (!dossier.exists()) 
 			return dossier.mkdirs(); // mkdirs() crée le dossier et tous ses parents si nécessaires
@@ -41,7 +41,7 @@ public class Ecriture
 	 */
 	public boolean creerDossierRessource(Ressource ressource)
 	{
-		File dossier = new File( "./ressources/" + ressource.getNom() );
+		File dossier = new File( "./ressources"+ File.separator + ressource.getNom() );
 
 		if (!dossier.exists())
 			return dossier.mkdirs();
@@ -57,7 +57,7 @@ public class Ecriture
 	 */
 	public boolean creerDossierNotion(Ressource ressource, Notion notion)
 	{
-		File dossier = new File( "./ressources/" + ressource.getNom() + "" + notion.getNom() );
+		File dossier = new File( "./ressources"+ File.separator + ressource.getNom() + "" + notion.getNom() );
 
 		if (!dossier.exists())
 			return dossier.mkdirs();
@@ -72,39 +72,55 @@ public class Ecriture
 	 * @return true si il a etait créer
 	 */
 	public boolean renommerDossier(String ancienNom, String nouveauNom)
-    {
-        File dossier = new File(emplacementRessources + File.separator + ancienNom);
+	{
+		File dossier = new File(emplacementRessources + File.separator + ancienNom);
 
-        if (dossier.exists()) 
-        {
-            File nouveauDossier = new File(emplacementRessources + File.separator + nouveauNom);
+		if (dossier.exists()) 
+		{
+			File nouveauDossier = new File(emplacementRessources + File.separator + nouveauNom);
 
-            if (!nouveauDossier.exists()) 
-            {
-                boolean success = dossier.renameTo(nouveauDossier);
-                return success; 
-            } 
-            else
-            {
-                System.out.println("Le dossier avec le nouveau nom existe déjà.");
-            }
-        } 
-        else 
-            System.out.println("Le dossier à renommer n'existe pas.");
+			if (!nouveauDossier.exists()) 
+			{
+				boolean success = dossier.renameTo(nouveauDossier);
+				return success; 
+			} 
+			else
+			{
+				System.out.println("Le dossier avec le nouveau nom existe déjà.");
+			}
+		} 
+		else 
+			System.out.println("Le dossier à renommer n'existe pas.");
 
-        return false; 
-    }
+		return false; 
+	}
 
 	/**
 	 * Supprime un dossier 
 	 * @param nomDossier du dossier
 	 * @return true si il a etait supprimer 
 	 */
-	public boolean supprimerDossier(String nomDossier)
-    {
-        File dossier = new File(emplacementRessources + File.separator + nomDossier);
-		 return dossier.delete();
-    }
+	public boolean supprimerDossier(String nomDossier) 
+	{
+		File dossier = new File(emplacementRessources + File.separator + nomDossier);
+		return supprimerRecursivement(dossier);
+	}
+	
+	private boolean supprimerRecursivement(File fichier) 
+	{
+		if (fichier.isDirectory()) {
+			// Récupérer la liste des fichiers et dossiers dans ce dossier
+			File[] fichiers = fichier.listFiles();
+			if (fichiers != null) {
+				for (File f : fichiers) {
+					// Appel récursif pour chaque fichier/sous-dossier
+					supprimerRecursivement(f);
+				}
+			}
+		}
+		// Supprimer le fichier ou dossier actuel
+		return fichier.delete();
+	}
 
 	//////////////////
 	// FICHIERS		//
@@ -118,7 +134,7 @@ public class Ecriture
 	public boolean creerFichier(String nomFichier)
 	{
 
-		File fichier = new File(emplacementRessources + nomFichier);
+		File fichier = new File(emplacementRessources + File.separator + nomFichier);
 		try 
 		{
 			if (!fichier.exists()) 
@@ -143,6 +159,85 @@ public class Ecriture
 			return dossier.mkdirs(); // mkdirs() crée le dossier et tous ses parents si nécessaires
 
 		return false; // Le dossier existe déjà	
+	}
+
+	public void creerElimination(Enlevement enlv, String chemin)
+	{
+		File dossierVerif = new File(emplacementRessources + File.separator + chemin);
+		String[] lstDos = dossierVerif.list();
+		String nomQuestion = null;
+		int numQuestion = 1;
+
+
+		while(nomQuestion == null)
+		{
+			boolean exist = false;
+
+			for(int i = 0; i < lstDos.length; i++)
+			{
+				if(lstDos[i].equals("Question " + numQuestion))
+				{
+					exist = true;
+				}
+			}
+
+			if(exist)
+				numQuestion++;
+			else
+			{
+				nomQuestion = "Question " + numQuestion;
+			}
+		}
+
+		creerDossierQuestion(nomQuestion,chemin);
+
+		File Enlv = new File(emplacementRessources + File.separator + chemin + File.separator + nomQuestion + File.separator + (nomQuestion + ".csv"));
+		try 
+		{
+			if (!Enlv.exists()) 
+			{
+				Enlv.createNewFile(); // Crée le fichier
+			}
+
+		} 
+		catch (IOException e) 
+		{
+			System.err.println("Erreur lors de la création du fichier : " + e.getMessage());
+		}
+
+		try (FileWriter writer = new FileWriter(Enlv)) 
+		{
+
+			String ordre   = "";
+			String nbPoint = "";
+			String contenu;
+
+			contenu = Enlv.getParentFile().getName() + "\t" + "E" + "\t" + enlv.getQuestion() + "\t" + enlv.getExplication() + "\t" + enlv.getDifficulte().getDifficulte() + "\t" +
+					enlv.getPoint()  + "\t" + enlv.getTemps() + "\n";
+
+			writer.append(contenu);
+
+
+			for(int i = 0; i < enlv.getLstRep().size(); i++)
+			{
+				ordre = String.valueOf(enlv.getLstRep().get(i).getOrdreEnleve());
+				nbPoint = String.valueOf(enlv.getLstRep().get(i).getNbPointEleve());
+				
+				contenu = enlv.getLstRep().get(i).getReponse() + "\t" + (enlv.getLstRep().get(i).getValeur() ? "vrai" : "faux") + "\t" + ordre + "\t" +
+				nbPoint + "\n";
+				writer.append(contenu);
+
+			}
+
+			contenu = "FIN";
+			writer.append(contenu);
+
+
+		} 
+		catch (IOException e) 
+		{
+			System.out.println("Une erreur s'est produite : " + e.getMessage());
+		}
 	}
 
 	public void creerQCM(QCM qst, String chemin)
@@ -189,35 +284,31 @@ public class Ecriture
 			System.err.println("Erreur lors de la création du fichier : " + e.getMessage());
 		}
 
-		try (FileWriter writer = new FileWriter(QCM)) 
+		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+			new FileOutputStream(QCM), "UTF-8"))) 
 		{
+			String contenu;
 
+			contenu = QCM.getParentFile().getName() + "\t" + "Q" + "\t" + qst.getQuestion() + "\t" + qst.getExplication() + "\t" + qst.getDifficulte().getDifficulte() + "\t" +
+					qst.getPoint()  + "\t" + qst.getTemps() + "\n";
 
-        String contenu;
-
-		contenu = QCM.getParentFile().getName() + "\t" + "Q" + "\t" + qst.getQuestion() + "\t" + qst.getExplication() + "\t" + qst.getDifficulte().getDifficulte() + "\t" +
-				  qst.getPoint()  + "\t" + qst.getTemps() + "\n";
-
-		writer.append(contenu);
-
-
-		for(int i = 0; i < qst.getReponse().size(); i++)
-		{
-			contenu = qst.getReponse().get(i).getReponse() + "\t" + (qst.getReponse().get(i).getValeur() ? "vrai" : "faux") + "\n";
 			writer.append(contenu);
 
-		}
 
-		contenu = "FIN";
-		writer.append(contenu);
+			for(int i = 0; i < qst.getReponse().size(); i++)
+			{
+				contenu = qst.getReponse().get(i).getReponse() + "\t" + (qst.getReponse().get(i).getValeur() ? "vrai" : "faux") + "\n";
+				writer.append(contenu);
 
+			}
 
-        } 
+			contenu = "FIN";
+			writer.append(contenu);
+		} 
 		catch (IOException e) 
 		{
-            System.out.println("Une erreur s'est produite : " + e.getMessage());
-        }
-
+			System.out.println("Une erreur s'est produite : " + e.getMessage());
+		}
 	}
 	
 	public void creerAssociation(Association asso, String chemin) 
@@ -261,7 +352,8 @@ public class Ecriture
 			System.err.println("Erreur lors de la création du fichier : " + e.getMessage());
 		}
 	
-		try (FileWriter writer = new FileWriter(associationFile)) {
+		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+			new FileOutputStream(associationFile), "UTF-8"))) {
 	
 			// Écrire les informations de la question principale
 			String contenu = String.format("%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\n",
@@ -296,7 +388,7 @@ public class Ecriture
 			{
 				contenu = String.format("%s\t%s\n",
 						lstRep.get(i).getReponse(),
-						lstRepAsso.get(i).getReponse());
+						lstRep.get(i).getAssocie());
 				writer.append(contenu);
 			}
 	
@@ -333,8 +425,6 @@ public class Ecriture
 	 */
 	public boolean creerTxtQuestion(Ressource ressource, Notion notion,Question question)
 	{
-
-
 		return true;
 	}
 }

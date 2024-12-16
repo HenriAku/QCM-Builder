@@ -46,9 +46,15 @@ public class PanelNotion extends JPanel implements ActionListener
 		/*********************************/
 		/*  Création du panneau d'ajout  */
 		/*********************************/
+
+		PanelNavigation navigation = new PanelNavigation(frame, null);
+		navigation.setBounds(0, 0, screenWidth, 100); 
+		this.add(navigation);
+
+
 		JPanel panelAjout = new JPanel();
 		panelAjout.setLayout(null);
-		panelAjout.setBounds((screenWidth - 600) / 2, 20, 600, 70);
+		panelAjout.setBounds((screenWidth - 600) / 2, 100, 600, 50);
 
 		JLabel lblTitre = new JLabel("Notion");
 		lblTitre.setBounds(0, 10, 400, 50);
@@ -99,7 +105,7 @@ public class PanelNotion extends JPanel implements ActionListener
 
 		// Ajouter contentPanel dans un JScrollPane
 		scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBounds(0, 100, screenWidth, screenHeight - 150); // Position et taille du JScrollPane
+		scrollPane.setBounds(0, 160, screenWidth, screenHeight - 200); // Ajusté pour prendre en compte PanelNavigation et panelAjout
 		this.add(scrollPane);
 
 
@@ -131,12 +137,12 @@ public class PanelNotion extends JPanel implements ActionListener
 			//Affiche les question des notions
 			if (e.getSource() == this.tabBtn[i][0]) 
 			{
-				//affiche les question
+				this.frame.AfficheQuestion(this.lstN.get(i), this.ressource);
 			}
 			//supprime la notion de la ligne
 			if (e.getSource() == this.tabBtn[i][1]) 
 			{
-				this.ctrl.supprimerDossier(this.ressource.getNom()+"/"+this.tabBtn[i][0].getText());
+				this.ctrl.supprimerDossier(this.ressource.getNom()+ File.separator +this.tabBtn[i][0].getText());
 				this.ressource.getNotions().remove(i);
 				this.frame.refreshNotion(ressource);
 			}

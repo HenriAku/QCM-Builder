@@ -44,5 +44,18 @@ public class Enlevement extends Question
         return lstRepOrdre;
     }
 
+    //toString
+     @Override
+     public String toString() 
+     {
+         String str = "[" + super.toString();
+         str += " Type : " + this.type ;
+         str += " Reponses : ";
+         for (ReponseEnlevement reponseEnlev : lstRep) 
+         {
+             str += reponseEnlev.toString() + "]";
+         }
+         return str + "]";
+     }
     
 }

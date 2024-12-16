@@ -1,4 +1,6 @@
-Question 1	Q	ca va		facile	5.0	5.0
-oui	vrai
-non	faux
+Question 1	E	dddddd		très facile	5.0	5.0
+d	faux	-1	-1.0
+dd	faux	2	-0.2
+ddd	vrai	-1	-1.0
+dddd	faux	1	-1.0
 FIN

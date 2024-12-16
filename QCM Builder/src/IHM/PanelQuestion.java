@@ -5,33 +5,41 @@
 package IHM;
 
 import javax.swing.*;
+
 import Controlleur.Controlleur;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.List;
+import java.util.ArrayList;
 
+import Metier.Notion;
+import Metier.Question;
 import Metier.Ressource;
 
-public class PanelRessource extends JPanel implements ActionListener 
+public class PanelQuestion extends JPanel implements ActionListener
 {
-	private Controlleur ctrl;
+	private Controlleur ctrl  ;
 	private JButton[][] tabBtn;
-	private JButton btnAdd;
-	private List<Ressource> lstRes;
-	private JScrollPane scrollPane;
+	private JButton     btnAdd;
+	private ArrayList<Question> lstQ;
+	private Notion notion;
 	private FramePrincipal frame;
+	private JScrollPane scrollPane;
+	private Ressource ressource;
 
-	public PanelRessource(Controlleur ctrl, FramePrincipal frame) 
+
+	public PanelQuestion(Controlleur ctrl, Notion notion, Ressource ressource, FramePrincipal frame) 
 	{
-		this.ctrl = ctrl;
-		this.frame = frame;
+		this.ctrl      = ctrl     ;
+		this.frame     = frame    ;
+		this.notion    = notion   ;
+		this.ressource = ressource;
+		this.lstQ   = notion.getLstQuestions();
 
-		// Récupérer les ressources
-		this.lstRes = this.ctrl.getLstRessource();
-		int tailleLst = this.lstRes.size();
+
+		int tailleLst  = this.lstQ.size();
 
 		// Récupérer la taille de l'écran
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -41,18 +49,19 @@ public class PanelRessource extends JPanel implements ActionListener
 		// Panel principal
 		this.setLayout(null);
 
-		PanelNavigation navigation = new PanelNavigation(frame, null);
-		navigation.setBounds(0, 0, screenWidth, 100); 
-		this.add(navigation);
-
 		/*********************************/
 		/*  Création du panneau d'ajout  */
 		/*********************************/
+
+		PanelNavigation navigation = new PanelNavigation(frame, this.ressource);
+		navigation.setBounds(0, 0, screenWidth, 100); 
+		this.add(navigation);
+
 		JPanel panelAjout = new JPanel();
 		panelAjout.setLayout(null);
 		panelAjout.setBounds((screenWidth - 600) / 2, 100, 600, 50);
 
-		JLabel lblTitre = new JLabel("Ressource");
+		JLabel lblTitre = new JLabel("Question");
 		lblTitre.setBounds(0, 10, 400, 50);
 
 		this.btnAdd = new JButton(new ImageIcon(
@@ -64,7 +73,7 @@ public class PanelRessource extends JPanel implements ActionListener
 		this.add(panelAjout);
 
 		/*********************************/
-		/*  Création des ressources      */
+		/*  Création des notions      */
 		/*********************************/
 		JPanel contentPanel = new JPanel();
 		contentPanel.setLayout(null); // Positionnement manuel
@@ -83,8 +92,8 @@ public class PanelRessource extends JPanel implements ActionListener
 			panelRes.setBounds((screenWidth - panelWidth) / 2, i * (panelHeight + spacing), panelWidth, panelHeight);
 			contentPanel.add(panelRes);
 
-			// Boutons pour chaque ressource
-			this.tabBtn[i][0] = new JButton(this.lstRes.get(i).getNom());
+			// Boutons pour chaque notion
+			this.tabBtn[i][0] = new JButton(this.lstQ.get(i).getQuestion());
 			this.tabBtn[i][0].setBounds(0, 10, 400, 50);
 			panelRes.add(this.tabBtn[i][0]);
 
@@ -104,14 +113,15 @@ public class PanelRessource extends JPanel implements ActionListener
 		scrollPane.setBounds(0, 160, screenWidth, screenHeight - 200); // Ajusté pour prendre en compte PanelNavigation et panelAjout
 		this.add(scrollPane);
 
+
 		/*********************************/
-		/* Activation des composants     */
+		/*	Activation des composants    */
 		/*********************************/
+
 		this.btnAdd.addActionListener(this);
 
-		for (int i = 0; i < this.tabBtn.length; i++) 
+		for(int i=0; i<this.tabBtn.length; i++)
 		{
-			this.tabBtn[i][0].addActionListener(this);
 			this.tabBtn[i][1].addActionListener(this);
 			this.tabBtn[i][2].addActionListener(this);
 		}
@@ -120,30 +130,25 @@ public class PanelRessource extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e) 
 	{
-		//affiche une frame pour crée une ressource
 		if (e.getSource() == this.btnAdd) 
 		{
-			new FrameCreation(this.ctrl, "Ressource", "", frame);
+			new FrameCreationQuestion(frame, ctrl);
+			this.repaint();
 		}
 
 		for (int i = 0; i < this.tabBtn.length; i++) 
 		{
-			//Affiche les notions de la ressource
-			if (e.getSource() == this.tabBtn[i][0]) 
-			{
-				frame.afficheNotion(this.lstRes.get(i));
-			}
-			//supprime la ressource de la ligne
+			//supprime la notion de la ligne
 			if (e.getSource() == this.tabBtn[i][1]) 
 			{
-				this.ctrl.supprimerDossier(this.tabBtn[i][0].getText());
-				this.ctrl.getLstRessource().remove(i);
-				this.frame.refreshRessource();
+				this.ctrl  .supprimerDossier(this.ressource.getNom() + File.separator + this.notion.getNom() + File.separator + "Question "+(i+1));
+				this.notion.getLstQuestions().remove(i);
+				this.frame .refreshQuestion(notion, this.ressource);
 			}
-			//modifie le nom de la ressource de la ligne
+			//modifie le nom de la notion de la ligne
 			if (e.getSource() == this.tabBtn[i][2]) 
 			{
-				new FrameModification(this.ctrl, this.frame ,"Ressource", this.lstRes.get(i),null);
+				//new FrameModification(this.ctrl, this.frame ,"Notion", this.notion,this.lstQ.get(i));
 			}
 		}
 	}
