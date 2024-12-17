@@ -18,6 +18,16 @@ public class Enlevement extends Question
         ranger();
     }
 
+
+	public Enlevement(String question, String explication, Difficulte difficulte, double point, float temps, List<ReponseEnlevement> lstRep, String path) 
+    {
+        super(question, explication, difficulte, point, temps, path);
+        this.type = "Enlevement";
+        this.lstRep = new ArrayList<>(lstRep);
+        this.lstRepOrdre = new ArrayList<ReponseEnlevement>();
+        ranger();
+    }
+
     private void ranger()
     {
         for(int i = 0; i<lstRep.size(); i++)
@@ -34,6 +44,7 @@ public class Enlevement extends Question
         return type;
     }
 
+    @Override
     public ArrayList<ReponseEnlevement> getLstRep() 
     {
         return lstRep;

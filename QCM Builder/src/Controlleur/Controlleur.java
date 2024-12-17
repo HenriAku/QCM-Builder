@@ -84,16 +84,24 @@ public class Controlleur
 	{
 		return (this.metier.creerQuestionQCM(r, n, question, type, explication, difficulte, point, temps, reponses, validite));
 	}
-
-	
-	public String creerQuestionAsso(String r, String c, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses)
+	public String creerQuestionQCM(String r, String c, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses ,  ArrayList<Boolean> validite, String path)
 	{
-		return (this.metier.creerQuestionAsso(r, c, question, type, explication, difficulte, point, temps, reponses));
+		return (this.metier.creerQuestionQCM(r, c, question, type, explication, difficulte, point, temps, reponses, validite, path));
 	}
 
+	public String creerQuestionAsso(String r, String c, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses, String path)
+	{
+		return (this.metier.creerQuestionAsso(r, c, question, type, explication, difficulte, point, temps, reponses, path));
+	}
+	
 	public String creerQuestionElimination(String Sressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> ordreElimination, ArrayList<String> nbPointPerdu, ArrayList<String> lstRep, ArrayList<Boolean> validite)
 	{
 		return this.metier.creerQuestionElimination(Sressource, notion, question, type, explication, difficulte, point, temps, ordreElimination, nbPointPerdu, lstRep, validite);
+	}
+
+	public String creerQuestionElimination(String Sressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> ordreElimination, ArrayList<String> nbPointPerdu, ArrayList<String> lstRep, ArrayList<Boolean> validite, String path)
+	{
+		return this.metier.creerQuestionElimination(Sressource, notion, question, type, explication, difficulte, point, temps, ordreElimination, nbPointPerdu, lstRep, validite, path);
 	}
 
 	public static void main(String[] args) 

@@ -16,6 +16,13 @@ public class QCM extends Question
         this.lstRep = new ArrayList<>(lstRep);
     }
 
+    public QCM(String question, String explication, Difficulte difficulte, double point, float temps, List<ReponseQcm> lstRep, String path) 
+    {
+        super(question, explication, difficulte, point, temps, path);
+        this.type = "QCM";
+        this.lstRep = new ArrayList<>(lstRep);
+    }
+
     public ArrayList<ReponseQcm> getBonneReponse()
     {
         ArrayList<ReponseQcm> bonnesReponse = new ArrayList<ReponseQcm>();
@@ -29,7 +36,8 @@ public class QCM extends Question
         return bonnesReponse;
     }
 
-    public ArrayList<ReponseQcm> getReponse()
+    @Override
+    public ArrayList<ReponseQcm> getLstRep()
     {
         return this.lstRep;
     }

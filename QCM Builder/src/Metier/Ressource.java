@@ -93,6 +93,17 @@ public class Ressource
 		}
 		return null;
 	}
+	
+	public QCM ajouterQuestionQCM(String notion, String question, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseQcm> reponses, String path)
+	{
+		//on récupère le notion dans lstNotions
+		for (Notion not : this.notions) 
+		{
+			if (not.getNom().equals(notion)) 
+				return not.ajouterQuestionQCM(question, explication, difficulte,point, temps, reponses, path);
+		}
+		return null;
+	}
 
 	public Association ajouterQuestionAsso(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseAsso> reponses)
 	{
@@ -108,6 +119,21 @@ public class Ressource
 		return null;
 	}
 
+	public Association ajouterQuestionAsso(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseAsso> reponses, String path)
+	{
+		System.out.println("path : " + path);
+		//on récupère le notion dans lstNotions
+		for (Notion not : this.notions) 
+		{
+			if (not.getNom().equals(notion)) 
+			{
+				System.out.println("Test1");
+				return not.ajouterQuestionAsso(question, explication, difficulte, point, temps, reponses, path);
+			}
+		}
+		return null;
+	}
+
 	public Enlevement ajouterQuestionEnleve(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseEnlevement> reponses)
 	{
 		//on récupère le notion dans lstNotions
@@ -115,6 +141,17 @@ public class Ressource
 		{
 			if (not.getNom().equals(notion)) 
 				return not.ajouterQuestionEnleve(question, explication, difficulte, point, temps, reponses);
+		}
+		return null;
+	}
+
+	public Enlevement ajouterQuestionEnleve(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseEnlevement> reponses, String path)
+	{
+		//on récupère le notion dans lstNotions
+		for (Notion not : this.notions) 
+		{
+			if (not.getNom().equals(notion)) 
+				return not.ajouterQuestionEnleve(question, explication, difficulte, point, temps, reponses, path);
 		}
 		return null;
 	}

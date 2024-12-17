@@ -1,0 +1,205 @@
+	<!DOCTYPE html>
+	<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Questionnaire</title>
+		<link rel="stylesheet" href="style.css">
+		<script>
+			const quiz = [
+{
+question: "De quel couleur est la marque coca cola ?",
+answers: ["rouge", "jaune", "vert", "blanc"],
+correct: [0],
+time: 0.0
+},
+{
+question: "De quel couleur est le ciel ?",
+answers: ["bleu", "jaune", "vert", "rouge"],
+correct: [0],
+time: 0.0
+},
+{
+question: "De quel couleur est le cheval d'Henri 4 ?",
+answers: ["bleu", "blanc", "vert", "rouge"],
+correct: [1],
+time: 0.0
+},
+	];
+
+	let currentQuestionIndex = 0;
+	let score = 0;
+	let selectedAnswer = null;
+	let answersValidated = Array(quiz.length).fill(false);
+
+	function displayQuestion() {
+		if (currentQuestionIndex >= quiz.length) {
+			showResults();
+			return;
+		}
+
+		const questionObj = quiz[currentQuestionIndex];
+		document.getElementById('question-number').textContent = `Question ${currentQuestionIndex + 1} / ${quiz.length}`;
+		document.getElementById('question').textContent = questionObj.question;
+
+		const answersContainer = document.getElementById('answers');
+		answersContainer.innerHTML = "";
+
+		questionObj.answers.forEach((answer, index) => {
+			const button = document.createElement('button');
+			button.textContent = answer;
+			button.onclick = () => selectAnswer(index);
+			button.id = `answer-${index}`;
+			answersContainer.appendChild(button);
+		});
+
+		document.getElementById('feedback').textContent = "";
+		selectedAnswer = null;
+
+		updateNavigationButtons();
+		updateValidateButton();
+	}
+
+	function selectAnswer(index) {
+		selectedAnswer = index;
+		const answers = document.querySelectorAll("#answers button");
+		answers.forEach((btn, idx) => {
+			btn.style.backgroundColor = idx === index ? "lightblue" : "";
+		});
+	}
+
+	function validateAnswer() {
+		if (selectedAnswer === null) {
+			document.getElementById('feedback').textContent = "Veuillez sélectionner une réponse avant de valider.";
+			return;
+		}
+
+		const questionObj = quiz[currentQuestionIndex];
+		const correct = questionObj.correct.includes(selectedAnswer);
+
+		if (correct) {
+			score++;
+			document.getElementById('feedback').textContent = "Bonne réponse !";
+		} else {
+			document.getElementById('feedback').textContent = "Mauvaise réponse !";
+		}
+
+		highlightAnswers(correct);
+		disableAnswerButtons();
+		answersValidated[currentQuestionIndex] = true;
+		updateValidateButton();
+		updateNavigationButtons();
+	}
+
+	function highlightAnswers(isCorrect) {
+		const answers = document.querySelectorAll("#answers button");
+		answers.forEach((btn, idx) => {
+			if (quiz[currentQuestionIndex].correct.includes(idx)) {
+				btn.style.backgroundColor = "lightgreen";
+			} else if (idx === selectedAnswer && !isCorrect) {
+				btn.style.backgroundColor = "lightcoral";
+			}
+		});
+	}
+
+	function disableAnswerButtons() {
+		const answers = document.querySelectorAll("#answers button");
+		answers.forEach(btn => btn.disabled = true);
+	}
+
+	function updateValidateButton() {
+		const validateButton = document.getElementById('validate');
+		validateButton.disabled = answersValidated[currentQuestionIndex];
+	}
+
+	function nextQuestion() {
+		if (currentQuestionIndex < quiz.length - 1) {
+			currentQuestionIndex++;
+			displayQuestion();
+		} else if (currentQuestionIndex === quiz.length - 1) {
+			showResults();
+		}
+	}
+
+	function prevQuestion() {
+		if (currentQuestionIndex > 0) {
+			currentQuestionIndex--;
+			displayQuestion();
+		}
+	}
+
+	function showResults() {
+		document.body.innerHTML = `
+			<div class="centered">
+				<h1>Résultats</h1>
+				<p>Votre score est de ${score} / ${quiz.length}</p>
+			</div>
+		`;
+	}
+
+	function updateNavigationButtons() {
+		document.getElementById('prev').disabled = currentQuestionIndex === 0;
+		const nextButton = document.getElementById('next');
+		nextButton.textContent = currentQuestionIndex === quiz.length - 1 ? "Résultats" : "Suivant";
+	}
+
+	window.onload = () => {
+		displayQuestion();
+		document.getElementById('next').addEventListener('click', nextQuestion);
+		document.getElementById('prev').addEventListener('click', prevQuestion);
+		document.getElementById('validate').addEventListener('click', validateAnswer);
+	};
+	</script>
+	<style>
+		.centered {
+			max-width: 600px;
+			margin: 0 auto;
+			text-align: center;
+		}
+
+		#answers {
+			margin-bottom: 20px;
+		}
+
+		#answers button {
+			display: block;
+			margin: 5px auto;
+			padding: 10px;
+			width: 100%;
+			max-width: 400px;
+		}
+
+		button {
+			padding: 10px;
+			font-size: 16px;
+			cursor: pointer;
+		}
+
+		#prev, #validate, #next {
+			background-color: #007BFF;
+			color: white;
+			border: none;
+			margin: 5px;
+			padding: 10px 20px;
+		}
+
+		#prev:disabled, #next:disabled {
+			background-color: #ccc;
+			cursor: not-allowed;
+		}
+	</style>
+	</head>
+	<body>
+		<div class="centered">
+			<p id="question-number"></p>
+			<p id="question"></p>
+			<div id="answers"></div>
+			<div>
+				<button id="prev">Précédent</button>
+				<button id="validate">Valider</button>
+				<button id="next">Suivant</button>
+			</div>
+			<p id="feedback"></p>
+		</div>
+	</body>
+	</html>

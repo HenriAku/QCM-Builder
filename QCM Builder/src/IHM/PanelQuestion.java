@@ -66,6 +66,9 @@ public class PanelQuestion extends JPanel implements ActionListener
 
 		this.btnAdd = new JButton(new ImageIcon(
 				new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "Ajout.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
+		this.btnAdd.setContentAreaFilled(false);
+		this.btnAdd.setBorderPainted    (false);
+		this.btnAdd.setFocusPainted     (false);
 		this.btnAdd.setBounds(450, 10, 30, 30);
 
 		panelAjout.add(lblTitre);
@@ -93,18 +96,31 @@ public class PanelQuestion extends JPanel implements ActionListener
 			contentPanel.add(panelRes);
 
 			// Boutons pour chaque notion
-			this.tabBtn[i][0] = new JButton(this.lstQ.get(i).getQuestion());
+			String question = this.lstQ.get(i).getQuestion();
+			String motif = "{\\rtf1\\ansi{\\fonttbl\\f0\\fnil Monospaced;}";
+			
+			if (question.startsWith(motif)) 
+				question = question.substring(motif.length());
+			
+			this.tabBtn[i][0] = new JButton(question);			
 			this.tabBtn[i][0].setBounds(0, 10, 400, 50);
+			this.tabBtn[i][0].setBackground(new Color(201,80,46));
 			panelRes.add(this.tabBtn[i][0]);
 
 			this.tabBtn[i][1] = new JButton(new ImageIcon(
 					new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoSuppr.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
 			this.tabBtn[i][1].setBounds(410, 10, 30, 30);
+			this.tabBtn[i][1].setContentAreaFilled(false);
+			this.tabBtn[i][1].setBorderPainted    (false);
+			this.tabBtn[i][1].setFocusPainted     (false);
 			panelRes.add(this.tabBtn[i][1]);
 
 			this.tabBtn[i][2] = new JButton(new ImageIcon(
 					new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoModif.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
 			this.tabBtn[i][2].setBounds(450, 10, 30, 30);
+			this.tabBtn[i][2].setContentAreaFilled(false);
+			this.tabBtn[i][2].setBorderPainted    (false);
+			this.tabBtn[i][2].setFocusPainted     (false);
 			panelRes.add(this.tabBtn[i][2]);
 		}
 

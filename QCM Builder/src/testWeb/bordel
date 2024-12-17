@@ -1,0 +1,517 @@
+
+
+	public void questionQCMHtml(QCM q)
+	{
+		try (FileWriter writer = new FileWriter(this.emplacement + File.separator + "questions.html")) 
+		{
+			// Début de la structure HTML de la page
+			writer.append("""
+				<!DOCTYPE html>
+				<html lang=\"fr\">
+				<head>
+					<meta charset=\"UTF-8\">
+					<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+					<title>Questionnaire</title>
+					<link rel=\"stylesheet\" href=\"style.css\">
+					<script>
+						// Déclaration d'un tableau contenant les questions et réponses
+						const quiz = [
+				""");
+
+			// Écriture de la question dans le fichier HTML
+			writer.append("{\n");
+			writer.append("question: \"" + q.getQuestion() + "\",\n");
+			
+			// Écriture des réponses possibles dans un tableau
+			writer.append("answers: [");
+			for (int i = 0; i < q.getLstRep().size(); i++) 
+			{
+				writer.append("\"" + q.getLstRep().get(i).getReponse() + "\"");
+				if (i < q.getLstRep().size() - 1) 
+				{
+					writer.append(", ");
+				}
+			}
+			writer.append("],\n");
+
+			// Indices des réponses correctes dans un tableau
+			writer.append("correct: [");
+			boolean first = true;
+			for (int i = 0; i < q.getLstRep().size(); i++) 
+			{
+				if (q.getLstRep().get(i).getValeur()) // Vérifie si la réponse est correcte
+				{
+					if (!first) writer.append(", ");
+					writer.append(String.valueOf(i)); // Ajoute l'indice de la bonne réponse
+					first = false;
+				}
+			}
+			writer.append("],\n");
+
+			// Temps pour répondre à cette question
+			writer.append("time: " + q.getTemps() + "\n");
+			writer.append("},\n");
+
+			// Suite du script JavaScript pour gérer le quiz
+			writer.append("""
+					];
+
+					//Variables globales pour suivre le quiz
+					let currentQuestionIndex = 0; // Index de la question actuelle
+					let timer;                    // Gestion du temps pour chaque question
+					let timeLeft = {};            // Temps restant pour chaque question
+					let score = 0;                // Score de l'utilisateur
+					let answeredQuestions = {};   // Réponses sélectionnées par l'utilisateur
+
+					// Initialise le temps pour chaque question
+					quiz.forEach((q, index) => {
+						timeLeft[index] = q.time;
+					});
+
+					// Fonction pour mettre à jour la question affichée
+					function updateQuestion() 
+					{
+						clearInterval(timer); // Arrête le timer précédent
+
+						if (currentQuestionIndex < quiz.length) 
+						{
+							const questionObj = quiz[currentQuestionIndex]; // Récupère la question actuelle
+
+							// Met à jour les éléments de la page HTML
+							document.getElementById('question-number').textContent = Question ${currentQuestionIndex + 1} / ${quiz.length};
+							document.getElementById('question').textContent = questionObj.question;
+
+							const answersContainer = document.getElementById('answers');
+							answersContainer.innerHTML = ""; // Vide l'ancien contenu des réponses
+
+							// Affiche les réponses comme des boutons
+							questionObj.answers.forEach((answer, index) => 
+							{
+								const button = document.createElement('button');
+								button.textContent = answer;
+								button.onclick = () => handleAnswer(index); // Gère la sélection de réponse
+								button.id = "answer-" + index;
+
+								// Style des réponses déjà sélectionnées
+								if (answeredQuestions[currentQuestionIndex]?.selected?.includes(index)) 
+								{
+									button.style.backgroundColor = "lightblue";
+								}
+
+								answersContainer.appendChild(button);
+							});
+
+							// Mise à jour du feedback et du bouton de validation
+							document.getElementById('feedback').textContent = answeredQuestions[currentQuestionIndex]?.correct !== null
+								? (answeredQuestions[currentQuestionIndex].correct ? "Bonne réponse !" : "Mauvaise réponse !")
+								: "";
+
+							document.getElementById('validate').disabled = !!answeredQuestions[currentQuestionIndex]?.correct;
+
+							// Réinitialise le timer pour cette question
+							resetTimer(timeLeft[currentQuestionIndex]);
+						} 
+							else 
+						{
+							showResults(); // Si c'est la dernière question, affiche les résultats
+						}
+					}
+
+					// Fonction pour gérer la sélection multiple des réponses
+					function handleAnswer(index) 
+					{
+						const selectedAnswers = answeredQuestions[currentQuestionIndex]?.selected || [];
+
+						// Ajoute ou retire l'index de la réponse sélectionnée
+						const answerIndex = selectedAnswers.indexOf(index);
+						if (answerIndex > -1) 
+						{
+							selectedAnswers.splice(answerIndex, 1); // Retire la réponse
+							document.getElementById('answer-' + index).style.backgroundColor = "";
+						} else 
+						{
+							selectedAnswers.push(index); // Ajoute la réponse
+							document.getElementById('answer-' + index).style.backgroundColor = "lightblue";
+						}
+
+						answeredQuestions[currentQuestionIndex] = { selected: selectedAnswers, correct: null };
+					}
+
+					// Fonction pour valider les réponses
+					function validateAnswer() 
+					{
+						if (!answeredQuestions[currentQuestionIndex] || answeredQuestions[currentQuestionIndex].selected.length === 0) 
+						{
+							alert("Veuillez sélectionner au moins une réponse.");
+							return;
+						}
+
+						const questionObj = quiz[currentQuestionIndex];
+						const selectedAnswers = answeredQuestions[currentQuestionIndex].selected;
+						const correctAnswers = questionObj.correct;
+
+						// Vérifie si les réponses sont correctes
+						const isCorrect = selectedAnswers.sort().toString() === correctAnswers.sort().toString();
+
+						answeredQuestions[currentQuestionIndex].correct = isCorrect;
+						if (isCorrect) score++; // Incrémente le score si la réponse est correcte
+
+						// Mise à jour des couleurs pour montrer les bonnes/mauvaises réponses
+						selectedAnswers.forEach(index => {
+							document.getElementById('answer-' + index).style.backgroundColor = correctAnswers.includes(index) ? "lightgreen" : "lightcoral";
+						});
+
+						correctAnswers.forEach(index => {
+							if (!selectedAnswers.includes(index)) 
+							{
+								document.getElementById('answer-' + index).style.backgroundColor = "lightgreen";
+							}
+						});
+
+						document.getElementById('feedback').textContent = isCorrect ? "Bonne réponse !" : "Mauvaise réponse !";
+						document.getElementById('validate').disabled = true;
+						clearInterval(timer);
+					}
+
+					// Fonction pour gérer le timer
+					function resetTimer(time) {
+						document.getElementById('countdown').textContent = time;
+
+						timer = setInterval(() => {
+							timeLeft[currentQuestionIndex]--;
+							document.getElementById('countdown').textContent = timeLeft[currentQuestionIndex];
+							if (timeLeft[currentQuestionIndex] <= 0) {
+								clearInterval(timer);
+								validateAnswer();
+							}
+						}, 1000);
+					}
+
+					// Fonction pour afficher les résultats à la fin du quiz
+					function showResults() {
+						const totalQuestions = quiz.length;
+						const finalScore = (score / totalQuestions) * 20;
+
+						document.body.innerHTML = 
+							<div class="centered">
+								<h2>Résultats du Quiz</h2>
+								<p>Total de questions : ${totalQuestions}</p>
+								<p>Bonnes réponses : ${score}</p>
+								<p>Score : ${score} / ${totalQuestions} (${finalScore.toFixed(2)} / 20)</p>
+							</div>
+						;
+					}
+
+					window.onload = updateQuestion; // Lance la première question à l'ouverture de la page
+				</script>
+				<style>
+					body {
+						font-family: Arial, sans-serif;
+						background-color: #f4f4f4;
+						text-align: center;
+					}
+					.centered {
+						margin-top: 50px;
+					}
+					button {
+						margin: 5px;
+						padding: 10px 20px;
+						font-size: 16px;
+						cursor: pointer;
+					}
+					button:disabled {
+						background-color: gray;
+						cursor: not-allowed;
+					}
+				</style>
+			</head>
+			<body>
+				<div class="centered">
+					<p id="question-number"></p>
+					<p id="question"></p>
+					<div id="answers"></div>
+					<p>Temps restant : <span id="countdown"></span> secondes</p>
+					<div>
+						<button id="validate" onclick="validateAnswer()">Valider</button>
+					</div>
+					<p id="feedback"></p>
+				</div>
+			</body>
+			</html>
+		""");
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public void questionAssoHtml(Association q) {
+		try (FileWriter writer = new FileWriter(this.emplacement + File.separator + "questions.html")) {
+			// Début de la structure HTML
+			writer.append("""
+				<!DOCTYPE html>
+				<html lang="fr">
+				<head>
+					<meta charset="UTF-8">
+					<meta name="viewport" content="width=device-width, initial-scale=1.0">
+					<title>Question d'association</title>
+					<link rel="stylesheet" href="style.css">
+					<script>
+						// Initialisation des données pour la question d'association
+						const associationQuestion = {
+							question: \"" + q.getQuestion() + "\",\n"
+							pairs: [
+			""");
+	
+			// Ajout des paires (colonne gauche et leurs associations possibles)
+			for (int i = 0; i < q.getLstRep().size(); i++) 
+			{
+				writer.append("{ left: \"" + q.getLstRep().get(i).getReponse() + "\", ");
+				writer.append("rightOptions: [");
+
+				for (int j = 0; j < q.getLstRepAsso().size(); j++)
+				{ // Associer avec les options de droite
+					writer.append("\"" + q.getLstRepAsso().get(j).getReponse() + "\"");
+					
+					if (j < q.getLstRepAsso().size() - 1) 
+					{
+						writer.append(", ");
+					}
+				}
+				writer.append("], ");
+				writer.append("correct: \"" + q.getLstRepAsso().get(i).getReponse() + "\" },");
+			}
+	
+			writer.append("""
+							]
+						};
+	
+						let score = 0;
+	
+						// Fonction pour valider les associations
+						function validateAssociations() {
+							let correctCount = 0;
+	
+							// Vérifie chaque paire
+							associationQuestion.pairs.forEach((pair, index) => {
+								const selectedValue = document.getElementById('dropdown-' + index).value;
+								if (selectedValue === pair.correct) {
+									correctCount++;
+									document.getElementById('dropdown-' + index).style.backgroundColor = 'lightgreen';
+								} else {
+									document.getElementById('dropdown-' + index).style.backgroundColor = 'lightcoral';
+								}
+							});
+	
+							score = correctCount;
+							document.getElementById('feedback').textContent = `Vous avez trouvé ${correctCount} / ${associationQuestion.pairs.length} associations correctes.`;
+						}
+	
+						// Chargement de la question d'association
+						window.onload = function() {
+							document.getElementById('question').textContent = associationQuestion.question;
+							const container = document.getElementById('associations');
+							associationQuestion.pairs.forEach((pair, index) => {
+								const row = document.createElement('div');
+								row.style.display = 'flex';
+								row.style.marginBottom = '10px';
+	
+								const leftCol = document.createElement('div');
+								leftCol.textContent = pair.left;
+								leftCol.style.flex = '1';
+								row.appendChild(leftCol);
+	
+								const rightCol = document.createElement('select');
+								rightCol.id = 'dropdown-' + index;
+								rightCol.style.flex = '1';
+	
+								// Ajout des options au menu déroulant
+								pair.rightOptions.forEach(option => {
+									const optionElement = document.createElement('option');
+									optionElement.value = option;
+									optionElement.textContent = option;
+									rightCol.appendChild(optionElement);
+								});
+	
+								row.appendChild(rightCol);
+								container.appendChild(row);
+							});
+						};
+					</script>
+					<style>
+						body {
+							font-family: Arial, sans-serif;
+							background-color: #f4f4f4;
+							text-align: center;
+							padding: 20px;
+						}
+						.centered {
+							margin: 0 auto;
+							max-width: 600px;
+						}
+						select {
+							padding: 5px;
+							font-size: 16px;
+						}
+						button {
+							margin-top: 20px;
+							padding: 10px 20px;
+							font-size: 16px;
+							cursor: pointer;
+						}
+					</style>
+				</head>
+				<body>
+					<div class="centered">
+						<h2 id="question"></h2>
+						<div id="associations"></div>
+						<button onclick="validateAssociations()">Valider</button>
+						<p id="feedback"></p>
+					</div>
+				</body>
+				</html>
+			""");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+	public void questionEnlevementHtml(Enlevement q)
+	{
+		try (FileWriter writer = new FileWriter(this.emplacement + File.separator + "questions.html")) 
+		{
+			// Début de la structure HTML de la page
+			writer.append("""
+				<!DOCTYPE html>
+				<html lang=\"fr\">
+				<head>
+					<meta charset=\"UTF-8\">
+					<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+					<title>Questionnaire</title>
+					<link rel=\"stylesheet\" href=\"style.css\">
+					<script>
+						// Déclaration d'un tableau contenant les questions et réponses
+						const quiz = [
+				""");
+
+			// Écriture de la question dans le fichier HTML
+			writer.append("{\n");
+			writer.append("question: \"" + q.getQuestion() + "\",\n");
+			
+			// Écriture des réponses possibles dans un tableau
+			writer.append("answers: [");
+			for (int i = 0; i < q.getLstRep().size(); i++) 
+			{
+				writer.append("\"" + q.getLstRep().get(i).getReponse() + "\"");
+				if (i < q.getLstRep().size() - 1) 
+				{
+					writer.append(", ");
+				}
+			}
+			writer.append("],\n");
+
+			// Indices des réponses correctes dans un tableau
+			writer.append("correct: [");
+			boolean first = true;
+			for (int i = 0; i < q.getLstRep().size(); i++) 
+			{
+				if (q.getLstRep().get(i).getValeur()) // Vérifie si la réponse est correcte
+				{
+					if (!first) writer.append(", ");
+					writer.append(String.valueOf(i)); // Ajoute l'indice de la bonne réponse
+					first = false;
+				}
+			}
+			writer.append("],\n");
+
+			// Temps pour répondre à cette question
+			writer.append("time: " + q.getTemps() + "\n");
+			writer.append("},\n");
+
+			// Suite du script JavaScript pour gérer le quiz
+			writer.append("""
+					];
+
+                let currentQuestionIndex = 0;
+                let answeredQuestions = {};
+                let quizData = [...quiz];
+
+                function updateQuestion() {
+                    const questionObj = quizData[currentQuestionIndex];
+
+                    document.getElementById('question').textContent = questionObj.question;
+
+                    const answersContainer = document.getElementById('answers');
+                    answersContainer.innerHTML = "";
+
+                    questionObj.answers.forEach((answer, index) => {
+                        const answerDiv = document.createElement('div');
+                        answerDiv.style.display = "flex";
+                        answerDiv.style.alignItems = "center";
+
+                        const button = document.createElement('button');
+                        button.textContent = answer;
+                        button.style.marginRight = "10px";
+                        button.onclick = () => handleAnswer(index);
+
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = "Supprimer";
+                        deleteButton.style.color = "red";
+                        deleteButton.onclick = () => deleteAnswer(index);
+
+                        answerDiv.appendChild(button);
+                        answerDiv.appendChild(deleteButton);
+
+                        answersContainer.appendChild(answerDiv);
+                    });
+                }
+
+                function deleteAnswer(index) {
+                    if (confirm("Êtes-vous sûr de vouloir supprimer cette réponse ?")) {
+                        quizData[currentQuestionIndex].answers.splice(index, 1);
+                        updateQuestion();
+                    }
+                }
+
+                function handleAnswer(index) {
+                    alert("Réponse sélectionnée : " + quizData[currentQuestionIndex].answers[index]);
+                }
+
+                window.onload = updateQuestion;
+                </script>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        text-align: center;
+                    }
+                    button {
+                        margin: 5px;
+                        padding: 10px 20px;
+                        font-size: 16px;
+                    }
+                    button:disabled {
+                        background-color: gray;
+                    }
+                </style>
+            </head>
+            <body>
+                <div>
+                    <h2 id="question"></h2>
+                    <div id="answers"></div>
+                </div>
+            </body>
+            </html>
+		""");
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+
+   
+	
+
+	

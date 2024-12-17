@@ -47,8 +47,16 @@ public class Notion
 		return q;
 	}
 
+	public QCM ajouterQuestionQCM(String question, String explication, Difficulte difficulte, double point, float temps, ArrayList<ReponseQcm> lstReponses, String path)
+	{
+		QCM q = new QCM(question, explication, difficulte, point, temps, lstReponses, path);
+		this.addQuestion(q);
+		return q;
+	}
+
 	public void addQuestion(Question q)
 	{
+		System.out.println("dif : " + q.getDifficulte());
 		this.lstQuestions.add(q);
 		Collections.sort(this.lstQuestions);
 	}
@@ -56,6 +64,13 @@ public class Notion
 	public Association ajouterQuestionAsso(String question, String explication, Difficulte difficulte, double point, float temps, ArrayList<ReponseAsso> lstReponses)
 	{
 		Association a = new Association(question, explication, difficulte, point, temps, lstReponses);
+		this.addQuestion(a);
+		return a;
+	}
+
+	public Association ajouterQuestionAsso(String question, String explication, Difficulte difficulte, double point, float temps, ArrayList<ReponseAsso> lstReponses, String path)
+	{
+		Association a = new Association(question, explication, difficulte, point, temps, lstReponses, path);
 		this.addQuestion(a);
 		return a;
 	}
@@ -75,79 +90,68 @@ public class Notion
 	public void supprQuestion(Question question) {this.lstQuestions.remove(question);}
 
 	// TODO: A Tester
+	//methode aleaQuestions qui prend un nombre de question par difficulté et renvoie une liste de question aléatoire
 	public ArrayList<Question> aleaQuestions(int nbQuestionTresFacile, int nbQuestionFacile, int nbQuestionMoyenne, int nbQuestionDifficile)
 	{
-		ArrayList<Question> lstQuestionCopie = new ArrayList<Question>();
-		Collections.copy(lstQuestionCopie, lstQuestions);
-
-		int idFinQuestionTresFacile = -1;
-		int idFinQuestionFacile     = -1;
-		int idFinQuestionMoyenne    = -1;
-		int idFinQuestionDifficile  = lstQuestionCopie.size() -1;
-
-		for(int i=0; i<lstQuestionCopie.size(); i++)
-		{
-			if (lstQuestionCopie.get(i).getDifficulte().equals(Difficulte.F))
-			{
-				idFinQuestionTresFacile = i-1;
-			}
-			if (lstQuestionCopie.get(i).getDifficulte().equals(Difficulte.M))
-			{
-				idFinQuestionFacile = i-1;
-			}
-			if (lstQuestionCopie.get(i).getDifficulte().equals(Difficulte.D))
-			{
-				idFinQuestionMoyenne = i-1;
-			}
-		}
-
 		ArrayList<Question> lstQuestionsAlea = new ArrayList<Question>();
 
-		/**
-		 * Peut en faire une méthode pour réduire 3x le code ici
-		 */
-		int debut = 0;
+
+		ArrayList<Question> lstQuestionsTresFacile = new ArrayList<Question>();
+		ArrayList<Question> lstQuestionsFacile = new ArrayList<Question>();
+		ArrayList<Question> lstQuestionsMoyenne = new ArrayList<Question>();
+		ArrayList<Question> lstQuestionsDifficile = new ArrayList<Question>();
+
+
+		for (Question question : this.lstQuestions)
+		{
+			if (question.getDifficulte().equals(Difficulte.TF))
+				lstQuestionsTresFacile.add(question);
+			else if (question.getDifficulte().equals(Difficulte.F))
+				lstQuestionsFacile.add(question);
+			else if (question.getDifficulte().equals(Difficulte.M))
+				lstQuestionsMoyenne.add(question);
+			else if (question.getDifficulte().equals(Difficulte.D))
+				lstQuestionsDifficile.add(question);
+		}
+
+		//verifier si le nombre de question est bien inférieur au nombre de question de la difficulté
+		if (nbQuestionTresFacile > lstQuestionsTresFacile.size())
+			nbQuestionTresFacile = lstQuestionsTresFacile.size();
+		if (nbQuestionFacile > lstQuestionsFacile.size())
+			nbQuestionFacile = lstQuestionsFacile.size();
+		if (nbQuestionMoyenne > lstQuestionsMoyenne.size())
+			nbQuestionMoyenne = lstQuestionsMoyenne.size();
+		if (nbQuestionDifficile > lstQuestionsDifficile.size())
+			nbQuestionDifficile = lstQuestionsDifficile.size();
+
+		//ajouter les questions aléatoirement
+
 		for (int i=0; i<nbQuestionTresFacile; i++)
 		{
-			int nbRandom = (int)(Math.random()*idFinQuestionTresFacile+debut);
-
-			Question questionAlea = lstQuestionCopie.get(nbRandom);
-
-			lstQuestionCopie.remove(nbRandom);
+			Question questionAlea = lstQuestionsTresFacile.get((int)(Math.random()*lstQuestionsTresFacile.size()));
 			lstQuestionsAlea.add(questionAlea);
+			lstQuestionsTresFacile.remove(questionAlea);
 		}
 
-		debut += idFinQuestionTresFacile;
-		for (int i=nbQuestionTresFacile; i<nbQuestionFacile; i++)
+		for (int i=0; i<nbQuestionFacile; i++)
 		{
-			int nbRandom = (int)(Math.random()*idFinQuestionFacile+debut);
-
-			Question questionAlea = lstQuestionCopie.get(nbRandom);
-
-			lstQuestionCopie.remove(nbRandom);
+			Question questionAlea = lstQuestionsFacile.get((int)(Math.random()*lstQuestionsFacile.size()));
 			lstQuestionsAlea.add(questionAlea);
+			lstQuestionsFacile.remove(questionAlea);
 		}
 
-		debut += idFinQuestionFacile;
-		for (int i=nbQuestionFacile; i<nbQuestionMoyenne; i++)
+		for (int i=0; i<nbQuestionMoyenne; i++)
 		{
-			int nbRandom = (int)(Math.random()*idFinQuestionMoyenne+debut);
-
-			Question questionAlea = lstQuestionCopie.get(nbRandom);
-
-			lstQuestionCopie.remove(nbRandom);
+			Question questionAlea = lstQuestionsMoyenne.get((int)(Math.random()*lstQuestionsMoyenne.size()));
 			lstQuestionsAlea.add(questionAlea);
+			lstQuestionsMoyenne.remove(questionAlea);
 		}
 
-		debut += idFinQuestionMoyenne;
-		for (int i=nbQuestionMoyenne; i<nbQuestionDifficile; i++)
+		for (int i=0; i<nbQuestionDifficile; i++)
 		{
-			int nbRandom = (int)(Math.random()*idFinQuestionDifficile+debut);
-
-			Question questionAlea = lstQuestionCopie.get(nbRandom);
-
-			lstQuestionCopie.remove(nbRandom);
+			Question questionAlea = lstQuestionsDifficile.get((int)(Math.random()*lstQuestionsDifficile.size()));
 			lstQuestionsAlea.add(questionAlea);
+			lstQuestionsDifficile.remove(questionAlea);
 		}
 
 		return lstQuestionsAlea;

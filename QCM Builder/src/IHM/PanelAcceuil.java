@@ -47,7 +47,6 @@ public class PanelAcceuil extends JPanel implements ActionListener
         // Panneau pour les éléments dans la zone centrale
         JPanel contenuMilieu = new JPanel();
         contenuMilieu.setLayout(new GridBagLayout());
-        contenuMilieu.setBackground(Color.WHITE);
 
         // Configuration des éléments dans contenuMilieu
         GridBagConstraints cmConstraints = new GridBagConstraints();
@@ -85,8 +84,6 @@ public class PanelAcceuil extends JPanel implements ActionListener
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 1)); // Grille à deux lignes (titre + bouton)
         
-        // Pas de fond pour le panneau
-        panel.setBackground(null); 
 
         // Label avec le titre
         JLabel labelTitre = new JLabel(titre);
@@ -99,7 +96,7 @@ public class PanelAcceuil extends JPanel implements ActionListener
         bouton.setPreferredSize(new Dimension(150, 40)); // Taille plus petite et plus rectangulaire
         
         // Enlever le fond du bouton et arrondir les bords
-        bouton.setBackground(new Color(201,80,46)); // Fond orange pour les boutons
+        bouton.setBackground(new Color(201,80,46)); 
         bouton.setFocusPainted(false); // Enlever la surbrillance lorsqu'on clique sur le bouton
         bouton.setContentAreaFilled(true); // Remplir la zone de contenu du bouton
 

@@ -6,6 +6,7 @@
 package Metier;
 
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public abstract class Question implements Comparable<Question>
 {
@@ -14,6 +15,8 @@ public abstract class Question implements Comparable<Question>
 	private Difficulte   difficulte  ;
 	private double		 point       ;
 	private float        temps        ;
+	private String		 filePath;
+
 
 	public Question(String question, String explication, Difficulte difficulte, double point, float temps) 
 	{
@@ -22,6 +25,16 @@ public abstract class Question implements Comparable<Question>
 		this.difficulte   = difficulte  ;
 		this.point        = point       ;
 		this.temps		  = temps       ;
+	}
+
+	public Question(String question, String explication, Difficulte difficulte, double point, float temps, String path) 
+	{
+		this.question     = question    ;
+		this.explication  = explication ;
+		this.difficulte   = difficulte  ;
+		this.point        = point       ;
+		this.temps		  = temps       ;
+		this.filePath     = path;
 	}
 
 	// Compare les difficultés
@@ -39,6 +52,10 @@ public abstract class Question implements Comparable<Question>
 	public Difficulte getDifficulte   () {return difficulte  ;}
 	public double     getPoint        () {return point       ;}
 	public float      getTemps        () {return temps       ;}
+	public String 	  getFilePath         () {return this.filePath;}
+
+	public abstract ArrayList<?> getLstRep();
+
 
 	/***********************/
 	/*		Setteurs	   */
@@ -49,6 +66,9 @@ public abstract class Question implements Comparable<Question>
 	public void setDifficulte  (Difficulte difficulte  ) {this.difficulte   = difficulte  ;}
 	public void setPoint       (int    point           ) {this.point        = point       ;}
 	public void setTemps       (float  temps           ) {this.temps        = temps       ;}
+	public void setPath       (String  path           ) {this.filePath       = path       ;}
+
+
 	
 	/***********************/
 	/*		Methodes	   */

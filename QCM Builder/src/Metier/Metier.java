@@ -10,12 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.HashMap;
+import IHM.*;
 
 public class Metier 
 {
 	private List<Ressource> lstRessources;
 	private Lire lecteur;
 	private Ecriture ecriture;
+
+	//a retirer
+	private Evaluation eval;
 
 	//////////////////
 	// CONSTRUCTEUR //
@@ -26,6 +30,7 @@ public class Metier
 		this.lstRessources = new ArrayList<>();
 		this.lecteur  = new Lire    ("QCM Builder" + File.separator + "ressources");
 		this.ecriture = new Ecriture("QCM Builder" + File.separator + "ressources");
+		this.eval = null;
 		this.init();
 	}
 
@@ -357,7 +362,149 @@ public class Metier
 		if (erreur.length() == 0)
 		{
 			Enlevement elvt = ress.ajouterQuestionEnleve(notion, question, type, explication, diff, point, tempsS, lstReponses);
-			this.ecriture.creerElimination(elvt, ressource + File.separator + notion);
+			//this.ecriture.creerElimination(elvt, ressource + File.separator + notion);
+		}
+			
+
+		return erreur;
+	}
+
+	public String creerQuestionElimination(String ressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> ordreElimination, ArrayList<String> nbPointPerdu, ArrayList<String> lstRep, ArrayList<Boolean> validite, String path)
+	{
+		String erreur = "";
+
+		//associer r à la ressource portant le même nom dans la liste
+		Ressource ress = null;
+		ress = rechercheRessource(ressource);
+
+		Difficulte diff = null;
+		difficulte = difficulte.toLowerCase();
+		//associer le string difficulté à un objet Difficulte
+		if (difficulte.equals("tres facile"))
+			diff = Difficulte.TF;
+		else if (difficulte.equals("facile"))
+			diff = Difficulte.F;
+		else if (difficulte.equals("moyenne"))
+			diff = Difficulte.M;
+		else if (difficulte.equals("difficile"))
+			diff = Difficulte.D;
+
+		String[] tab = temps.split(":");
+		int timeMin = Integer.parseInt(tab[0]);
+		int timeSec = Integer.parseInt(tab[1]);
+		//calculer le temps en en numérique 1h30 = 1,5h
+		float tempsS = timeMin + (timeSec/60);
+
+		ArrayList<ReponseEnlevement> lstReponses = new ArrayList<ReponseEnlevement>();
+
+		boolean txtReponseValide = true;
+		boolean ordreEliminationValide = true;
+		boolean nbPointPerduValide = true;
+		boolean auMoinsUneReponseSupprimer = false;
+
+		if (question.length() == 0)
+			erreur += "L'énnoncé de la question est vide\n";
+
+		boolean auMoinsUneReponseCorrecte = false;
+		for (boolean estValide:validite)
+		{
+			if (estValide)
+				auMoinsUneReponseCorrecte = true;
+		}
+
+		if (! auMoinsUneReponseCorrecte)
+			erreur += "Au moins une réponse doit être valide\n";
+		
+		for (int i=0; i<lstRep.size(); i++)
+		{
+			if (lstRep.get(i).length() == 0 && txtReponseValide)
+			{
+				erreur += "Le texte d'une réponse est vide\n";
+				txtReponseValide = false;
+			}
+
+			if (validite.get(i))
+			{
+				lstReponses.add(new ReponseEnlevement(lstRep.get(i), -1, -1, validite.get(i)));
+			}
+			else
+			{
+				int    ordre   = -2;
+				double nbPoint = -2;
+
+				try
+				{
+					if (ordreElimination.get(i).equals(""))
+						ordre = -1;
+					else
+					{
+						ordre = Integer.parseInt(ordreElimination.get(i));
+						if (ordre <= 0 && ordreEliminationValide)
+						{
+							erreur += "L'ordre d'élimination doit être positif\n";
+							ordreEliminationValide = false;
+						}
+						else
+							auMoinsUneReponseSupprimer = true;
+					}
+				}
+
+				catch (Exception e)
+				{
+					if (ordreEliminationValide)
+					{
+						erreur += "Erreur format ordre élimination";
+						ordreEliminationValide = false;
+					}
+				}
+
+				try
+				{
+					if (nbPointPerdu.get(i).equals(""))
+					{
+						nbPoint = -1;
+					}
+					else
+					{
+						nbPoint = Double.parseDouble(nbPointPerdu.get(i));
+						if (nbPoint > 0 && nbPointPerduValide)
+						{
+							erreur += "Le nombre de point enlevé doit être inférieur ou égal à 0\n";
+							nbPointPerduValide = false;
+						}
+						if (ordre == -1)
+						{
+							erreur += "Ordre d'élimination vide\n";
+						}
+					}
+
+				}
+				catch (Exception e)
+				{
+					if (nbPointPerduValide)
+					{
+						erreur += "Erreur format nombre de point à enlever";
+						nbPointPerduValide = false;
+					}
+				}
+
+				if (erreur.length() == 0)
+					lstReponses.add(new ReponseEnlevement(lstRep.get(i), ordre, nbPoint, validite.get(i)));
+			}
+		}
+		if (! auMoinsUneReponseSupprimer)
+		{
+			erreur += "Au moins une erreur doit être supprimer\n";
+		}
+		
+		if (erreur.length() == 0)
+		{
+			Enlevement elvt = null;
+			if(path != null)
+				elvt = ress.ajouterQuestionEnleve(notion, question, type, explication, diff, point, tempsS, lstReponses, path);
+			else
+				elvt = ress.ajouterQuestionEnleve(notion, question, type, explication, diff, point, tempsS, lstReponses);
+			//this.ecriture.creerElimination(elvt, ressource + File.separator + notion);
 		}
 			
 
@@ -436,12 +583,12 @@ public class Metier
 		if (erreur.equals(""))
 		{
 			QCM q = ress.ajouterQuestionQCM(notion, question, explication, diff, point, tempsS, lstReponses);
-			this.ecriture.creerQCM(q, ressource + File.separator + notion);
+			//this.ecriture.creerQCM(q, ressource + File.separator + notion);
 		}
 		return erreur;
 	}
 
-	public String creerQuestionAsso(String Sressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> lstRep)
+	public String creerQuestionQCM(String Sressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> lstRep, ArrayList<Boolean> validite, String path)
 	{
 		if (question == null) question = "";
 
@@ -467,7 +614,97 @@ public class Metier
 			diff = Difficulte.TF;
 		else if (difficulte.equals("facile"))
 			diff = Difficulte.F;
-		else if (difficulte.equals("moyen"))
+		else if (difficulte.equals("moyenne"))
+			diff = Difficulte.M;
+		else if (difficulte.equals("difficile"))
+			diff = Difficulte.D;
+			
+		//temps
+		//transofrmer le temps (mm::ss) en minutes a virgule
+		//si le temps est négatif ou égal à 0
+		int timeMin =0;
+		int timeSec =0;
+		String[] tab = temps.split(":");
+		timeMin = Integer.parseInt(tab[0]);
+		timeSec = Integer.parseInt(tab[1]);
+		//calculer le temps en en numérique 1h30 = 1,5h
+		float tempsS = timeMin + (timeSec/60);
+
+		//creer la liste de reponses par la list de string entree en paremetre
+		ArrayList<ReponseQcm> lstReponses = new ArrayList<ReponseQcm>();
+		//vérifier si la liste de reponses est vide
+		boolean auMoinsUneReponseVrai = false;
+		boolean texteReponseValide = true;
+
+		if (lstRep.size() == 0)
+			erreur += "Il faut au moins une réponse\n";
+		else
+		{
+			for (int i=0; i<lstRep.size(); i++)
+			{
+				if (lstRep.get(i).length() == 0)
+					texteReponseValide = false;
+				if (validite.get(i) == true)
+					auMoinsUneReponseVrai = true;
+				lstReponses.add(new ReponseQcm(lstRep.get(i), validite.get(i)));
+			}
+		}
+		
+		// Verif si il y a au moins une réponse vrai (lstRep.size() != 0 pour que si il n'y a aucune réponse ça n'affiche pas ces erreurs)
+		if (! auMoinsUneReponseVrai && lstRep.size() != 0)
+		{
+			erreur += "Au moins une réponse doit être correcte\n";
+		}
+		if (! texteReponseValide && lstRep.size() != 0)
+		{
+			erreur += "Au moin une des réponses n'a pas de texte\n";
+		}
+		
+		//si il n'y a pas d'erreur appeler la methode ajouterQuestion de la ressource
+		if (erreur.equals(""))
+		{
+			QCM q = null;
+			if(path != null)
+				q = ressource.ajouterQuestionQCM(notion, question, explication, diff, point, tempsS, lstReponses, path);
+			else
+				q = ressource.ajouterQuestionQCM(notion, question, explication, diff, point, tempsS, lstReponses);
+			//this.ecriture.creerQCM(q, Sressource + File.separator + notion);
+			/*if (type.equalsIgnoreCase("QCM"))
+				return r.ajouterQuestion(c, new QCM(question, explication, difficulte, point, timeMin, timeSec, nbRep));
+			else
+				return r.ajouterQuestion(c, new Association(question, explication, difficulte, point, timeMin, timeSec, nbRep));
+			*/
+		}
+		return erreur;
+	}
+
+	public String creerQuestionAsso(String Sressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> lstRep, String path)
+	{
+		if (question == null) question = "";
+
+		//associer r à la ressource portant le même nom dans la liste
+		Ressource ressource = null;
+		for (Ressource res : this.lstRessources)
+		{
+			if (res.getNom().equals(Sressource))
+				ressource = res;
+		}
+
+		String erreur = "";
+		//question
+		if (question.equals(""))
+			erreur += "La question ne peut pas être vide\n";
+
+		//difficulte
+		Difficulte diff = null;
+		//mettre en minuscule la difficulté
+		difficulte = difficulte.toLowerCase();
+		//associer le string difficulté à un objet Difficulte
+		if (difficulte.equals("tres facile"))
+			diff = Difficulte.TF;
+		else if (difficulte.equals("facile"))
+			diff = Difficulte.F;
+		else if (difficulte.equals("moyenne"))
 			diff = Difficulte.M;
 		else if (difficulte.equals("difficile"))
 			diff = Difficulte.D;
@@ -509,6 +746,7 @@ public class Metier
 			erreur += "Il faut au moins une réponse\n";
 		else
 		{
+			System.out.println(lstRep.size());
 			for (int i=0; i<lstRep.size(); i = i + 2)
 			{
 				if (lstRep.get(i).length() == 0 || lstRep.get(i + 1).length() == 0)
@@ -516,6 +754,8 @@ public class Metier
 
 				//cree les reponse
 				lstReponses.add(new ReponseAsso(lstRep.get(i  ), null));
+				System.out.println(lstRep.get(i  ));
+				System.out.println(lstRep.get(i+1));
 				lstReponses.add(new ReponseAsso(lstRep.get(i+1), null));
 				//associe les 2 reponse 
 				lstReponses.get(i  ).setAssocie(lstReponses.get(i+1));
@@ -526,8 +766,17 @@ public class Metier
 		//si il n'y a pas d'erreur appeler la methode ajouterQuestion de la ressource
 		if (erreur.equals(""))
 		{
-			Association a = ressource.ajouterQuestionAsso(notion, question, type, explication, diff, point, tempsS, lstReponses);
-			this.ecriture.creerAssociation(a, Sressource + File.separator + notion);
+			Association a = null;
+			if(path != null)
+				a = ressource.ajouterQuestionAsso(notion, question, type, explication, diff, point, tempsS, lstReponses, path);
+			else
+				a = ressource.ajouterQuestionAsso(notion, question, type, explication, diff, point, tempsS, lstReponses);
+			//this.ecriture.creerAssociation(a, Sressource + File.separator + notion);
+			/*if (type.equalsIgnoreCase("QCM"))
+				return r.ajouterQuestion(c, new QCM(question, explication, difficulte, point, timeMin, timeSec, nbRep));
+			else
+				return r.ajouterQuestion(c, new Association(question, explication, difficulte, point, timeMin, timeSec, nbRep));
+			*/
 		}
 		return erreur;
 	}
@@ -573,7 +822,7 @@ public class Metier
 	//generer un Evaluation
 	//appel genererEvaluation de la classe Ressource en associant la ressource, si il y a un chrono
 	// le duree si le chrno est oui, la liste de notions et le nombre de questions
-	public String genererEvaluation(String r, boolean chrono, HashMap<String, int[]> nbQuestParNotionDiff)
+	public String genererEvaluation(String r, boolean chrono, HashMap<String, int[]> nbQuestParNotionDiff, String nomFichier, String emplacement)
 	{
 
 		String erreur = "";
@@ -593,19 +842,25 @@ public class Metier
 				lstNotions.add(not);
 				lstQuestionsGenere.addAll(not.aleaQuestions(nbQuestParNotionDiff.get(nomNotion)[0], nbQuestParNotionDiff.get(nomNotion)[1], nbQuestParNotionDiff.get(nomNotion)[2], nbQuestParNotionDiff.get(nomNotion)[3]));
 			}
-			Evaluation eval = new Evaluation(ressource, lstNotions, lstQuestionsGenere);
 			
 			//generer le web de l'evaluation
-			
-			this.webEval(eval);
+			new FrameVisu(lstQuestionsGenere);
+			this.eval = new Evaluation(ressource, lstNotions, lstQuestionsGenere, chrono);
+			this.webEval(new Evaluation(ressource, lstNotions, lstQuestionsGenere, chrono), nomFichier, emplacement);
 		}
 		
 		return erreur;
 	}
 
-	private void webEval(Evaluation eval)
+	private void webEval(Evaluation eval, String nomFichier, String emplacement)
 	{
-		this.ecritureWeb.creerEvaluation(eval);
+		new EcritureWeb(eval, nomFichier, emplacement);
+	}
+
+	//get evaluation
+	public Evaluation getEvaluation()
+	{
+		return this.eval;
 	}
 
 	/////////////

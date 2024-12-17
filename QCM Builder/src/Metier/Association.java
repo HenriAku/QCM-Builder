@@ -28,6 +28,26 @@ public class Association extends Question
         melanger();
     }
 
+    public Association( String question, String explication, Difficulte difficulte, double point, float temps, 
+                        List<ReponseAsso> lstRep, String path) 
+    {
+        super(question, explication, difficulte, point, temps, path);
+     
+        System.out.println("path : " + path);
+        this.type = "Association";
+        
+        this.lstRep = new ArrayList<>(lstRep);
+
+        this.lstRepAsso = new ArrayList<ReponseAsso>();  
+        
+        for (ReponseAsso rep : lstRep) 
+        {
+            this.lstRepAsso.add(rep.getAssocie());
+        }
+
+        melanger();
+    }
+    
     public ReponseAsso getReponseAsso(ReponseAsso rep)
     {
         return rep.getAssocie();
@@ -58,7 +78,8 @@ public class Association extends Question
     {
         return type;
     }
-
+    
+    @Override
     public ArrayList<ReponseAsso> getLstRep() 
     {
         return lstRep;

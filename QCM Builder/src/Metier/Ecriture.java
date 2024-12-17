@@ -5,6 +5,9 @@
 package Metier;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.Scanner;
 import java.util.ArrayList;
 import Metier.QCM;
 
@@ -232,11 +235,75 @@ public class Ecriture
 			contenu = "FIN";
 			writer.append(contenu);
 
+			if(enlv.getFilePath() != null)
+			{
+				System.out.println(enlv.getFilePath());
+				String cheminImage = emplacementRessources  + File.separator + chemin + File.separator + nomQuestion + File.separator + "complement";
+				creerDossierQuestion("complement", chemin + File.separator + nomQuestion);
+				copierFichierDansDossier(enlv.getFilePath(), cheminImage, numQuestion);
+				
+			}
+
 
 		} 
 		catch (IOException e) 
 		{
 			System.out.println("Une erreur s'est produite : " + e.getMessage());
+		}
+	}
+
+	public String getFileExtension(String filename) 
+	{
+        int lastIndex = filename.lastIndexOf('.');
+        if (lastIndex > 0 && lastIndex < filename.length() - 1) 
+		{
+            return filename.substring(lastIndex + 1);
+        }
+        return ""; // Pas d'extension trouvée
+    }
+
+	public void copierFichierDansDossier(String sourcePath, String destinationDir, int numQuest) 
+	{
+		try 
+		{
+			// Vérifiez que le dossier existe, sinon créez-le
+			File dir = new File(destinationDir);
+			if (!dir.exists()) 
+			{
+				if (dir.mkdirs()) 
+				{
+					System.out.println("Dossier créé : " + destinationDir);
+				} 
+				else 
+				{
+					System.out.println("Impossible de créer le dossier.");
+					return;
+				}
+			}
+
+			// Préparez le fichier source et la destination
+			File sourceFile = new File(sourcePath);
+			if (!sourceFile.exists()) 
+			{
+				System.out.println("Le fichier source n'existe pas : " + sourcePath);
+				return;
+			}
+
+			// Construisez le chemin du fichier de destination
+			File destinationFile = new File(dir, sourceFile.getName());
+			System.out.println(sourceFile.getPath() + " | " + destinationFile.getPath() + " | " + destinationFile.getParent());
+
+			// Copiez le fichier
+			Files.copy(sourceFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+			destinationFile.renameTo(new File(destinationFile.getParent() + File.separator + "flc" + numQuest + "." + getFileExtension(sourceFile.getPath())));
+
+			System.out.println("Fichier copiée dans : " + destinationFile.getAbsolutePath());
+		} 
+		catch (IOException e) 
+		{
+			System.out.println("Erreur lors de la copie du fichier : " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -295,15 +362,23 @@ public class Ecriture
 			writer.append(contenu);
 
 
-			for(int i = 0; i < qst.getReponse().size(); i++)
+			for(int i = 0; i < qst.getLstRep().size(); i++)
 			{
-				contenu = qst.getReponse().get(i).getReponse() + "\t" + (qst.getReponse().get(i).getValeur() ? "vrai" : "faux") + "\n";
+				contenu = qst.getLstRep().get(i).getReponse() + "\t" + (qst.getLstRep().get(i).getValeur() ? "vrai" : "faux") + "\n";
 				writer.append(contenu);
 
 			}
 
 			contenu = "FIN";
 			writer.append(contenu);
+
+			if(qst.getFilePath() != null)
+			{
+				String cheminImage = emplacementRessources  + File.separator + chemin + File.separator + nomQCM + File.separator + "complement";
+				creerDossierQuestion("complement", chemin + File.separator + nomQCM);
+				copierFichierDansDossier(qst.getFilePath(), cheminImage, numQCM);
+				
+			}
 		} 
 		catch (IOException e) 
 		{
@@ -369,7 +444,7 @@ public class Ecriture
 			writer.append("Reponse\n");
 	
 			// Écrire les correspondances des réponses et leurs associés
-			ArrayList<ReponseAsso> lstRep = asso.getLstRep();
+			ArrayList<ReponseAsso> lstRep     = asso.getLstRep();
 			ArrayList<ReponseAsso> lstRepAsso = asso.getLstRepAsso();
 			
 			//affiche la list des rep
@@ -395,6 +470,14 @@ public class Ecriture
 			// Indiquer la fin du fichier
 			writer.append("FIN");
 	
+			if(asso.getFilePath() != null)
+			{
+				System.out.println(asso.getFilePath());
+				String cheminImage = emplacementRessources  + File.separator + chemin + File.separator + nomQCM + File.separator + "complement";
+				creerDossierQuestion("complement", chemin + File.separator + nomQCM);
+				copierFichierDansDossier(asso.getFilePath(), cheminImage, numQCM);
+				
+			}
 			System.out.println("Association créée avec succès dans le fichier : " + associationFile.getPath());
 	
 		} catch (IOException e) {

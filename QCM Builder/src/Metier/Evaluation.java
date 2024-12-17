@@ -15,17 +15,19 @@ public class Evaluation
 	private Ressource           ressource   ;
 	private ArrayList<Notion>   lstNotions  ;
 	private ArrayList<Question> lstQuestions;
+	private boolean chrono;
 	private int nbQuestion;
 
 	///////////////////
 	// CONSTRUCTEURS //
 	///////////////////
 
-	public Evaluation(Ressource r, ArrayList<Notion> lstN, ArrayList<Question> lstQ) 
+	public Evaluation(Ressource r, ArrayList<Notion> lstN, ArrayList<Question> lstQ, boolean chrono) 
 	{
 		this.ressource = r;
 		this.lstNotions = lstN;
 		this.lstQuestions = lstQ;
+		this.chrono = chrono;
 		this.nbQuestion = lstQ.size();
 	}
 
@@ -193,7 +195,7 @@ public class Evaluation
 			lstQuestions.addAll(notion.aleaQuestionsSimple(nbQues));
 		}
 		// creer un Evaluation
-		return new Evaluation(ressource, lstNotion, lstQuestions);
+		return new Evaluation(ressource, lstNotion, lstQuestions, false);
 	}
 
-}
+} 

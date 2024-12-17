@@ -1,8 +1,6 @@
-Question 5	A	Associ objet		très facile	5,00	5,00
-Reponse
-pomme
-jaune
-Association
-pomme	pomme[jaune]
-jaune	jaune[pomme]
+Question 5	E	{\rtf1\ansi{\fonttbl\f0\fnil Monospaced;}f\par}		facile	5.0	5.0
+fff	faux	1	-1.0
+ff	faux	2	-8.0
+fff	faux	3	-16.0
+fffffff	vrai	-1	-1.0
 FIN

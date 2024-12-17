@@ -3,14 +3,14 @@ package IHM;
 import Controlleur.Controlleur;
 import Metier.Notion;
 import Metier.Ressource;
-import Metier.Notion;
+import Metier.Question;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.util.HashMap;
 
 public class PanelEvaluation extends JPanel implements ActionListener 
 {
@@ -34,10 +34,18 @@ public class PanelEvaluation extends JPanel implements ActionListener
     private int nbQuestionsM ;
     private int nbQuestionsD ;
 
+    private JPanel panelDifficulteQuestions;
     private JLabel lblQuestionsTF;
     private JLabel lblQuestionsF ;
     private JLabel lblQuestionsM ;
     private JLabel lblQuestionsD ;
+    private JLabel lblQuestionsTotal;
+    private JLabel lblChronometre;
+
+    private JPanel       panelChrono;
+    private JRadioButton radioBtnOui;
+    private JRadioButton radioBtnNon;
+    private ButtonGroup  groupChrono;
 
     public PanelEvaluation(Controlleur ctrl, FrameEvaluation frame) {
         this.ctrl = ctrl;
@@ -93,6 +101,28 @@ public class PanelEvaluation extends JPanel implements ActionListener
 
         // Composants ajoutés avec des marges
         addLabeledComponent("Ressource : ", this.comboBoxRessource);
+        
+        //Panel du chronometre
+        lblChronometre = new JLabel("Chronomètre :");
+        radioBtnOui = new JRadioButton("Oui");
+        radioBtnNon = new JRadioButton("Non");
+        radioBtnNon.setSelected(true);
+
+        groupChrono = new ButtonGroup();
+        groupChrono.add(radioBtnOui);
+        groupChrono.add(radioBtnNon);
+
+        radioBtnOui.addActionListener(this);
+        radioBtnNon.addActionListener(this);
+
+        panelChrono = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelChrono.add(lblChronometre);
+        panelChrono.add(radioBtnOui);
+        panelChrono.add(radioBtnNon);
+
+        // Ajout du panel à l'interface principale
+        this.add(panelChrono);
+
         addLabeledComponent("Notion : ", this.comboBoxNotion);
         addComponent(this.btnAddNot);
         addComponent(this.btnDelNot);
@@ -100,17 +130,21 @@ public class PanelEvaluation extends JPanel implements ActionListener
         addComponent(scrollPane);
 
         // Nombre de questions
-        this.lblQuestionsTF = new JLabel(""+nbQuestionsTF);
-        addLabeledComponent("Nombre de Questions très faciles : ", this.lblQuestionsTF);
+        lblQuestionsTF = new JLabel("TF : " + this.nbQuestionsTF);
+        lblQuestionsF  = new JLabel("F  : " + this.nbQuestionsF);
+        lblQuestionsM  = new JLabel("M  : " + this.nbQuestionsM);
+        lblQuestionsD  = new JLabel("D  : " + this.nbQuestionsD);
+        lblQuestionsTotal = new JLabel("Total : " + getTotalNbQuestions());
 
-        this.lblQuestionsF = new JLabel(""+nbQuestionsF);
-        addLabeledComponent("Nombre de Questions faciles : ", this.lblQuestionsF);
+        this.panelDifficulteQuestions = new JPanel();
+        this.panelDifficulteQuestions.setLayout(new GridLayout(1, 5));
+        this.panelDifficulteQuestions.add(lblQuestionsTF);
+        this.panelDifficulteQuestions.add(lblQuestionsF);
+        this.panelDifficulteQuestions.add(lblQuestionsM);
+        this.panelDifficulteQuestions.add(lblQuestionsD);
+        this.panelDifficulteQuestions.add(lblQuestionsTotal);
 
-        this.lblQuestionsM = new JLabel(""+nbQuestionsM);
-        addLabeledComponent("Nombre de Questions moyennes : ", this.lblQuestionsM);
-
-        this.lblQuestionsD = new JLabel(""+nbQuestionsD);
-        addLabeledComponent("Nombre de Questions difficiles : ", this.lblQuestionsD);
+        this.add(panelDifficulteQuestions);
 
         // Bouton Créer
         this.btnGenerer = new JButton("Créer");
@@ -171,20 +205,37 @@ public class PanelEvaluation extends JPanel implements ActionListener
                 JOptionPane.showMessageDialog(null, "Il doit y avoir au moins une question (TF, F, M, D) choisie dans le tableau pour générer", "Erreur", JOptionPane.ERROR_MESSAGE);
             else
             {
-                HashMap< String, int[] > mapQuestion = new HashMap < String, int[] >();
+                // Partie emplacement et nom du fichier
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Enregistrer l'évaluation");
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+                String defaultFileName = "evaluation";
+                fileChooser.setSelectedFile(new java.io.File(defaultFileName));
+
+                int userSelection = fileChooser.showSaveDialog(this);
+
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    java.io.File fileToSave = fileChooser.getSelectedFile();
+                    String nomFichier = fileToSave.getName();
+                    String emplacement = fileToSave.getParent();
                 
-                for (Notion not : ressourceActuel.getNotions()) {
-                    for (int row = 0; row < tableModel.getRowCount(); row++)
+
+                    //Partie retour au métier
+                    HashMap< String, int[] > mapQuestion = new HashMap < String, int[] >();
+                    
+                    for (Notion not : ressourceActuel.getNotions()) {
+                        for (int row = 0; row < tableModel.getRowCount(); row++)
+                        {
+                            mapQuestion.put(not.getNom(), valeurLigne(row));
+                        }
+                    }
+                    String verif = this.ctrl.getMetier().genererEvaluation(ressourceActuel.getNom(), this.radioBtnOui.isSelected(), mapQuestion, nomFichier, emplacement);
+                    if(!verif.equals(""))
                     {
-                        mapQuestion.put(not.getNom(), valeurLigne(row));
+                        JOptionPane.showMessageDialog(null, "Il y a une erreur dans la création\n" + verif, "Erreur", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-                String verif = this.ctrl.getMetier().genererEvaluation(ressourceActuel.getNom(), true, mapQuestion );
-                if(!verif.equals(""))
-                {
-                    JOptionPane.showMessageDialog(null, "Il y a une erreur dans la création\n" + verif, "Erreur", JOptionPane.ERROR_MESSAGE);
-                }
-
             }
 
         }
@@ -228,10 +279,11 @@ public class PanelEvaluation extends JPanel implements ActionListener
         this.nbQuestionsM  = valeurQuestions[2] ;
         this.nbQuestionsD  = valeurQuestions[3] ;
 
-        this.lblQuestionsTF.setText( String.valueOf(valeurQuestions[0]));
-        this.lblQuestionsF.setText ( String.valueOf(valeurQuestions[1]) );
-        this.lblQuestionsM.setText ( String.valueOf(valeurQuestions[2]) );
-        this.lblQuestionsD.setText ( String.valueOf(valeurQuestions[3]) );
+        this.lblQuestionsTF.setText( "TF : " + String.valueOf(valeurQuestions[0]));
+        this.lblQuestionsF.setText ( "F  : " + String.valueOf(valeurQuestions[1]) );
+        this.lblQuestionsM.setText ( "M  : " + String.valueOf(valeurQuestions[2]) );
+        this.lblQuestionsD.setText ( "D  : " + String.valueOf(valeurQuestions[3]) );
+        this.lblQuestionsTotal.setText("Total : " + getTotalNbQuestions());
     }
 
     /**
@@ -267,6 +319,16 @@ public class PanelEvaluation extends JPanel implements ActionListener
      */
     public int getTotalNbQuestions()
     {
-        return this.nbQuestionsTF + this.nbQuestionsF + this.nbQuestionsM + this.nbQuestionsD;
+        try {
+            int tf = Integer.parseInt(lblQuestionsTF.getText().split(":")[1].trim());
+            int f = Integer.parseInt(lblQuestionsF.getText().split(":")[1].trim());
+            int m = Integer.parseInt(lblQuestionsM.getText().split(":")[1].trim());
+            int d = Integer.parseInt(lblQuestionsD.getText().split(":")[1].trim());
+
+            return tf + f + m + d;
+        } catch (NumberFormatException e) {
+            e.printStackTrace(); // Debug : Afficher l'erreur
+            return 0; // Retourner une valeur par défaut en cas d'erreur
+        }
     }
 }

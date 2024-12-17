@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.awt.event.ActionEvent;
 
@@ -42,10 +43,12 @@ public class PanelAjoutQuestionQCM extends JPanel implements ActionListener
 	private JButton btnAjouter;
 	private JButton btnExplication;
 	private JButton btnEnregistrer;
+	private JButton btnImage;
 
 	private ArrayList<JPanel> lstPanelReponse;
 
 	private FrameFeedBack frameFeedBack;
+	private FrameAddFile frameFile;
 
 	/* Paramètre question */
 	private String ressource;
@@ -54,7 +57,8 @@ public class PanelAjoutQuestionQCM extends JPanel implements ActionListener
 	private String diffuculte;
 	private String temps;
 	private double point;
-	
+	private String pathFile;
+
 	public PanelAjoutQuestionQCM(Controlleur ctrl, boolean reponseMultiple)
 	{
 		this.ctrl = ctrl;
@@ -70,11 +74,12 @@ public class PanelAjoutQuestionQCM extends JPanel implements ActionListener
 		this.type       = null;
 		this.diffuculte = null;
 		this.temps      = null;
+		this.pathFile   = null;
 		this.point      = -1;
 
 		/* Panel Haut */
 		this.txtQuestion = new JEditorPane();
-		//this.txtQuestion.setEditorKit(new RTFEditorKit());
+		this.txtQuestion.setEditorKit(new RTFEditorKit());
 		this.txtQuestion.setMargin(new java.awt.Insets(5, 5, 5, 5)); // Ajout de marges pour l'esthétique
 
 		/* Panel Bas */
@@ -112,6 +117,9 @@ public class PanelAjoutQuestionQCM extends JPanel implements ActionListener
 			panelReponse.setLayout(new BorderLayout(10, 10));
 
 			this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoSuppr.png")));
+			this.lstBtnSupprimer.get(this.lstBtnSupprimer.size()-1).setContentAreaFilled(false);
+			this.lstBtnSupprimer.get(this.lstBtnSupprimer.size()-1).setBorderPainted    (false);
+			this.lstBtnSupprimer.get(this.lstBtnSupprimer.size()-1).setFocusPainted     (false);
 			this.lstBtnReponseValide.add(new JButton(""));
 			this.lstBtnReponseValide.get(i).setPreferredSize(new Dimension(25,25));
 
@@ -145,10 +153,16 @@ public class PanelAjoutQuestionQCM extends JPanel implements ActionListener
 		this.btnEnregistrer = new JButton("Enregistrer");
 		this.btnEnregistrer.addActionListener(this);
 
+		this.btnImage = new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "Upload.png"));
+		this.btnImage.setBorderPainted(false);
+		this.btnImage.setContentAreaFilled(false);
+		this.btnImage.addActionListener(this);
+
 		this.panelBas.add(new JLabel());
 		this.panelBas.add(this.btnAjouter);
 		this.panelBas.add(this.btnExplication);
 		this.panelBas.add(this.btnEnregistrer);
+		this.panelBas.add(this.btnImage);
 
 		this.add(this.panelHaut, BorderLayout.NORTH);
 		this.add(this.scrollPane, BorderLayout.CENTER);
@@ -184,6 +198,10 @@ public class PanelAjoutQuestionQCM extends JPanel implements ActionListener
 
 	public void actionPerformed(ActionEvent e)
 	{
+		if (e.getSource().equals(this.btnImage))
+		{
+			frameFile = new FrameAddFile();
+		}
 		if (e.getSource().equals(this.btnAjouter))
 		{
 			this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoSuppr.png")));
@@ -216,6 +234,11 @@ public class PanelAjoutQuestionQCM extends JPanel implements ActionListener
 			// Appelle controlleur ajoute la question
 			ArrayList<String>  lstReponse  = new ArrayList<String >();
 			ArrayList<Boolean> lstValidite = new ArrayList<Boolean>();
+			
+			String erreur = null;
+
+			if(frameFile != null &&frameFile.getPath()!=null)
+				this.pathFile = frameFile.getPath();
 
 			for (int i=0; i<this.lstTxtReponse.size(); i++)
 			{
@@ -225,7 +248,32 @@ public class PanelAjoutQuestionQCM extends JPanel implements ActionListener
 				else
 					lstValidite.add(true);
 			}
-			String erreur = this.ctrl.creerQuestionQCM(this.ressource, this.notion, this.txtQuestion.getText(), this.type, this.frameFeedBack.getFeedback(), this.diffuculte, this.point, this.temps, lstReponse, lstValidite);
+						
+			String question = "";
+			try {
+				// Crée un flux de sortie pour stocker le contenu RTF
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+				// Utilise le RTFEditorKit pour écrire le document en RTF
+				RTFEditorKit rtfEditorKit = new RTFEditorKit();
+				rtfEditorKit.write(outputStream, this.txtQuestion.getDocument(), 0,  this.txtQuestion.getDocument().getLength());
+
+				// Convertit le contenu en String
+				question = outputStream.toString("UTF-8").replaceAll("\\n|\\r|\\t", "");
+			} catch (Exception a) {
+				a.printStackTrace();
+			} 
+
+
+			if(this.pathFile != null)
+			{
+				erreur = this.ctrl.creerQuestionQCM(this.ressource, this.notion, question, this.type, this.frameFeedBack.getFeedback(), this.diffuculte, this.point, this.temps, lstReponse, lstValidite, this.pathFile);
+			}
+			else
+			{
+				erreur = this.ctrl.creerQuestionQCM(this.ressource, this.notion, question, this.type, this.frameFeedBack.getFeedback(), this.diffuculte, this.point, this.temps, lstReponse, lstValidite);
+			}
+			
 			if (erreur.length() > 0)
 			{
 				JOptionPane.showMessageDialog(null, erreur, "Erreur", JOptionPane.ERROR_MESSAGE);
