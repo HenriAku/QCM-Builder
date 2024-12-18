@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import IHM.FrameVisu;
+
 class TestMetier
 {
 	public static void main(String[] args) 
@@ -32,7 +34,7 @@ class TestMetier
 		//ajouter une ressource
 		metierTest.addRessource(new Ressource("R1.01"));
 
-		//affcihage des notions
+		//ajout des notions
 		metierTest.addNotion("R1.01", new Notion("TP1 : Première approche",null));
 		metierTest.addNotion("R1.01", new Notion("TP2 : Les variables, Instructions de bases ",null));
 
@@ -54,14 +56,13 @@ class TestMetier
 			ArrayList<String> lstReponses = new ArrayList<String>(Arrays.asList("bleu", "jaune", "vert", "rouge"));
 			ArrayList<Boolean> lstvalidite = new ArrayList<Boolean>(Arrays.asList(true, false, false, false));
 			metierTest.creerQuestionQCM(ressource, notion, question, type, explication, difficulte,points,temps, lstReponses, lstvalidite);
-
-			}
+		}
 
 		String ressource2 = "R1.01"; String notion2 = "TP1 : Première approche"; String type2 = "question à choix multiple à réponse unique"; String difficulte2 = "tres facile"; Double points2 = 2.0; String temps2 = "00:50";
-		String erreur2 = metierTest.validerQuestion(ressource, notion,type, difficulte,points,temps);
+		String erreur2 = metierTest.validerQuestion(ressource2, notion2,type2, difficulte2,points2,temps2);
 		if (erreur != "")
 		{
-			System.out.println(erreur);
+			System.out.println(erreur2);
 		}
 		else
 		{
@@ -75,10 +76,10 @@ class TestMetier
 		}
 		
 		String ressource3 = "R1.01"; String notion3 = "TP1 : Première approche"; String type3 = "question à choix multiple à réponse unique"; String difficulte3 = "tres facile"; Double points3 = 2.0; String temps3 = "00:50";
-		String erreur3 = metierTest.validerQuestion(ressource, notion,type, difficulte,points,temps);
+		String erreur3 = metierTest.validerQuestion(ressource3, notion3,type3, difficulte3,points3,temps3);
 		if (erreur != "")
 		{
-			System.out.println(erreur);
+			System.out.println(erreur3);
 		}
 		else
 		{
@@ -112,7 +113,6 @@ class TestMetier
 			System.out.println(metierTest.creerQuestionAsso(ressource, notion, question, type, explication, difficulte,points,temps, lstReponses, path));
 		}
 
-		/* COMMENTE
 		//creation d'une questiion par elemination
 		//Preparation de la question
 		ressource = "R1.01"; notion = "TP2 : Les variables, Instructions de bases "; type = "question avec élimination de propositions de réponses"; difficulte = "difficile"; points = 4.0; temps = "05:00";
@@ -136,7 +136,6 @@ class TestMetier
 			ArrayList<Boolean> lstvalidite = new ArrayList<Boolean>(Arrays.asList(true, false, false, false));
 			System.out.println(metierTest.creerQuestionElimination(ressource, notion, question, type, explication, difficulte,points,temps, lstOrdreElim, lstPointsPerdu, lstReponses, lstvalidite));
 		}
-		*/
 
 		//affcihage des ressources
 		for (Ressource res : metierTest.getLstRessource())
@@ -147,10 +146,10 @@ class TestMetier
 		//test creation d'un questionnaire
 		//creation d'un questionnaire
 		//Preparation du questionnaire
-		ressource = "R1.01"; Boolean chrono = false ; 
+		ressource = "R1.01"; Boolean chrono = true ; 
 		HashMap<String, int[]> nbQuestions = new HashMap<String, int[]>();
 		nbQuestions.put("TP1 : Première approche", new int[]{3,0,0,0});
-		nbQuestions.put("TP2 : Les variables, Instructions de bases ", new int[]{0,0,0,0});
+		nbQuestions.put("TP2 : Les variables, Instructions de bases ", new int[]{0,0,0,1});
 		
 		String nom = "QCM1"; String emplacement = "Evaluations/R1.01";
 		erreur = metierTest.validerEvaluation(ressource, chrono, nbQuestions);
@@ -161,12 +160,9 @@ class TestMetier
 		else
 		{
 			//creation du questionnaire
-			System.out.println(metierTest.genererEvaluation(ressource, chrono, nbQuestions, nom,emplacement));
+			ArrayList<Question> questions = (metierTest.genererEvaluation(ressource, chrono, nbQuestions, nom,emplacement));
+			//affcihage des questions
+			new FrameVisu(questions);
 		}
-
-		//affcihage d l'evaluation
-		System.out.println(metierTest.getEvaluation().afficherEvaluation());
-
-
 	}
 }

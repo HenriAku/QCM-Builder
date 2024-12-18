@@ -26,13 +26,9 @@ public class FrameEvaluation extends JFrame
 		this.ctrl = ctrl;
 		
 
-		this.qst = new PanelEvaluation(this.ctrl, this);
+		this.qst = new PanelEvaluation(this.ctrl);
 		this.add(this.qst);
 
 		this.setVisible(true);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
-
-
-    
 }

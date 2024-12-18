@@ -16,6 +16,7 @@ import Metier.Ressource;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class FrameCreation extends JFrame implements ActionListener
 {
@@ -93,15 +94,17 @@ public class FrameCreation extends JFrame implements ActionListener
 			String name = this.txtName.getText();
 			if (this.operation.equals("Ressource")) 
 			{
-				this.ctrl.creerDossier(name); 
-				this.ctrl.addRessource(new Ressource(name));
+				Ressource ressource = new Ressource(name);
+				this.ctrl.creerDossierRessource(ressource); 
+				this.ctrl.addRessource(ressource);
 				this.frame.refreshRessource();
 			}
 			else 
 			{
-				this.ctrl.creerDossier(this.ressource + "/" + name); 
+				Notion    not = new Notion(name, null);
 				Ressource res = this.ctrl.rechercheRessource(this.ressource);
-				res.addNotion(new Notion(name, null));
+				this.ctrl.creerDossierNotion(res , not); 
+				res.addNotion(not);
 				this.frame.afficheNotion(res);
 			}
 			this.dispose();	

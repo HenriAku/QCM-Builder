@@ -1,7 +1,8 @@
 	body {
+		background-image: url("../../media/examples/lizard.png");
 		margin: 0;
 		padding: 0;
-		background: linear-gradient(135deg, #89f7fe, #66a6ff);
+		background: White;
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -33,7 +34,21 @@
 
 	/* Style général pour les boutons */
 	button {
-		background-color: #ff6600; /* Couleur de fond orange */
+		background-color: rgb(58, 138, 249) ; /* Couleur de fond orange */
+		color: white;
+		font-size: 18px;
+		font-weight: bold;
+		padding: 15px 30px;
+		border: none;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		margin-top: 10px; /* Ajoute un espacement entre les boutons */
+		width: 100%; /* Les boutons prennent toute la largeur */
+	}
+
+	.buttonAction {
+		background-color:rgb(233, 168, 76); /* Couleur de fond orange */
 		color: white;
 		font-size: 18px;
 		font-weight: bold;

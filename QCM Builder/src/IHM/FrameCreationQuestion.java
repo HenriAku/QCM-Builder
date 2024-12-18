@@ -6,7 +6,6 @@ package IHM;
 
 import javax.swing.JFrame;
 import Controlleur.Controlleur;
-import IHM.FramePrincipal;
 
 
 public class FrameCreationQuestion extends JFrame

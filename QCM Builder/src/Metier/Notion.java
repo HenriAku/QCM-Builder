@@ -25,9 +25,9 @@ public class Notion
 		this.notion = notion;
 		this.lstQuestions = lstQuestions;
 
-			if (this.lstQuestions == null)
-			this.lstQuestions = new ArrayList<Question>();
-;
+		if (this.lstQuestions == null)
+		this.lstQuestions = new ArrayList<Question>();
+
 		Ecriture ef = new Ecriture("../ressources/" );
 		ef.creerDossier(notion);
 	}
@@ -82,14 +82,20 @@ public class Notion
 		return e;
 	}
 
-	/** //TODO: Ptt a changer
+	public Enlevement ajouterQuestionEnleve(String question, String explication, Difficulte difficulte, double point, float temps, ArrayList<ReponseEnlevement> lstReponses, String path)
+	{
+		Enlevement e = new Enlevement(question, explication, difficulte, point, temps, lstReponses, path);
+		this.addQuestion(e);
+		return e;
+	}
+
+	/**
 	 * Supprime une question d'une list
 	 * @param nom la question 
 	 * @param difficulte de la question
 	 */
 	public void supprQuestion(Question question) {this.lstQuestions.remove(question);}
 
-	// TODO: A Tester
 	//methode aleaQuestions qui prend un nombre de question par difficulté et renvoie une liste de question aléatoire
 	public ArrayList<Question> aleaQuestions(int nbQuestionTresFacile, int nbQuestionFacile, int nbQuestionMoyenne, int nbQuestionDifficile)
 	{
@@ -187,13 +193,9 @@ public class Notion
 	// GETTER //
 	////////////
 
-	public String 			   getNom         (){return this.notion      ;}
-	public ArrayList<Question> getLstQuestions(){return this.lstQuestions;}
-
-	public int getNbQuestions()
-	{
-		return this.lstQuestions.size();
-	} 
+	public String 			   getNom         (){return this.notion             ;}
+	public ArrayList<Question> getLstQuestions(){return this.lstQuestions       ;}
+	public int                 getNbQuestions (){return this.lstQuestions.size();} 
 
 	//get nombre de question par difficulté
 	public int getNbQuestionsTresFacile()

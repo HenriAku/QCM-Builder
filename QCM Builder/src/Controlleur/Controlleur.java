@@ -6,20 +6,24 @@ package Controlleur;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import IHM.FramePrincipal;
-import Metier.Difficulte;
+import Metier.Association;
+import Metier.Enlevement;
 import Metier.Metier;
+import Metier.Notion;
+import Metier.Question;
 import Metier.Ressource;
+import Metier.QCM;
 
 public class Controlleur
 {
 	private Metier         metier;
-	private FramePrincipal frame;
 	public Controlleur()
 	{
-		this.metier = new Metier   		(    );
-		this.frame  = new FramePrincipal(this);
+		this.metier = new Metier();
+		new FramePrincipal(this);
 	}
 
 	/////////////
@@ -31,6 +35,16 @@ public class Controlleur
 		return this.metier.creerDossier(nomRes);
 	}
 
+	public boolean creerDossierNotion(Ressource ressource, Notion notion)
+	{
+		return this.metier.creerDossierNotion(ressource, notion);
+	}
+
+	public boolean creerDossierRessource(Ressource ressource)
+	{
+		return this.metier.creerDossierRessource(ressource);
+	}
+
 	public boolean renommerDossier(String ancienNom, String nouveauNom)
 	{
 		return this.metier.renommerDossier(ancienNom, nouveauNom);
@@ -40,6 +54,11 @@ public class Controlleur
 	{
 		System.out.println(nomDossier);
 		return this.metier.supprimerDossier(nomDossier);
+	}
+
+	public boolean supprimerDossierQuestion(String chemin) 
+	{
+		return this.metier.supprimerDossierQuestion(chemin);
 	}
 
 	////////////////
@@ -84,6 +103,7 @@ public class Controlleur
 	{
 		return (this.metier.creerQuestionQCM(r, n, question, type, explication, difficulte, point, temps, reponses, validite));
 	}
+
 	public String creerQuestionQCM(String r, String c, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses ,  ArrayList<Boolean> validite, String path)
 	{
 		return (this.metier.creerQuestionQCM(r, c, question, type, explication, difficulte, point, temps, reponses, validite, path));
@@ -102,6 +122,40 @@ public class Controlleur
 	public String creerQuestionElimination(String Sressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> ordreElimination, ArrayList<String> nbPointPerdu, ArrayList<String> lstRep, ArrayList<Boolean> validite, String path)
 	{
 		return this.metier.creerQuestionElimination(Sressource, notion, question, type, explication, difficulte, point, temps, ordreElimination, nbPointPerdu, lstRep, validite, path);
+	}
+
+	public String modifQuestionQCM(String r, String c, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses ,  ArrayList<Boolean> validite, QCM questionAMettreAJour)
+	{
+		return this.metier.modifQuestionQCM(r, c, question, type, explication, difficulte, point, temps, reponses, validite, questionAMettreAJour);
+	}
+
+	public String modifQuestionAsso(String r, String c, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses, Association questionAModifier)
+	{
+		return (this.metier.modifQuestionAsso(r, c, question, type, explication, difficulte, point, temps, reponses, questionAModifier));
+	}
+
+	public String modifQuestionElimination(String Sressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> ordreElimination, ArrayList<String> nbPointPerdu, ArrayList<String> lstRep, ArrayList<Boolean> validite, Enlevement questionAModifier)
+	{
+		return this.metier.modifQuestionElimination(Sressource, notion, question, type, explication, difficulte, point, temps, ordreElimination, nbPointPerdu, lstRep, validite, questionAModifier);
+	}
+
+	public String rechercherFichierQuestion (Question question,Ressource res, Notion not)
+	{
+		return this.metier.rechercherFichierQuestion(question, res, not);
+	}
+
+	////////////////
+	// Evaluation //
+	////////////////
+	
+	public String validerEvaluation(String ressource, boolean chrono, HashMap<String, int[]> mapQuestion)
+	{
+		return this.metier.validerEvaluation(ressource, chrono, mapQuestion);
+	}
+	
+	public ArrayList<Question> genererEvaluation(String r, boolean chrono, HashMap<String, int[]> mapQuestion, String nomFichier,String emplacement)
+	{
+		return this.metier.genererEvaluation(r, chrono, mapQuestion, nomFichier, emplacement);
 	}
 
 	public static void main(String[] args) 

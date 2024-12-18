@@ -39,10 +39,11 @@ public class Evaluation
 	// GETTERS     //
 	/////////////////
 
-	public ArrayList<Question> getQuestions() {return this.lstQuestions;}
-	public Ressource getRessource() {return this.ressource;}
-	public ArrayList<Notion> getNotions() {return this.lstNotions;}
-	public int getNbQuestion() {return this.nbQuestion;}
+	public ArrayList<Question> getQuestions () {return this.lstQuestions;}
+	public Ressource           getRessource () {return this.ressource   ;}
+	public ArrayList<Notion>   getNotions   () {return this.lstNotions  ;}
+	public int                 getNbQuestion() {return this.nbQuestion  ;}
+	public boolean             getChrono    () {return this.chrono      ;}
 
 	//////////////
 	// STRING   //
@@ -54,15 +55,15 @@ public class Evaluation
 		String str = "Evaluation : \n";
 		str += "Ressource : " + this.ressource.getNom() + "\n";
 		str += "Notions : \n";
+
 		for (Notion not : this.lstNotions)
-		{
 			str += " - " + not.getNom() + "\n";
-		}
+		
 		str += "Questions : \n";
+
 		for (Question q : this.lstQuestions)
-		{
 			str += q.afficherQuestion();
-		}
+			
 		return str;
 	}
 

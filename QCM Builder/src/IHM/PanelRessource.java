@@ -52,17 +52,20 @@ public class PanelRessource extends JPanel implements ActionListener
 		panelAjout.setLayout(null);
 		panelAjout.setBounds((screenWidth - 600) / 2, 100, 600, 50);
 
-		JLabel lblTitre = new JLabel("Ressource");
+		JLabel lblTitre = new JLabel("Toute vos ressources : ");
 		lblTitre.setBounds(0, 10, 400, 50);
 
 		this.btnAdd = new JButton(new ImageIcon(
-				new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "Ajout.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
+				new ImageIcon(".." + File.separator + "img" + File.separator + "Ajout.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
 		this.btnAdd.setContentAreaFilled(false);
 		this.btnAdd.setBorderPainted    (false);
 		this.btnAdd.setFocusPainted     (false);
 		this.btnAdd.setBounds(450, 10, 30, 30);
+				
+		JLabel lblExplication = new JLabel("Cliquer sur les Ressource pour voir leur questions");
+		lblExplication.setBounds(0, 25, 400, 20);
 
-		panelAjout.add(lblTitre);
+		panelAjout.add(lblTitre   );
 		panelAjout.add(this.btnAdd);
 		this.add(panelAjout);
 
@@ -90,10 +93,11 @@ public class PanelRessource extends JPanel implements ActionListener
 			this.tabBtn[i][0] = new JButton(this.lstRes.get(i).getNom());
 			this.tabBtn[i][0].setBounds(0, 10, 400, 50);
 			this.tabBtn[i][0].setBackground(new Color(201,80,46));
+			this.tabBtn[i][0].setForeground(Color.WHITE);
 			panelRes.add(this.tabBtn[i][0]);
 
 			this.tabBtn[i][1] = new JButton(new ImageIcon(
-					new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoSuppr.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
+					new ImageIcon(".." + File.separator + "img" + File.separator + "LogoSuppr.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
 			this.tabBtn[i][1].setBounds(410, 10, 30, 30);
 			this.tabBtn[i][1].setContentAreaFilled(false);
 			this.tabBtn[i][1].setBorderPainted    (false);
@@ -101,7 +105,7 @@ public class PanelRessource extends JPanel implements ActionListener
 			panelRes.add(this.tabBtn[i][1]);
 
 			this.tabBtn[i][2] = new JButton(new ImageIcon(
-					new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoModif.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
+					new ImageIcon(".." + File.separator + "img" + File.separator + "LogoModif.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
 			this.tabBtn[i][2].setBounds(450, 10, 30, 30);
 			this.tabBtn[i][2].setContentAreaFilled(false);
 			this.tabBtn[i][2].setBorderPainted    (false);

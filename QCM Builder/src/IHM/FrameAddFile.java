@@ -5,8 +5,6 @@
 package IHM;
 
 import javax.swing.JFrame;
-import Controlleur.Controlleur;
-import IHM.FramePrincipal;
 
 public class FrameAddFile extends JFrame
 {
@@ -16,18 +14,14 @@ public class FrameAddFile extends JFrame
         new FrameAddFile();    
     }
 
-	private FramePrincipal frame;
-	private Controlleur    ctrl ;
     private PanelAddFile panel;
+
 	public FrameAddFile()
 	{
 		this.setTitle    ("Ajout Fichier");
 		this.setSize     (600,300      );
 		this.setLocation ( 350,200              );
 		this.setResizable(false           ); 
-
-		this.ctrl  = ctrl ;
-		this.frame = frame;
 
         panel = new PanelAddFile();
 

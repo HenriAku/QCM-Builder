@@ -58,19 +58,19 @@ public class PanelAcceuil extends JPanel implements ActionListener
         // Ajout de "Créer une question"
         cmConstraints.gridx = 0; // Position 0, colonne 0
         cmConstraints.gridy = 0; // Ligne 0
-        JPanel creationQuestion = createPanel("Créer une question", "Créer question");
+        JPanel creationQuestion = createPanel("Créer question");
         contenuMilieu.add(creationQuestion, cmConstraints);
 
         // Ajout de "Créer une evaluation"
         cmConstraints.gridx = 1; // Colonne 1
         cmConstraints.gridy = 0; // Ligne 0
-        JPanel creationEvaluation = createPanel("Créer une evaluation", "Créer evaluation");
+        JPanel creationEvaluation = createPanel("Générer évaluation");
         contenuMilieu.add(creationEvaluation, cmConstraints);
 
         // Ajout de "Créer une ressource"
         cmConstraints.gridx = 2; // Colonne 2
         cmConstraints.gridy = 0; // Ligne 0
-        JPanel creationRessource = createPanel("Créer une ressource", "Créer ressource");
+        JPanel creationRessource = createPanel("Créer ressource");
         contenuMilieu.add(creationRessource, cmConstraints);
 
         // Ajout du panneau central
@@ -79,21 +79,16 @@ public class PanelAcceuil extends JPanel implements ActionListener
         frame.setVisible(true);
     }
 
-    private JPanel createPanel(String titre, String boutonTexte) 
+    private JPanel createPanel( String boutonTexte) 
     {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 1)); // Grille à deux lignes (titre + bouton)
-        
-
-        // Label avec le titre
-        JLabel labelTitre = new JLabel(titre);
-        labelTitre.setHorizontalAlignment(SwingConstants.CENTER);
-        labelTitre.setFont(new Font("Arial", Font.BOLD, 20)); // Taille du titre
 
         // Bouton avec le texte
         JButton bouton = new JButton(boutonTexte);
         bouton.setFont(new Font("Arial", Font.BOLD, 14)); // Taille plus petite du texte
         bouton.setPreferredSize(new Dimension(150, 40)); // Taille plus petite et plus rectangulaire
+        bouton.setForeground(Color.WHITE);
         
         // Enlever le fond du bouton et arrondir les bords
         bouton.setBackground(new Color(201,80,46)); 
@@ -102,7 +97,6 @@ public class PanelAcceuil extends JPanel implements ActionListener
 
         bouton.addActionListener(this);
 
-        panel.add(labelTitre);
         panel.add(bouton);
 
         return panel;

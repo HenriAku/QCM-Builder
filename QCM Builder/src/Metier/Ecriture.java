@@ -9,14 +9,15 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
 import java.util.ArrayList;
-import Metier.QCM;
 
 public class Ecriture
 {
-
 	private String emplacementRessources;
 
-	public Ecriture(String emplacementRessources) {this.emplacementRessources = emplacementRessources;}
+	public Ecriture(String emplacementRessources) 
+	{
+		this.emplacementRessources = emplacementRessources;
+	}
 
 	//////////////////
 	// DOSSIERS		//
@@ -60,7 +61,7 @@ public class Ecriture
 	 */
 	public boolean creerDossierNotion(Ressource ressource, Notion notion)
 	{
-		File dossier = new File( "./ressources"+ File.separator + ressource.getNom() + "" + notion.getNom() );
+		File dossier = new File( "./ressources"+ File.separator + ressource.getNom() + File.separator + notion.getNom() );
 
 		if (!dossier.exists())
 			return dossier.mkdirs();
@@ -108,6 +109,12 @@ public class Ecriture
 		File dossier = new File(emplacementRessources + File.separator + nomDossier);
 		return supprimerRecursivement(dossier);
 	}
+
+	public boolean supprimerDossierQuestion(String chemin) 
+	{
+		File dossier = new File(chemin);
+		return supprimerRecursivement(dossier);
+	}
 	
 	private boolean supprimerRecursivement(File fichier) 
 	{
@@ -136,7 +143,6 @@ public class Ecriture
 	 */
 	public boolean creerFichier(String nomFichier)
 	{
-
 		File fichier = new File(emplacementRessources + File.separator + nomFichier);
 		try 
 		{
@@ -166,10 +172,10 @@ public class Ecriture
 
 	public void creerElimination(Enlevement enlv, String chemin)
 	{
-		File dossierVerif = new File(emplacementRessources + File.separator + chemin);
-		String[] lstDos = dossierVerif.list();
-		String nomQuestion = null;
-		int numQuestion = 1;
+		File     dossierVerif = new File(emplacementRessources + File.separator + chemin);
+		String[] lstDos       = dossierVerif.list();
+		String   nomQuestion  = null;
+		int      numQuestion  = 1   ;
 
 
 		while(nomQuestion == null)
@@ -179,17 +185,13 @@ public class Ecriture
 			for(int i = 0; i < lstDos.length; i++)
 			{
 				if(lstDos[i].equals("Question " + numQuestion))
-				{
 					exist = true;
-				}
 			}
 
 			if(exist)
 				numQuestion++;
 			else
-			{
 				nomQuestion = "Question " + numQuestion;
-			}
 		}
 
 		creerDossierQuestion(nomQuestion,chemin);
@@ -198,10 +200,7 @@ public class Ecriture
 		try 
 		{
 			if (!Enlv.exists()) 
-			{
 				Enlv.createNewFile(); // Crée le fichier
-			}
-
 		} 
 		catch (IOException e) 
 		{
@@ -210,7 +209,6 @@ public class Ecriture
 
 		try (FileWriter writer = new FileWriter(Enlv)) 
 		{
-
 			String ordre   = "";
 			String nbPoint = "";
 			String contenu;
@@ -223,13 +221,12 @@ public class Ecriture
 
 			for(int i = 0; i < enlv.getLstRep().size(); i++)
 			{
-				ordre = String.valueOf(enlv.getLstRep().get(i).getOrdreEnleve());
+				ordre   = String.valueOf(enlv.getLstRep().get(i).getOrdreEnleve ());
 				nbPoint = String.valueOf(enlv.getLstRep().get(i).getNbPointEleve());
 				
 				contenu = enlv.getLstRep().get(i).getReponse() + "\t" + (enlv.getLstRep().get(i).getValeur() ? "vrai" : "faux") + "\t" + ordre + "\t" +
 				nbPoint + "\n";
 				writer.append(contenu);
-
 			}
 
 			contenu = "FIN";
@@ -237,14 +234,10 @@ public class Ecriture
 
 			if(enlv.getFilePath() != null)
 			{
-				System.out.println(enlv.getFilePath());
 				String cheminImage = emplacementRessources  + File.separator + chemin + File.separator + nomQuestion + File.separator + "complement";
 				creerDossierQuestion("complement", chemin + File.separator + nomQuestion);
 				copierFichierDansDossier(enlv.getFilePath(), cheminImage, numQuestion);
-				
 			}
-
-
 		} 
 		catch (IOException e) 
 		{
@@ -254,13 +247,12 @@ public class Ecriture
 
 	public String getFileExtension(String filename) 
 	{
-        int lastIndex = filename.lastIndexOf('.');
-        if (lastIndex > 0 && lastIndex < filename.length() - 1) 
-		{
-            return filename.substring(lastIndex + 1);
-        }
-        return ""; // Pas d'extension trouvée
-    }
+		int lastIndex = filename.lastIndexOf('.');
+		if (lastIndex > 0 && lastIndex < filename.length() - 1) 
+			return filename.substring(lastIndex + 1);
+			
+		return ""; // Pas d'extension trouvée
+	}
 
 	public void copierFichierDansDossier(String sourcePath, String destinationDir, int numQuest) 
 	{
@@ -307,12 +299,90 @@ public class Ecriture
 		}
 	}
 
+	public String rechercherFichierQuestion(Question question, Ressource ressource, Notion notion)
+	{
+		File dossier = new File(".." + File.separator + "Builder" + File.separator + "ressources");
+
+		if (dossier.exists() && dossier.isDirectory())
+		{
+			File[] fichiers = dossier.listFiles();
+			if (fichiers != null)
+			{
+				for (File fichier : fichiers) 
+				{
+					if (fichier.isDirectory() && fichier.getName().equals(ressource.getNom()))
+					{
+						File dossierRessource = new File(fichier.getPath());
+						File[] fichiersDossierRessources = dossierRessource.listFiles();
+						for (File fichierRessources:fichiersDossierRessources)
+						{
+							if (fichierRessources.isDirectory() && fichierRessources.getName().equals(notion.getNom()))
+							{
+								File dossierNotion = new File(fichierRessources.getPath());
+								File[] fichiersDossierNotions = dossierNotion.listFiles();
+								for (File fichierNotions:fichiersDossierNotions)
+								{
+									if (fichierNotions.isDirectory())
+									{
+										File dossierQuestion = new File(fichierNotions.getPath());
+										File[] fichiersDossierQuestions = dossierQuestion.listFiles();
+										for (File fichierQuestions:fichiersDossierQuestions)
+										{
+											if (fichierQuestions.isFile())
+											{
+												// Parcours des fichiers .csv et compare les infos pour savoir lequels est celui de la question
+												try
+												{
+													Scanner sc = new Scanner ( new FileInputStream ( fichierQuestions.getPath() ) );
+
+													Scanner scLine = new Scanner(sc.nextLine());
+													scLine.useDelimiter("\t");
+													scLine.next(); // Question + son numéro
+													scLine.next(); // Type
+													if (scLine.next().equals(question.getQuestion()))
+													{
+														if (scLine.next().equals(question.getExplication()))
+														{
+															if (scLine.next().equals(question.getDifficulte().getDifficulte()))
+															{
+																if (Double.parseDouble(scLine.next().replace(',', '.')) == question.getPoint())
+																{
+																	if (Float.parseFloat(scLine.next().replace(',', '.')) == question.getTemps())
+																	{
+																		scLine.close();
+																		sc.close();
+																		return fichierQuestions.getPath();
+																	}
+																}
+															}
+														}
+													}
+													scLine.close();
+													
+
+													sc.close();
+												}
+												catch (Exception e){ e.printStackTrace(); }
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return "";
+	}
+
 	public void creerQCM(QCM qst, String chemin)
 	{
-		File dossierVerif = new File(emplacementRessources + File.separator + chemin);
-		String[] lstDos = dossierVerif.list();
-		String nomQCM = null;
-		int numQCM = 1;
+		File     dossierVerif = new File(emplacementRessources + File.separator + chemin);
+		String[] lstDos       = dossierVerif.list();
+		String   nomQCM       = null;
+		int      numQCM       = 1   ;
 
 
 		while(nomQCM == null)
@@ -322,17 +392,13 @@ public class Ecriture
 			for(int i = 0; i < lstDos.length; i++)
 			{
 				if(lstDos[i].equals("Question " + numQCM))
-				{
 					exist = true;
-				}
 			}
 
 			if(exist)
 				numQCM++;
 			else
-			{
 				nomQCM = "Question " + numQCM;
-			}
 		}
 
 		creerDossierQuestion(nomQCM,chemin);
@@ -341,10 +407,7 @@ public class Ecriture
 		try 
 		{
 			if (!QCM.exists()) 
-			{
 				QCM.createNewFile(); // Crée le fichier
-			}
-
 		} 
 		catch (IOException e) 
 		{
@@ -366,7 +429,6 @@ public class Ecriture
 			{
 				contenu = qst.getLstRep().get(i).getReponse() + "\t" + (qst.getLstRep().get(i).getValeur() ? "vrai" : "faux") + "\n";
 				writer.append(contenu);
-
 			}
 
 			contenu = "FIN";
@@ -377,7 +439,6 @@ public class Ecriture
 				String cheminImage = emplacementRessources  + File.separator + chemin + File.separator + nomQCM + File.separator + "complement";
 				creerDossierQuestion("complement", chemin + File.separator + nomQCM);
 				copierFichierDansDossier(qst.getFilePath(), cheminImage, numQCM);
-				
 			}
 		} 
 		catch (IOException e) 
@@ -388,10 +449,10 @@ public class Ecriture
 	
 	public void creerAssociation(Association asso, String chemin) 
 	{
-		File dossierVerif = new File(emplacementRessources + File.separator + chemin);
-		String[] lstDos = dossierVerif.list();
-		String nomQCM = null;
-		int numQCM = 1;
+		File     dossierVerif = new File(emplacementRessources + File.separator + chemin);
+		String[] lstDos       = dossierVerif.list();
+		String   nomQCM       = null;
+		int      numQCM       = 1   ;
 
 
 		while(nomQCM == null)
@@ -401,17 +462,13 @@ public class Ecriture
 			for(int i = 0; i < lstDos.length; i++)
 			{
 				if(lstDos[i].equals("Question " + numQCM))
-				{
 					exist = true;
-				}
 			}
 
 			if(exist)
 				numQCM++;
 			else
-			{
 				nomQCM = "Question " + numQCM;
-			}
 		}
 
 		// Créer le dossier pour la question d'association
@@ -445,7 +502,6 @@ public class Ecriture
 	
 			// Écrire les correspondances des réponses et leurs associés
 			ArrayList<ReponseAsso> lstRep     = asso.getLstRep();
-			ArrayList<ReponseAsso> lstRepAsso = asso.getLstRepAsso();
 			
 			//affiche la list des rep
 			for (int i = 0; i < lstRep.size(); i++) 
@@ -506,8 +562,5 @@ public class Ecriture
 	 * @param question  la question qui va être créée dans le fichier texte
 	 * @return true si le dossier à bien été crée
 	 */
-	public boolean creerTxtQuestion(Ressource ressource, Notion notion,Question question)
-	{
-		return true;
-	}
+	public boolean creerTxtQuestion(Ressource ressource, Notion notion,Question question) {return true;}
 }

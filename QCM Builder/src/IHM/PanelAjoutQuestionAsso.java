@@ -7,8 +7,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.awt.event.ActionEvent;
 
@@ -21,6 +19,11 @@ import javax.swing.JPanel;
 import javax.swing.text.rtf.RTFEditorKit;
 
 import Controlleur.Controlleur;
+import Metier.Association;
+import Metier.Question;
+import Metier.Reponse;
+import Metier.ReponseAsso;
+import Metier.ReponseQcm;
 import Metier.Ressource;
 
 import javax.swing.JScrollPane;
@@ -36,7 +39,6 @@ public class PanelAjoutQuestionAsso extends JPanel implements ActionListener
 	private double      point      ;
 	private Controlleur ctrl       ;
 	private JPanel 		panelCentre;
-	private String 		pathFile   ;
 
 	private JEditorPane txtQuestion;
 
@@ -49,27 +51,28 @@ public class PanelAjoutQuestionAsso extends JPanel implements ActionListener
 	private JButton btnAjouter;
 	private JButton btnExplication;
 	private JButton btnEnregistrer;
-	private JButton btnImage;
 
 	private ArrayList<JPanel> lstPanelReponse;
 
 	private FrameFeedBack frameFeedBack;
-	private FrameAddFile frameFile;
 
+	private Association question;
 
-	public PanelAjoutQuestionAsso(Controlleur ctrl)
+	public PanelAjoutQuestionAsso(Controlleur ctrl, Question question)
 	{
 		this.setLayout(new BorderLayout());
 
 		this.ctrl = ctrl;
-		this.pathFile   = null;
-
+		if (question != null)
+			this.question = (Association)(question);
+		
 		this.frameFeedBack = new FrameFeedBack();
 
 		/* Panel Haut */
 		this.txtQuestion = new JEditorPane();
-		this.txtQuestion.setEditorKit(new RTFEditorKit()); //Rtf
 		this.txtQuestion.setMargin(new java.awt.Insets(5, 5, 5, 5)); // Ajout de marges pour l'esthétique
+		if (question != null)
+			this.txtQuestion.setText(this.question.getQuestion());
 
 		/* Panel Bas */
 		this.lstTxtReponseD = new ArrayList<JTextField>();
@@ -97,39 +100,79 @@ public class PanelAjoutQuestionAsso extends JPanel implements ActionListener
 		JPanel panelReponse = new JPanel();
 		panelReponse.setLayout(new GridLayout(1, 4, 5, 5));
 
-		this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoSuppr.png")));
-		this.lstBtnSupprimer.get(0).setContentAreaFilled(false);
-		this.lstBtnSupprimer.get(0).setBorderPainted    (false);
-		this.lstBtnSupprimer.get(0).setFocusPainted     (false);
-		this.lstBtnSupprimer.get(0).addActionListener(this);
+		if (question == null)
+		{
+			this.lstBtnSupprimer.add(new JButton(new ImageIcon(".." + File.separator + "img" + File.separator + "LogoSuppr.png")));
+			this.lstBtnSupprimer.get(0).addActionListener(this);
+	
+			this.lstTxtReponseG  .add(new JTextField());
+			this.lstTxtReponseG  .get(0).setMargin(new java.awt.Insets(5, 5, 5, 5));
+	
+			this.lstTxtReponseD  .add(new JTextField());
+			this.lstTxtReponseD  .get(0).setMargin(new java.awt.Insets(5, 5, 5, 5));
+	
+	
+			panelReponse.add(this.lstBtnSupprimer.get(0));
+			panelReponse.add(this.lstTxtReponseD .get(0));
+			panelReponse.add(this.lstTxtReponseG .get(0));
+			this.lstPanelReponse.add(panelReponse);
+			this.panelCentre    .add(panelReponse);
+		}
+		else
+		{
+			ArrayList<ReponseAsso> lstReponse = this.question.getLstRep(); // Ptt changer en getLstRepNonMelanger
+			ArrayList<ReponseAsso> lstTxtG = new ArrayList<ReponseAsso>();
+			ArrayList<ReponseAsso> lstTxtD = new ArrayList<ReponseAsso>();
+			
+			for (int i=0; i<lstReponse.size(); i++)
+			{
+				if (! lstTxtG.contains(lstReponse.get(i)) && ! lstTxtD.contains(lstReponse.get(i)))
+				{
+					lstTxtG.add(lstReponse.get(i));
+					lstTxtD.add(lstReponse.get(i).getAssocie());
+				}
+			}
 
-		this.lstTxtReponseG.add(new JTextField());
-		this.lstTxtReponseG.get(0).setMargin(new java.awt.Insets(5, 10, 5, 5));
+			int limiteBoucle = lstTxtG.size();
+			if (lstTxtD.size() > limiteBoucle)
+				limiteBoucle = lstTxtD.size();
 
-		this.lstTxtReponseD.add(new JTextField());
-		this.lstTxtReponseD.get(0).setMargin(new java.awt.Insets(5, 10, 5, 5));
+			for (int i=0; i<limiteBoucle; i++)
+			{
+				panelReponse = new JPanel();
+				panelReponse.setLayout(new GridLayout(1, 4, 5, 5));
 
+				this.lstBtnSupprimer.add(new JButton(new ImageIcon(".." + File.separator + "img" + File.separator + "LogoSuppr.png")));
+				this.lstBtnSupprimer.get(this.lstBtnSupprimer.size()-1).addActionListener(this);
 
-		panelReponse.add(this.lstBtnSupprimer.get(0));
-		panelReponse.add(this.lstTxtReponseD .get(0));
-		panelReponse.add(this.lstTxtReponseG .get(0));
+				this.lstTxtReponseG.add(new JTextField(lstTxtG.get(i).getReponse()));
+				this.lstTxtReponseG.get(this.lstTxtReponseG.size()-1).setMargin(new java.awt.Insets(5, 5, 5, 5));
 
-		this.lstPanelReponse.add(panelReponse);
-		this.panelCentre    .add(panelReponse);
-		
-		
+				this.lstTxtReponseD.add(new JTextField(lstTxtD.get(i).getReponse()));
+				this.lstTxtReponseD.get(this.lstTxtReponseD.size()-1).setMargin(new java.awt.Insets(5, 5, 5, 5));
+
+				panelReponse.add(this.lstBtnSupprimer.get(i));
+				panelReponse.add(this.lstTxtReponseD .get(i));
+				panelReponse.add(this.lstTxtReponseG .get(i));
+				this.lstPanelReponse.add(panelReponse);
+			}
+		}
+
+		for (JPanel panelRep:this.lstPanelReponse)
+			this.panelCentre.add(panelRep);
+
 		this.scrollPane = new JScrollPane(this.panelCentre);
-
+		
 		/* Panel Bas */
 		JPanel panelBas = new JPanel();
 		panelBas.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-		this.btnAjouter = new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "Ajout.png"));
+		this.btnAjouter = new JButton(new ImageIcon(".." + File.separator + "img" + File.separator + "Ajout.png"));
 		this.btnAjouter.setBorderPainted(false);
 		this.btnAjouter.setContentAreaFilled(false);
 		this.btnAjouter.addActionListener(this);
 
-		this.btnExplication = new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoModif.png"));
+		this.btnExplication = new JButton(new ImageIcon(".." + File.separator + "img" + File.separator + "LogoModif.png"));
 		this.btnExplication.setBorderPainted(false);
 		this.btnExplication.setContentAreaFilled(false);
 		this.btnExplication.addActionListener(this);
@@ -137,16 +180,10 @@ public class PanelAjoutQuestionAsso extends JPanel implements ActionListener
 		this.btnEnregistrer = new JButton("Enregistrer");
 		this.btnEnregistrer.addActionListener(this);
 
-		this.btnImage = new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "Upload.png"));
-		this.btnImage.setBorderPainted(false);
-		this.btnImage.setContentAreaFilled(false);
-		this.btnImage.addActionListener(this);
-
 		panelBas.add(new JLabel());
 		panelBas.add(this.btnAjouter);
 		panelBas.add(this.btnExplication);
 		panelBas.add(this.btnEnregistrer);
-		panelBas.add(this.btnImage);
 
 		this.add(panelHaut      , BorderLayout.NORTH);
 		this.add(this.scrollPane, BorderLayout.CENTER);
@@ -182,26 +219,14 @@ public class PanelAjoutQuestionAsso extends JPanel implements ActionListener
 
 	public void actionPerformed(ActionEvent e)
 	{
-		if (e.getSource().equals(this.btnImage))
-		{
-			frameFile = new FrameAddFile();
-		}
 		if (e.getSource().equals(this.btnAjouter))
 		{
 			JPanel panelReponse = new JPanel();
 			panelReponse.setLayout(new GridLayout(1, 4, 5, 5));
 	
-			this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder"+ File.separator +"img"+File.separator+ "LogoSuppr.png")));
-			this.lstBtnSupprimer.get(this.lstBtnSupprimer.size()-1).setContentAreaFilled(false);
-			this.lstBtnSupprimer.get(this.lstBtnSupprimer.size()-1).setBorderPainted    (false);
-			this.lstBtnSupprimer.get(this.lstBtnSupprimer.size()-1).setFocusPainted     (false);
-
+			this.lstBtnSupprimer.add(new JButton(new ImageIcon(".."+ File.separator +"img"+File.separator+ "LogoSuppr.png")));
 			this.lstTxtReponseG .add(new JTextField());
-			this.lstTxtReponseG.get(this.lstTxtReponseG.size()-1).setMargin(new java.awt.Insets(5, 5, 5, 5));
-
 			this.lstTxtReponseD .add(new JTextField());
-			this.lstTxtReponseD.get(this.lstTxtReponseD.size()-1).setMargin(new java.awt.Insets(5, 5, 5, 5));
-
 
 			int i = 0;
 			if (!this.lstBtnSupprimer.isEmpty()) 
@@ -243,43 +268,22 @@ public class PanelAjoutQuestionAsso extends JPanel implements ActionListener
 				lstS.add(this.lstTxtReponseG.get(i).getText());
 				lstS.add(this.lstTxtReponseD.get(i).getText());
 			}
-			if(frameFile != null &&frameFile.getPath()!=null)
-				this.pathFile = frameFile.getPath();
-
-			String question = "";
-			try {
-				// Crée un flux de sortie pour stocker le contenu RTF
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-				// Utilise le RTFEditorKit pour écrire le document en RTF
-				RTFEditorKit rtfEditorKit = new RTFEditorKit();
-				rtfEditorKit.write(outputStream, this.txtQuestion.getDocument(), 0,  this.txtQuestion.getDocument().getLength());
-
-				// Convertit le contenu en String
-				question = outputStream.toString("UTF-8").replaceAll("\\n|\\r|\\t", "");
-			} catch (Exception erreur) {
-				erreur.printStackTrace();
-			} 
 			
-			String erreur = null;
-			if(this.pathFile != null)
-			{
-				System.out.println("test panel "+this.difficulte);
-				erreur = this.ctrl.creerQuestionAsso(this.ressource, this.notion, question, this.type, this.frameFeedBack.getFeedback(), this.difficulte, this.point, this.temps, lstS, this.pathFile);
-			}
+			String erreur = "";
+			if (this.question == null)
+				erreur = this.ctrl.creerQuestionAsso(this.ressource, this.notion, this.txtQuestion.getText(), this.type, this.frameFeedBack.getFeedback(), this.difficulte, this.point, this.temps, lstS, null);
 			else
-			{
-				System.out.println("test panel "+this.difficulte);
-				erreur = this.ctrl.creerQuestionAsso(this.ressource, this.notion, question, this.type, this.frameFeedBack.getFeedback(), this.difficulte, this.point, this.temps, lstS,null);
-			}
-			
+				erreur = this.ctrl.modifQuestionAsso(this.ressource, this.notion, this.txtQuestion.getText(), this.question.getType(), this.frameFeedBack.getFeedback(), this.difficulte, this.question.getPoint(), String.valueOf(this.question.getTemps()), lstS, this.question);
 			if (erreur.length() > 0)
 			{
 				JOptionPane.showMessageDialog(null, erreur, "Erreur", JOptionPane.ERROR_MESSAGE);
 			}
 			else
 			{
-				JOptionPane.showMessageDialog(null, "La question à été crée", "Question crée", JOptionPane.INFORMATION_MESSAGE);
+				if (this.question == null)
+					JOptionPane.showMessageDialog(null, "La question à été crée"  , "Question crée"   , JOptionPane.INFORMATION_MESSAGE);
+				else
+					JOptionPane.showMessageDialog(null, "La question à été modifé", "Question modifié", JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
 		

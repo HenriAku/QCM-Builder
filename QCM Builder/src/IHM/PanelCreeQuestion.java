@@ -250,7 +250,7 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 			System.out.println(erreur);
 			if (erreur.length() == 0)
 			{
-				this.frameAjoutQuestion = new FrameAjoutQuestion(this.ctrl, type);
+				this.frameAjoutQuestion = new FrameAjoutQuestion(this.ctrl, type, null);
 				this.frameAjoutQuestion.setParametres(ressource, notion, type, difficulte, temps, point);
 				this.frameAjoutQuestion.setVisible(true);
 			}

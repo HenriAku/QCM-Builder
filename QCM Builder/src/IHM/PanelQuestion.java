@@ -15,7 +15,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 import Metier.Notion;
+import Metier.QCM;
 import Metier.Question;
+import Metier.ReponseQcm;
 import Metier.Ressource;
 
 public class PanelQuestion extends JPanel implements ActionListener
@@ -61,11 +63,11 @@ public class PanelQuestion extends JPanel implements ActionListener
 		panelAjout.setLayout(null);
 		panelAjout.setBounds((screenWidth - 600) / 2, 100, 600, 50);
 
-		JLabel lblTitre = new JLabel("Question");
+		JLabel lblTitre = new JLabel("Toutes vos questions de la ressource " + ressource.getNom() + " et notion " + notion.getNom() + " :");
 		lblTitre.setBounds(0, 10, 400, 50);
 
 		this.btnAdd = new JButton(new ImageIcon(
-				new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "Ajout.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
+				new ImageIcon(".." + File.separator + "img" + File.separator + "Ajout.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
 		this.btnAdd.setContentAreaFilled(false);
 		this.btnAdd.setBorderPainted    (false);
 		this.btnAdd.setFocusPainted     (false);
@@ -105,10 +107,11 @@ public class PanelQuestion extends JPanel implements ActionListener
 			this.tabBtn[i][0] = new JButton(question);			
 			this.tabBtn[i][0].setBounds(0, 10, 400, 50);
 			this.tabBtn[i][0].setBackground(new Color(201,80,46));
+			this.tabBtn[i][0].setForeground(Color.WHITE);
 			panelRes.add(this.tabBtn[i][0]);
 
 			this.tabBtn[i][1] = new JButton(new ImageIcon(
-					new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoSuppr.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
+					new ImageIcon(".." + File.separator + "img" + File.separator + "LogoSuppr.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
 			this.tabBtn[i][1].setBounds(410, 10, 30, 30);
 			this.tabBtn[i][1].setContentAreaFilled(false);
 			this.tabBtn[i][1].setBorderPainted    (false);
@@ -116,7 +119,7 @@ public class PanelQuestion extends JPanel implements ActionListener
 			panelRes.add(this.tabBtn[i][1]);
 
 			this.tabBtn[i][2] = new JButton(new ImageIcon(
-					new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoModif.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
+					new ImageIcon(".." + File.separator + "img" + File.separator + "LogoModif.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
 			this.tabBtn[i][2].setBounds(450, 10, 30, 30);
 			this.tabBtn[i][2].setContentAreaFilled(false);
 			this.tabBtn[i][2].setBorderPainted    (false);
@@ -157,14 +160,40 @@ public class PanelQuestion extends JPanel implements ActionListener
 			//supprime la notion de la ligne
 			if (e.getSource() == this.tabBtn[i][1]) 
 			{
-				this.ctrl  .supprimerDossier(this.ressource.getNom() + File.separator + this.notion.getNom() + File.separator + "Question "+(i+1));
+				String chemin = this.ctrl.rechercherFichierQuestion(this.lstQ.get(i), ressource, notion);
+				this.ctrl  .supprimerDossierQuestion(chemin.substring(0, chemin.lastIndexOf(File.separator)));
 				this.notion.getLstQuestions().remove(i);
 				this.frame .refreshQuestion(notion, this.ressource);
 			}
 			//modifie le nom de la notion de la ligne
 			if (e.getSource() == this.tabBtn[i][2]) 
 			{
-				//new FrameModification(this.ctrl, this.frame ,"Notion", this.notion,this.lstQ.get(i));
+				String type = "";
+				if (this.notion.getLstQuestions().get(i).getClass() == Metier.Association.class)
+				{
+					type = "question à association d’éléments";
+				}
+				else if (this.notion.getLstQuestions().get(i).getClass() == Metier.Enlevement.class)
+				{
+					type = "question avec élimination de propositions de réponses";
+				}
+				else
+				{
+					QCM question = (QCM)(this.notion.getLstQuestions().get(i));
+					int nbReponseVrai = 0;
+
+					for (ReponseQcm rp:question.getLstRep()) 
+					{
+						if (rp.getValeur()) nbReponseVrai++;
+					}
+					
+					if (nbReponseVrai > 1)
+						type = "question à choix multiple à réponse multiple";
+					else
+						type = "question à choix multiple à réponse unique";
+				}
+				FrameAjoutQuestion frameModif = new FrameAjoutQuestion(this.ctrl, type, this.notion.getLstQuestions().get(i));
+				frameModif.setVisible(true);
 			}
 		}
 	}

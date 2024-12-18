@@ -156,6 +156,12 @@ public class Ressource
 		return null;
 	}
 
+	public void supprimerQuestion(Question questionn, Notion notion)
+	{
+		notion.supprQuestion(questionn);
+	}
+
+
 	/*
 	////////////////
 	// Evaluation //

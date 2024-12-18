@@ -3,7 +3,7 @@ package IHM;
 import Controlleur.Controlleur;
 import Metier.Notion;
 import Metier.Ressource;
-import Metier.Question;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,7 +15,6 @@ import java.util.HashMap;
 public class PanelEvaluation extends JPanel implements ActionListener 
 {
     private Controlleur ctrl;
-    private FrameEvaluation frame;
     private Ressource ressourceActuel;
 
     private JComboBox<String> comboBoxRessource;
@@ -47,9 +46,8 @@ public class PanelEvaluation extends JPanel implements ActionListener
     private JRadioButton radioBtnNon;
     private ButtonGroup  groupChrono;
 
-    public PanelEvaluation(Controlleur ctrl, FrameEvaluation frame) {
+    public PanelEvaluation(Controlleur ctrl) {
         this.ctrl = ctrl;
-        this.frame = frame;
         this.lstNotions = new ArrayList<>();
 
         // Utilisation de BoxLayout pour plus de flexibilité
@@ -205,35 +203,44 @@ public class PanelEvaluation extends JPanel implements ActionListener
                 JOptionPane.showMessageDialog(null, "Il doit y avoir au moins une question (TF, F, M, D) choisie dans le tableau pour générer", "Erreur", JOptionPane.ERROR_MESSAGE);
             else
             {
-                // Partie emplacement et nom du fichier
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("Enregistrer l'évaluation");
-                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-                String defaultFileName = "evaluation";
-                fileChooser.setSelectedFile(new java.io.File(defaultFileName));
-
-                int userSelection = fileChooser.showSaveDialog(this);
-
-                if (userSelection == JFileChooser.APPROVE_OPTION) {
-                    java.io.File fileToSave = fileChooser.getSelectedFile();
-                    String nomFichier = fileToSave.getName();
-                    String emplacement = fileToSave.getParent();
+                //Partie retour au métier
+                HashMap< String, int[] > mapQuestion = new HashMap < String, int[] >();
                 
-
-                    //Partie retour au métier
-                    HashMap< String, int[] > mapQuestion = new HashMap < String, int[] >();
-                    
-                    for (Notion not : ressourceActuel.getNotions()) {
-                        for (int row = 0; row < tableModel.getRowCount(); row++)
+                for (Notion not : ressourceActuel.getNotions()) 
+                {
+                    for (int row = 0; row < tableModel.getRowCount(); row++)
+                    {
+                        if (tableModel.getValueAt(row, 0).equals(not.getNom())) 
                         {
                             mapQuestion.put(not.getNom(), valeurLigne(row));
                         }
+                        
                     }
-                    String verif = this.ctrl.getMetier().genererEvaluation(ressourceActuel.getNom(), this.radioBtnOui.isSelected(), mapQuestion, nomFichier, emplacement);
-                    if(!verif.equals(""))
+                }
+                String verif = this.ctrl.validerEvaluation(ressourceActuel.getNom(), this.radioBtnOui.isSelected(), mapQuestion);
+                if(!verif.equals(""))
+                {
+                    JOptionPane.showMessageDialog(null, "Il y a une erreur dans la création\n" + verif, "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+                else
+                {
+                    // Partie emplacement et nom du fichier
+                    JFileChooser fileChooser = new JFileChooser();
+                    fileChooser.setDialogTitle("Enregistrer l'évaluation");
+                    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+                    String defaultFileName = "evaluation";
+                    fileChooser.setSelectedFile(new java.io.File(defaultFileName));
+
+                    int userSelection = fileChooser.showSaveDialog(this);
+
+                    if (userSelection == JFileChooser.APPROVE_OPTION) 
                     {
-                        JOptionPane.showMessageDialog(null, "Il y a une erreur dans la création\n" + verif, "Erreur", JOptionPane.ERROR_MESSAGE);
+                        java.io.File fileToSave = fileChooser.getSelectedFile();
+                        String nomFichier = fileToSave.getName();
+                        String emplacement = fileToSave.getParent();
+
+                        new FrameVisu(this.ctrl.genererEvaluation(ressourceActuel.getNom(), this.radioBtnOui.isSelected(), mapQuestion, nomFichier, emplacement));
                     }
                 }
             }
@@ -244,7 +251,7 @@ public class PanelEvaluation extends JPanel implements ActionListener
     /**
      * Change les notions dans la JComboBox en suivant la ressource choisie
      */
-    private void changerNotion(JComboBox e) {
+    private void changerNotion(JComboBox<String> e) {
         for (int Rsc = 0; Rsc < this.ctrl.getLstRessource().size(); Rsc++) {
             if (this.ctrl.getLstRessource().get(Rsc).getNom().equals(e.getSelectedItem())) {
                 this.ressourceActuel = this.ctrl.getLstRessource().get(Rsc);

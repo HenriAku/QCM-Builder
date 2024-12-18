@@ -39,7 +39,8 @@ public class PanelNavigation extends JPanel implements ActionListener
 		panelBtn.setOpaque(false);
 	
 		// Style de la police soulignée
-		Font font = new Font("Arial", Font.PLAIN, 12); 
+		Font font = new Font("Arial", Font.PLAIN, 15); 
+		@SuppressWarnings("unchecked")
 		Map<TextAttribute, Object> attributes = (Map<TextAttribute, Object>) font.getAttributes();
 		attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
 		Font underlinedFont = new Font(attributes);
@@ -47,21 +48,24 @@ public class PanelNavigation extends JPanel implements ActionListener
 		// Création des boutons
 		this.btnA = new JButton("Acceuil");
 		this.btnA.setContentAreaFilled(false);
-		this.btnA.setBorderPainted(false);
-		this.btnA.setFocusPainted(false);
+		this.btnA.setBorderPainted    (false);
+		this.btnA.setFocusPainted     (false);
 		this.btnA.setFont(underlinedFont);
+		this.btnA.setForeground(Color.WHITE);
 	
 		this.btnR = new JButton("Ressource");
 		this.btnR.setContentAreaFilled(false);
-		this.btnR.setBorderPainted(false);
-		this.btnR.setFocusPainted(false);
+		this.btnR.setBorderPainted    (false);
+		this.btnR.setFocusPainted     (false);
 		this.btnR.setFont(underlinedFont);
+		this.btnR.setForeground(Color.WHITE);
 	
 		this.btnN = new JButton("Notion");
 		this.btnN.setContentAreaFilled(false);
-		this.btnN.setBorderPainted(false);
-		this.btnN.setFocusPainted(false);
-		this.btnN.setFont(underlinedFont);
+		this.btnN.setBorderPainted    (false);
+		this.btnN.setFocusPainted     (false);
+		this.btnN.setFont      (underlinedFont);
+		this.btnN.setForeground(Color.WHITE);
 	
 		// Condition sur le bouton Notion
 		if (ressource == null) 
@@ -72,6 +76,7 @@ public class PanelNavigation extends JPanel implements ActionListener
 
 		JLabel titre = new JLabel("QCM Builder");
 		titre.setFont(fontTitre);
+		titre.setForeground(Color.WHITE);
 
 	
 		panelBtn.add(btnA);
@@ -80,7 +85,7 @@ public class PanelNavigation extends JPanel implements ActionListener
 	
 		this.add(panelBtn);
 		this.add(titre   );
-		this.add(new JLabel(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "IUT.png")));
+		this.add(new JLabel(new ImageIcon(".." + File.separator + "img" + File.separator + "IUT.png")));
 
 		this.btnA.addActionListener(this);
 		this.btnR.addActionListener(this);

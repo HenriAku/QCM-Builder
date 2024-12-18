@@ -51,6 +51,7 @@ public class PanelAddFile extends JPanel {
                 try {
                     // Récupère les fichiers glissés
                     Transferable transferable = support.getTransferable();
+                    @SuppressWarnings("unchecked")
                     List<File> files = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
 
                     // Traite les fichiers

@@ -8,31 +8,61 @@
 		<script>
 			const quiz = [
 {
-question: "De quel couleur est la marque coca cola ?",
-answers: ["rouge", "jaune", "vert", "blanc"],
+question: "{\rtf1\ansi{\fonttbl\f0\fnil Monospaced;}ca va\par}",
+answers: ["oui", "non", "peut etre"],
 correct: [0],
-time: 0.0
+time: 5.0
 },
 {
-question: "De quel couleur est le ciel ?",
-answers: ["bleu", "jaune", "vert", "rouge"],
+question: "{\rtf1\ansi{\fonttbl\f0\fnil Monospaced;}Cava ou quoi \par}",
+answers: ["d", "dddd"],
 correct: [0],
-time: 0.0
+time: 5.0
 },
-{
-question: "De quel couleur est le cheval d'Henri 4 ?",
-answers: ["bleu", "blanc", "vert", "rouge"],
-correct: [1],
-time: 0.0
-},
-	];
-
+];
+const hasChrono = false;
 	let currentQuestionIndex = 0;
 	let score = 0;
 	let selectedAnswer = null;
 	let answersValidated = Array(quiz.length).fill(false);
+	let timer;
+	let timeRemaining;
 
-	function displayQuestion() {
+	//Lance le timer avec le temps correspondant
+	function startTimer(duration) {
+		const timerElement = document.getElementById('timer');
+		timeRemaining = duration;
+		timerElement.textContent = `Temps restant : ${timeRemaining}s`;
+		timer = setInterval(() => {
+			timeRemaining--;
+			timerElement.textContent = `Temps restant : ${timeRemaining}s`;
+			if (timeRemaining <= 0) {
+				clearInterval(timer);
+				handleTimeout();
+			}
+		}, 1000);
+	}
+
+	//Si timer est faux rien sinon jsp
+	function stopTimer() {
+		if (timer) {
+			clearInterval(timer);
+		}
+	}
+
+	//Temps
+	function handleTimeout() {
+		//Affiche un message, valide la question, met a jour les  btns, empeche d'appuyer en haut
+		document.getElementById('feedback').textContent = "Temps écoulé ! Réponse incorrecte.";
+		answersValidated[currentQuestionIndex] = true;
+		updateValidateButton();
+		updateNavigationButtons();
+		disableAnswerButtons();
+		highlightAnswers(false);
+	}
+
+	//Affiche les questions de type QCM
+	function afficheQuestionQCM() {
 		if (currentQuestionIndex >= quiz.length) {
 			showResults();
 			return;
@@ -45,6 +75,7 @@ time: 0.0
 		const answersContainer = document.getElementById('answers');
 		answersContainer.innerHTML = "";
 
+		//Fait un bouton pour chaque reponses
 		questionObj.answers.forEach((answer, index) => {
 			const button = document.createElement('button');
 			button.textContent = answer;
@@ -58,8 +89,90 @@ time: 0.0
 
 		updateNavigationButtons();
 		updateValidateButton();
+
+		if (hasChrono) {
+			stopTimer(); // Arrêter le timer précédent
+			startTimer(questionObj.time || 30); // Démarrer un nouveau timer
+		} else {
+			document.getElementById('timer').textContent = "";
+		}
 	}
 
+	//Affiche les questions de type QCM
+	function afficheQuestionAssociati() {
+		if (currentQuestionIndex >= quiz.length) {
+			showResults();
+			return;
+		}
+
+		const questionObj = quiz[currentQuestionIndex];
+		document.getElementById('question-number').textContent = `Question ${currentQuestionIndex + 1} / ${quiz.length}`;
+		document.getElementById('question').textContent = questionObj.question;
+
+		const answersContainer = document.getElementById('answers');
+		answersContainer.innerHTML = "";
+
+		//Fait un bouton pour chaque reponses
+		questionObj.answers.forEach((answer, index) => {
+			const button = document.createElement('button');
+			button.textContent = answer;
+			button.onclick = () => selectAnswer(index);
+			button.id = `answer-${index}`;
+			answersContainer.appendChild(button);
+		});
+
+		document.getElementById('feedback').textContent = "";
+		selectedAnswer = null;
+
+		updateNavigationButtons();
+		updateValidateButton();
+
+		if (hasChrono) {
+			stopTimer(); // Arrêter le timer précédent
+			startTimer(questionObj.time || 30); // Démarrer un nouveau timer
+		} else {
+			document.getElementById('timer').textContent = "";
+		}
+	}
+
+	//Affiche les questions de type QCM
+	function afficheQuestionEnlevement() {
+		if (currentQuestionIndex >= quiz.length) {
+			showResults();
+			return;
+		}
+
+		const questionObj = quiz[currentQuestionIndex];
+		document.getElementById('question-number').textContent = `Question ${currentQuestionIndex + 1} / ${quiz.length}`;
+		document.getElementById('question').textContent = questionObj.question;
+
+		const answersContainer = document.getElementById('answers');
+		answersContainer.innerHTML = "";
+
+		//Fait un bouton pour chaque reponses
+		questionObj.answers.forEach((answer, index) => {
+			const button = document.createElement('button');
+			button.textContent = answer;
+			button.onclick = () => selectAnswer(index);
+			button.id = `answer-${index}`;
+			answersContainer.appendChild(button);
+		});
+
+		document.getElementById('feedback').textContent = "";
+		selectedAnswer = null;
+
+		updateNavigationButtons();
+		updateValidateButton();
+
+		if (hasChrono) {
+			stopTimer(); // Arrêter le timer précédent
+			startTimer(questionObj.time || 30); // Démarrer un nouveau timer
+		} else {
+			document.getElementById('timer').textContent = "";
+		}
+	}
+
+	//Surligne le bouton sur lequel on a cliqué
 	function selectAnswer(index) {
 		selectedAnswer = index;
 		const answers = document.querySelectorAll("#answers button");
@@ -68,15 +181,21 @@ time: 0.0
 		});
 	}
 
+	//Le bouton valider
 	function validateAnswer() {
+		//Si on appuie dessus sans avoir choisi, affiche qqchose
 		if (selectedAnswer === null) {
 			document.getElementById('feedback').textContent = "Veuillez sélectionner une réponse avant de valider.";
 			return;
 		}
 
+		// Arrêter le chronomètre lors de la validation
+		stopTimer();
+
 		const questionObj = quiz[currentQuestionIndex];
 		const correct = questionObj.correct.includes(selectedAnswer);
 
+		//Si bonne réponse +1 sinon 0
 		if (correct) {
 			score++;
 			document.getElementById('feedback').textContent = "Bonne réponse !";
@@ -84,13 +203,16 @@ time: 0.0
 			document.getElementById('feedback').textContent = "Mauvaise réponse !";
 		}
 
+		//Met la couleur, Désactive les boutons du haut, met que la question a été validée
 		highlightAnswers(correct);
 		disableAnswerButtons();
 		answersValidated[currentQuestionIndex] = true;
+		//met a jour les boutons du bas
 		updateValidateButton();
 		updateNavigationButtons();
 	}
 
+	//Met en rouge ou vert si la réponse est bonne ou mauvaise
 	function highlightAnswers(isCorrect) {
 		const answers = document.querySelectorAll("#answers button");
 		answers.forEach((btn, idx) => {
@@ -102,32 +224,40 @@ time: 0.0
 		});
 	}
 
+	// désactive les boutons quand jsp
 	function disableAnswerButtons() {
 		const answers = document.querySelectorAll("#answers button");
 		answers.forEach(btn => btn.disabled = true);
 	}
 
+	//Desactive valider si on a deja repondu
 	function updateValidateButton() {
 		const validateButton = document.getElementById('validate');
 		validateButton.disabled = answersValidated[currentQuestionIndex];
 	}
 
+	//Va a la question suivante
 	function nextQuestion() {
-		if (currentQuestionIndex < quiz.length - 1) {
-			currentQuestionIndex++;
-			displayQuestion();
-		} else if (currentQuestionIndex === quiz.length - 1) {
-			showResults();
+		if (answersValidated[currentQuestionIndex] || !hasChrono) {
+			if (currentQuestionIndex < quiz.length - 1) {
+				currentQuestionIndex++;
+				afficheQuestionQCM();
+			} else {
+				showResults();
+			}
 		}
+
 	}
 
+	//Retourne a la question precedente
 	function prevQuestion() {
-		if (currentQuestionIndex > 0) {
+		if (!hasChrono && currentQuestionIndex > 0) {
 			currentQuestionIndex--;
 			displayQuestion();
 		}
 	}
 
+	// Affiche la partie résultats
 	function showResults() {
 		document.body.innerHTML = `
 			<div class="centered">
@@ -137,67 +267,34 @@ time: 0.0
 		`;
 	}
 
+	//Met a jour les boutons precedent et suivant
 	function updateNavigationButtons() {
-		document.getElementById('prev').disabled = currentQuestionIndex === 0;
+		const prevButton = document.getElementById('prev');
+		prevButton.disabled = hasChrono || currentQuestionIndex === 0;
 		const nextButton = document.getElementById('next');
 		nextButton.textContent = currentQuestionIndex === quiz.length - 1 ? "Résultats" : "Suivant";
 	}
 
+	//Ajoute les eventListener
 	window.onload = () => {
-		displayQuestion();
+		afficheQuestionQCM();
 		document.getElementById('next').addEventListener('click', nextQuestion);
 		document.getElementById('prev').addEventListener('click', prevQuestion);
 		document.getElementById('validate').addEventListener('click', validateAnswer);
 	};
 	</script>
-	<style>
-		.centered {
-			max-width: 600px;
-			margin: 0 auto;
-			text-align: center;
-		}
 
-		#answers {
-			margin-bottom: 20px;
-		}
-
-		#answers button {
-			display: block;
-			margin: 5px auto;
-			padding: 10px;
-			width: 100%;
-			max-width: 400px;
-		}
-
-		button {
-			padding: 10px;
-			font-size: 16px;
-			cursor: pointer;
-		}
-
-		#prev, #validate, #next {
-			background-color: #007BFF;
-			color: white;
-			border: none;
-			margin: 5px;
-			padding: 10px 20px;
-		}
-
-		#prev:disabled, #next:disabled {
-			background-color: #ccc;
-			cursor: not-allowed;
-		}
-	</style>
 	</head>
 	<body>
 		<div class="centered">
+			<p id="timer"></p>
 			<p id="question-number"></p>
 			<p id="question"></p>
 			<div id="answers"></div>
 			<div>
-				<button id="prev">Précédent</button>
-				<button id="validate">Valider</button>
-				<button id="next">Suivant</button>
+				<button class="buttonAction" id="prev">Précédent</button>
+				<button class="buttonAction" id="validate">Valider</button>
+				<button class="buttonAction" id="next">Suivant</button>
 			</div>
 			<p id="feedback"></p>
 		</div>

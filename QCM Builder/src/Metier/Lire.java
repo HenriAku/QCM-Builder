@@ -31,11 +31,10 @@ public class Lire
 			if (sousDossiers != null)
 			{
 				for (File sousDossier : sousDossiers)
-				{
 					nomsSousDossiers.add(sousDossier.getName());
-				}
 			}
 		}
+		System.out.println("Test lire " + nomsSousDossiers);
 		return nomsSousDossiers;
 	}
 
@@ -44,42 +43,17 @@ public class Lire
 		try
 		{
 			FileReader fl = new FileReader(this.emplacementRessources);
-			Scanner sc = new Scanner(fl);
+			Scanner    sc = new Scanner(fl);
 
 			while(sc.hasNextLine())
-			{
 				this.contenuFichier += sc.nextLine() + "\n"; 
-			}
+
 			sc.close();
 		}
 		catch(Exception e) { e.getStackTrace();}
 
 		return this.contenuFichier;
 	}
-
-
-	/*
-		notion5	A	qst
-			Reponse
-			rep1 	
-			rep2 	
-			rep3	
-			rep4
-			Association
-			rep1	rep2	rep4 	
-			rep2 	rep4	rep1	rep3
-			rep3	rep2	rep4
-			rep4	rep1	rep2	rep3
-		FIN
-
-		notion7	Q	qst	
-			rep1	vrai
-			rep2	faux
-			rep3	vrai
-			rep4	vrai
-			rep5 	faux
-		FIN
-	*/
 
 	//Emplacement fichier doit etre une ../ressources/X/
 	public ArrayList<Question> lireQuestion(String emplacementFichier)
@@ -173,7 +147,6 @@ public class Lire
 
 			case "A":
 				int indiceTabAsso = -1;
-				int indiceTabTest = -1;
 				String etape = "";
 				ArrayList<ReponseAsso> lstReponsesAsso = new ArrayList<ReponseAsso>();
 				
@@ -271,15 +244,8 @@ public class Lire
 		return null;
 	}
 
-	public void setEmplacementRessources(String e)
-	{
-		this.emplacementRessources = e;
-	}
-
-	public String getEmplacementRessources()
-	{
-		return this.emplacementRessources;
-	}
+	public void   setEmplacementRessources(String e){this.emplacementRessources = e   ;}
+	public String getEmplacementRessources(        ){return this.emplacementRessources;}
 	
 	
 }

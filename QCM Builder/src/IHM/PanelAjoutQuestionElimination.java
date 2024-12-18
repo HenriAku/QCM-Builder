@@ -1,6 +1,9 @@
 package IHM;
 
 import Controlleur.Controlleur;
+import Metier.Enlevement;
+import Metier.Question;
+import Metier.ReponseEnlevement;
 
 import java.util.ArrayList;
 
@@ -9,7 +12,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.awt.event.ActionEvent;
 
@@ -21,11 +23,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.text.rtf.RTFEditorKit;
 
 public class PanelAjoutQuestionElimination extends JPanel implements ActionListener
 {
 	private Controlleur ctrl;
+
+	private Enlevement question;
 
 	private JPanel  panelHaut;
 	private JPanel  panelCentre;
@@ -44,13 +47,10 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 	private JButton btnAjouter;
 	private JButton btnExplication;
 	private JButton btnEnregistrer;
-	private JButton btnImage;
 
 	private ArrayList<JPanel> lstPanelReponse;
 
 	private FrameFeedBack frameFeedBack;
-	private FrameAddFile frameFile;
-
 
 	/* Paramètre question */
 	private String ressource;
@@ -59,12 +59,13 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 	private String diffuculte;
 	private String temps;
 	private double point;
-	private String pathFile;
-
 	
-	public PanelAjoutQuestionElimination(Controlleur ctrl)
+	public PanelAjoutQuestionElimination(Controlleur ctrl, Question question)
 	{
 		this.ctrl = ctrl;
+		this.question = null;
+		if (question != null)
+			this.question = (Enlevement)(question);
 
 		this.frameFeedBack = new FrameFeedBack();
 
@@ -76,22 +77,36 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 		this.type       = null;
 		this.diffuculte = null;
 		this.temps      = null;
-		this.pathFile   = null;
 		this.point      = -1;
 
 		/* Panel Haut */
 		this.txtQuestion = new JEditorPane();
-		this.txtQuestion.setEditorKit(new RTFEditorKit());
+		//this.txtQuestion.setEditorKit(new RTFEditorKit());
 		this.txtQuestion.setMargin(new java.awt.Insets(5, 5, 5, 5)); // Ajout de marges pour l'esthétique
+		if (this.question != null)
+			this.txtQuestion.setText(this.question.getQuestion());
 
 		/* Panel Bas */
 		this.lstTxtReponse = new ArrayList<JTextField>();
-		this.lstTxtReponse.add(new JTextField());
-		this.lstTxtReponse.get(0).setMargin(new java.awt.Insets(5, 5, 5, 5));
-		this.lstTxtReponse.add(new JTextField());
-		this.lstTxtReponse.get(1).setMargin(new java.awt.Insets(5, 5, 5, 5));
-		this.lstTxtReponse.add(new JTextField());
-		this.lstTxtReponse.add(new JTextField());
+
+		if (this.question == null)
+		{
+			this.lstTxtReponse.add(new JTextField());
+			this.lstTxtReponse.get(0).setMargin(new java.awt.Insets(5, 5, 5, 5));
+			this.lstTxtReponse.add(new JTextField());
+			this.lstTxtReponse.get(1).setMargin(new java.awt.Insets(5, 5, 5, 5));
+			this.lstTxtReponse.add(new JTextField());
+			this.lstTxtReponse.add(new JTextField());
+		}
+		else
+		{
+			for (ReponseEnlevement reponseEnlevement : this.question.getLstRep())
+			{
+				this.lstTxtReponse.add(new JTextField(reponseEnlevement.getReponse()));
+				this.lstTxtReponse.get(this.lstTxtReponse.size()-1).setMargin(new java.awt.Insets(5, 5, 5, 5));
+			}
+		}
+
 
 		this.lstBtnSupprimer = new ArrayList<JButton>();
 		this.lstBtnReponseValide = new ArrayList<JButton>();
@@ -120,10 +135,7 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 			JPanel panelReponse = new JPanel();
 			panelReponse.setLayout(new BorderLayout(10, 10));
 
-			this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder"+ File.separator+"img"+ File.separator +"LogoSuppr.png")));
-			this.lstBtnSupprimer.get(i).setContentAreaFilled(false);
-			this.lstBtnSupprimer.get(i).setBorderPainted    (false);
-			this.lstBtnSupprimer.get(i).setFocusPainted     (false);
+			this.lstBtnSupprimer.add(new JButton(new ImageIcon(".." + File.separator + "img" + File.separator + "LogoSuppr.png")));
 	
 			JPanel panelBtn = new JPanel();
 			panelBtn.setLayout(new GridLayout(2,2));
@@ -131,11 +143,23 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 			this.lstBtnReponseValide.add(new JButton(""));
 			this.lstBtnReponseValide.get(i).setPreferredSize(new Dimension(25,25));
 
-			this.lstBtnSupprimer    .get(i).addActionListener(this);
+			this.lstBtnSupprimer.get(i).addActionListener(this);
 			this.lstBtnReponseValide.get(i).addActionListener(this);
 
 			this.lstTxtOrdreElimination.add(new JTextField(6));
 			this.lstTxtNbPointPerdu.add(new JTextField(6));
+
+			if (this.question != null)
+			{
+				if (this.question.getLstRep().get(i).getValeur())
+					this.lstBtnReponseValide.get(i).setIcon(new ImageIcon(".." + File.separator + "img" + File.separator + "LogoValide.png"));
+				if (this.question.getLstRep().get(i).getOrdreEnleve() >= 0 && this.question.getLstRep().get(i).getNbPointEleve() < 0)
+				{
+					this.lstTxtOrdreElimination.get(i).setText(String.valueOf(this.question.getLstRep().get(i).getOrdreEnleve ()));
+					this.lstTxtNbPointPerdu    .get(i).setText(String.valueOf(this.question.getLstRep().get(i).getNbPointEleve()));
+				}
+
+			}
 
 			panelBtn.add(this.lstTxtOrdreElimination.get(i));
 			panelBtn.add(this.lstBtnReponseValide.get(i));
@@ -156,12 +180,12 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 		this.panelBas = new JPanel();
 		this.panelBas.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-		this.btnAjouter = new JButton(new ImageIcon("QCM Builder"+ File.separator+"img"+ File.separator +"Ajout.png"));
+		this.btnAjouter = new JButton(new ImageIcon(".." + File.separator + "img" + File.separator + "Ajout.png"));
 		this.btnAjouter.setBorderPainted(false);
 		this.btnAjouter.setContentAreaFilled(false);
 		this.btnAjouter.addActionListener(this);
 
-		this.btnExplication = new JButton(new ImageIcon("QCM Builder"+ File.separator+"img"+ File.separator +"LogoModif.png"));
+		this.btnExplication = new JButton(new ImageIcon(".." + File.separator + "img" + File.separator + "LogoModif.png"));
 		this.btnExplication.setBorderPainted(false);
 		this.btnExplication.setContentAreaFilled(false);
 		this.btnExplication.addActionListener(this);
@@ -169,17 +193,10 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 		this.btnEnregistrer = new JButton("Enregistrer");
 		this.btnEnregistrer.addActionListener(this);
 
-		this.btnImage = new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "Upload.png"));
-		this.btnImage.setBorderPainted(false);
-		this.btnImage.setContentAreaFilled(false);
-		this.btnImage.addActionListener(this);
-
 		this.panelBas.add(new JLabel());
 		this.panelBas.add(this.btnAjouter);
 		this.panelBas.add(this.btnExplication);
 		this.panelBas.add(this.btnEnregistrer);
-		this.panelBas.add(this.btnImage);
-
 
 		this.add(this.panelHaut, BorderLayout.NORTH);
 		this.add(this.scrollPane, BorderLayout.CENTER);
@@ -215,20 +232,13 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 
 	public void actionPerformed(ActionEvent e)
 	{
-		if (e.getSource().equals(this.btnImage))
-		{
-			frameFile = new FrameAddFile();
-		}
 		if (e.getSource().equals(this.btnAjouter))
 		{
 			JPanel panelBtn = new JPanel();
 			panelBtn.setLayout(new GridLayout(2,2));
 
-			//this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder" + File.separator + "img" + File.separator + "LogoSuppr.png")));
-			this.lstBtnSupprimer.add(new JButton(new ImageIcon("QCM Builder"+ File.separator+"img"+ File.separator +"LogoSuppr.png")));
-			this.lstBtnSupprimer.get(this.lstBtnSupprimer.size()-1).setContentAreaFilled(false);
-			this.lstBtnSupprimer.get(this.lstBtnSupprimer.size()-1).setBorderPainted    (false);
-			this.lstBtnSupprimer.get(this.lstBtnSupprimer.size()-1).setFocusPainted     (false);
+			//this.lstBtnSupprimer.add(new JButton(new ImageIcon(".." + File.separator + "img" + File.separator + "LogoSuppr.png")));
+			this.lstBtnSupprimer.add(new JButton(new ImageIcon(".." + File.separator + "img" + File.separator + "LogoSuppr.png")));
 			this.lstTxtReponse.add(new JTextField(""));
 			this.lstTxtReponse.get(this.lstTxtReponse.size()-1).setMargin(new java.awt.Insets(5, 5, 5, 5));
 
@@ -268,7 +278,6 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 			ArrayList<Boolean> lstValidite = new ArrayList<Boolean>();
 			ArrayList<String>  lstOrdreElimination = new ArrayList<String>();
 			ArrayList<String>  lstNbPointPerdu = new ArrayList<String>();
-			String erreur = null;
 
 			for (int i=0; i<this.lstTxtReponse.size(); i++)
 			{
@@ -289,32 +298,11 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 				lstNbPointPerdu.add(txtNbPointPerdu.getText());
 			}
 
-			if(frameFile != null &&frameFile.getPath()!=null)
-				this.pathFile = frameFile.getPath();
-
-			String question = "";
-			try {
-				// Crée un flux de sortie pour stocker le contenu RTF
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-				// Utilise le RTFEditorKit pour écrire le document en RTF
-				RTFEditorKit rtfEditorKit = new RTFEditorKit();
-				rtfEditorKit.write(outputStream, this.txtQuestion.getDocument(), 0,  this.txtQuestion.getDocument().getLength());
-
-				// Convertit le contenu en String
-				question = outputStream.toString("UTF-8").replaceAll("\\n|\\r|\\t", "");
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			} 
-
-			if(this.pathFile != null)
-			{
-				erreur = this.ctrl.creerQuestionElimination(ressource, notion, question, type, this.frameFeedBack.getFeedback(), diffuculte, point, temps, lstOrdreElimination, lstNbPointPerdu, lstReponse, lstValidite,  this.pathFile);
-			}
+			String erreur = "";
+			if (this.question == null)
+				erreur = this.ctrl.creerQuestionElimination(ressource, notion, this.txtQuestion.getText(), type, this.frameFeedBack.getFeedback(), diffuculte, point, temps, lstOrdreElimination, lstNbPointPerdu, lstReponse, lstValidite);
 			else
-			{
-				erreur = this.ctrl.creerQuestionElimination(ressource, notion, question, type, this.frameFeedBack.getFeedback(), diffuculte, point, temps, lstOrdreElimination, lstNbPointPerdu, lstReponse, lstValidite);
-			}
+				erreur = this.ctrl.modifQuestionElimination(this.ressource, this.notion, this.txtQuestion.getText(), this.question.getType(), this.frameFeedBack.getFeedback(), this.diffuculte, this.question.getPoint(), String.valueOf(this.question.getTemps()), lstOrdreElimination, lstNbPointPerdu, lstReponse, lstValidite, this.question);
 
 			if (erreur.length() > 0)
 			{
@@ -322,7 +310,10 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 			}
 			else
 			{
-				JOptionPane.showMessageDialog(null, "La question à été crée", "Question crée", JOptionPane.INFORMATION_MESSAGE);
+				if (this.question == null)
+					JOptionPane.showMessageDialog(null, "La question à été crée"   , "Question crée"   , JOptionPane.INFORMATION_MESSAGE);
+				else
+					JOptionPane.showMessageDialog(null, "La question à été modifié", "Question modifié", JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
 		
@@ -344,7 +335,7 @@ public class PanelAjoutQuestionElimination extends JPanel implements ActionListe
 				for (JButton btn:this.lstBtnReponseValide)
 					btn.setIcon(null);
 
-				btnRepValide.setIcon(new ImageIcon("QCM Builder"+ File.separator+"img"+ File.separator +"LogoValide.png"));
+				btnRepValide.setIcon(new ImageIcon(".." + File.separator + "img" + File.separator + "LogoValide.png"));
 			}
 		}
 	}

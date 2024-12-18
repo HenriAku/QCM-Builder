@@ -7,10 +7,7 @@ package IHM;
 import javax.swing.JFrame;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import Controlleur.Controlleur;
-import IHM.FramePrincipal;
 import Metier.*;
 
 public class FrameVisu extends JFrame

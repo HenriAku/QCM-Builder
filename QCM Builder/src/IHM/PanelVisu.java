@@ -6,14 +6,7 @@ import javax.swing.table.DefaultTableModel;
 import Metier.Question;
 
 import java.awt.*;
-import java.awt.datatransfer.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.*;
 import java.util.ArrayList;
-import java.util.List;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 
 public class PanelVisu extends JPanel 
 {
