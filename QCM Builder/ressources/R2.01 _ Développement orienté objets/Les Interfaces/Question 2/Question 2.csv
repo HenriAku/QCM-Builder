@@ -1,0 +1,12 @@
+Question 2	Q	
+DebutQuestion
+Quelles affirmations concernant les attributs dans une interface sont vraies ?
+DebutExplication
+Tous les attributs d'une interface sont public static final et doivent être initialisés lors de leur déclaration.
+FinExplication
+moyen	3.0	45.0
+Ils sont implicitement public static final.	vrai
+Ils peuvent être modifiés après leur initialisation.	faux
+Ils doivent être initialisés dans l’interface elle-même.	vrai
+Ils ne peuvent pas être accédés via le nom de l'interface.	faux
+FIN

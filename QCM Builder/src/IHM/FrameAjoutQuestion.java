@@ -1,11 +1,11 @@
+/**
+ * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Wychowski Théo
+ * @date 09/12/2024
+ */
 package IHM;
 
 import Controlleur.Controlleur;
 import Metier.Question;
-import Metier.QCM;
-import Metier.Enlevement;
-import Metier.Association;
-
 import javax.swing.JFrame;
 
 public class FrameAjoutQuestion extends JFrame
@@ -14,15 +14,18 @@ public class FrameAjoutQuestion extends JFrame
 
 	private Question question;
 
+	private FrameCreationQuestion frameCreationQuestion;
+
 	private PanelAjoutQuestionQCM         panelAjoutQuestionQCM ;
 	private PanelAjoutQuestionAsso        panelAjoutQuestionAsso;
 	private PanelAjoutQuestionElimination panelAjoutQuestionElimination;
 
-	public FrameAjoutQuestion(Controlleur ctrl, String type, Question question)
+	public FrameAjoutQuestion(Controlleur ctrl, FrameCreationQuestion frameCreationQuestion, String type, Question question, boolean estCreeDepuisRessource)
 	{
 		this.ctrl = ctrl;
 
 		this.question = question;
+		this.frameCreationQuestion = frameCreationQuestion;
 
 		this.setTitle    ("Création question");
 		this.setSize     (920,550);
@@ -31,19 +34,19 @@ public class FrameAjoutQuestion extends JFrame
 
 		switch (type) 
 		{
-			case "question à choix multiple à réponse multiple": this.panelAjoutQuestionQCM = new PanelAjoutQuestionQCM(this.ctrl, true, question);
+			case "question à choix multiple à réponse multiple": this.panelAjoutQuestionQCM = new PanelAjoutQuestionQCM(this.ctrl, true, question, this, estCreeDepuisRessource);
 					    this.add(this.panelAjoutQuestionQCM);
 				break;
 
-			case "question à choix multiple à réponse unique": this.panelAjoutQuestionQCM = new PanelAjoutQuestionQCM(this.ctrl, false, question);
+			case "question à choix multiple à réponse unique": this.panelAjoutQuestionQCM = new PanelAjoutQuestionQCM(this.ctrl, false, question, this, estCreeDepuisRessource);
 					    this.add(this.panelAjoutQuestionQCM);
 				break;
 
-			case "question à association d’éléments": this.panelAjoutQuestionAsso = new PanelAjoutQuestionAsso(this.ctrl, question);
+			case "question à association d’éléments": this.panelAjoutQuestionAsso = new PanelAjoutQuestionAsso(this.ctrl, question, this, estCreeDepuisRessource);
 				this.add(this.panelAjoutQuestionAsso);
 				break;
 
-			case "question avec élimination de propositions de réponses": this.panelAjoutQuestionElimination= new PanelAjoutQuestionElimination(this.ctrl, question);
+			case "question avec élimination de propositions de réponses": this.panelAjoutQuestionElimination= new PanelAjoutQuestionElimination(this.ctrl, question, this, estCreeDepuisRessource);
 				this.add(this.panelAjoutQuestionElimination);
 				break;
 
@@ -55,7 +58,15 @@ public class FrameAjoutQuestion extends JFrame
 		if (this.question == null)
 			this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		else
+		{
 			this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		}
+	}
+
+	public void dispose()
+	{
+		if (this.frameCreationQuestion != null) this.frameCreationQuestion.setVisible(false);
+		super.dispose();
 	}
 
 	public void setParametres(String ressource, String notion, String type, String difficulte, String temps, double point)
@@ -74,5 +85,4 @@ public class FrameAjoutQuestion extends JFrame
 				break;
 		}
 	}
-
 }

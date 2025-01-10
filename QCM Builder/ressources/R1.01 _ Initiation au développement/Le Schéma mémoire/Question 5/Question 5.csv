@@ -1,0 +1,10 @@
+Question 5	Q	
+DebutQuestion
+Vrai ou Faux : Les registres sont responsables de l’exécution des instructions comme i = i + 1.
+DebutExplication
+Les registres traitent les instructions
+FinExplication
+tres facile	1.0	30.0
+Vrai	vrai
+Faux	faux
+FIN

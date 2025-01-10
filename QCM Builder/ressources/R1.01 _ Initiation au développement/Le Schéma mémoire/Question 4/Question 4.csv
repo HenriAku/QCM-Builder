@@ -1,0 +1,10 @@
+Question 4	Q	
+DebutQuestion
+Vrai ou Faux : Le tas (Heap) est partagé entre toutes les instances de classes en Java.
+DebutExplication
+Le tas est une zone mémoire partagée pour toutes les instances
+FinExplication
+tres facile	1.0	30.0
+Vrai	vrai
+Faux	faux
+FIN

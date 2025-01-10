@@ -1,29 +1,140 @@
+/**
+ * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Wychowski Théo
+ * @date 09/12/2024
+ */
 //Cette classe s'occupe de récuperer les donnees d'une evaluation
 //pour creer le site html/css/js de celle-ci
 
 package Metier;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.List;
 
 public class EcritureWeb 
 {
 	//attributs evaluation
-	private Evaluation evaluation;
-	private String emplacement;
+	private Evaluation evaluation ;
+	private String     emplacement;
+	private static int numFlc     ;
 
-	//constructeur
+	/**
+	 * Constructeur de la classe EcritureWeb
+	 * @param evaluation l'évaluation liée au questionnaire
+	 * @param nomDossier le nom donné au questionnaire
+	 * @param emplacement l'emplacement de la création du questionnaire
+	 */
 	public EcritureWeb(Evaluation evaluation, String nomDossier, String emplacement)
 	{
-		this.evaluation = evaluation;
-
-		//this.emplacement = ".." + File.separator + "Evaluation" ;
+		this.evaluation  = evaluation;
 		this.emplacement = emplacement + File.separator + nomDossier;
+		
 		this.creerDossier();
 
 		this.ecrireFichier();
+
+		this.copierComplement();
 	}
 
+	/**
+	 * Copie les compléments des questions de l'évaluation dans le dossier compléments du questionnaire.
+	 */
+	public void copierComplement()
+	{
+		File dossier = new File(this.emplacement + File.separator + "complements");
+		Ecriture ecriture = new Ecriture("../ressources");
+
+		if (!dossier.exists()) 
+		{
+			dossier.mkdirs(); 
+		}
+
+		for (Question qst : evaluation.getQuestions()) 
+		{
+			for (Notion n : evaluation.getRessource().getNotions()) 
+			{
+				if (ecriture.rechercherFichierQuestion(qst, evaluation.getRessource(), n) != "") 
+				{
+					File flcBase = new File(ecriture.rechercherFichierQuestion(qst, evaluation.getRessource(), n));
+					try
+					{
+						File dosComp = new File(ecriture.getEmp());
+
+						File flcArr = dosComp.listFiles()[0];
+						
+						File test = new File(flcBase.getParentFile() + File.separator + "complement");
+
+						this.copierFichierDansDossier(test.listFiles()[0].getPath(), dossier.getPath(),  qst.getFileName());
+
+					}
+					catch(Exception e){e.getStackTrace();}
+					
+				}
+			}
+		}
+	}
+
+	/**
+	 * Copie un fichier existant à un endroit donné, avec un nom spécifié
+	 *
+	 * @param sourcePath le chemin du fichier qui doit être copié
+	 * @param destinationDir la destination de la copie
+	 * @param nom le nom du dossier
+	 */
+	public void copierFichierDansDossier(String sourcePath, String destinationDir,String nom) 
+	{
+		try 
+		{
+			// Vérifiez que le dossier existe, sinon créez-le
+			File dir = new File(destinationDir);
+			if (!dir.exists()) 
+			{
+				if (dir.mkdirs()) 
+				{
+					System.out.println("Dossier créé : " + destinationDir);
+				} 
+				else 
+				{
+					System.out.println("Impossible de créer le dossier.");
+					return;
+				}
+			}
+
+			// Préparez le fichier source et la destination
+			File sourceFile = new File(sourcePath);
+			if (!sourceFile.exists()) 
+			{
+				System.out.println("Le fichier source n'existe pas : " + sourcePath);
+				return;
+			}
+
+			// Construisez le chemin du fichier de destination
+			File destinationFile = new File(dir, sourceFile.getName());
+			//System.out.println(sourceFile.getPath() + " | " + destinationFile.getPath() + " | " + destinationFile.getParent());
+
+			// Copiez le fichier
+			Files.copy(sourceFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+			Ecriture ec = new Ecriture("");
+
+			destinationFile.renameTo(new File(destinationFile.getParent() + File.separator + nom));
+
+			System.out.println("Fichier copiée dans : " + destinationFile.getAbsolutePath());
+		} 
+		catch (IOException e) 
+		{
+			System.out.println("Erreur lors de la copie du fichier : " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Crée un dossier à l'emplacement de l'attribut emplacement d'une instance
+	 *
+	 * @return si le dossier à été créé
+	 */
 	public boolean creerDossier()
 	{
 		File dossier = new File(this.emplacement);
@@ -34,51 +145,58 @@ public class EcritureWeb
 		return false; // Le dossier existe déjà	
 	}
 
-	//methode qui appelle les methodes d'ecriture des fichiers html css js
+	/**
+	 * Méthode qui permet de crée le questionnaire à l'aide des méthodes de copie et de création.
+	 */
 	public void ecrireFichier()
 	{
+
+		File dossier = new File(this.emplacement + File.separator + "questionnaire");
+		if (!dossier.exists()) 
+		{
+			dossier.mkdirs(); 
+		}
+		
 		//this.ecrireFichierHTML();
 		this.acceuilHtml();
-		this.testBien();
-		this.ecrireFichierCSS();
+
+		//ecrireFichierJS;
+		try{
+			this.copierFichierJs(this.emplacement+File.separator+"questionnaire");
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//ecrireFichierCSS;
+		this.questionsHtml();
+		try{
+			this.copierFichierCSS(this.emplacement+File.separator+"questionnaire");
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	//////////
-	// HTML //
-	//////////
+	////////////////
+	// HTML et JS //
+	////////////////
 
-	//methode qui ecrit le code html de l'evaluation
-	/*public void ecrireFichierHTML()
-	{
-		
-		ArrayList<Question> lst = this.evaluation.getQuestions();
-
-
-		for (Question question : lst) 
-		{
-			if (question instanceof Association) 
-			{
-				questionAssoHtml((Association) question);
-			} else if (question instanceof QCM) 
-			{
-				questionQCMHtml((QCM) question);
-			} else if (question instanceof Enlevement) 
-			{
-				questionEnlevementHtml((Enlevement) question);
-			}
-		}
-	}*/
-
-	public void testBien() {
-		try (FileWriter writer = new FileWriter(this.emplacement + File.separator + "questions.html")) {
+	/**
+	 * Crée le fichier question.html qui contient des informations pour le javascript,
+	 * ainsi que la structure des pages de questionnaire
+	 */
+	public void questionsHtml() {
+		try (FileWriter writer = new FileWriter(this.emplacement + File.separator + "questionnaire" + File.separator + "questions.html")) {
 			writer.write("""
 				<!DOCTYPE html>
 				<html lang="fr">
 				<head>
 					<meta charset="UTF-8">
 					<meta name="viewport" content="width=device-width, initial-scale=1.0">
-					<title>Questionnaire</title>
+					<title>Evaluation</title>
 					<link rel="stylesheet" href="style.css">
+					<script src="script.js" defer></script>
 					<script>
 						const quiz = [
 			""");
@@ -97,12 +215,13 @@ public class EcritureWeb
 				} 
 				else 
 				{
-					writer.write(genereInfoEnlevement((Enlevement) question));
+					writer.write(genereInfoElimination((Elimination) question));
 				}
 			}
 	
-			writer.write("];\n");
-			writer.write("const hasChrono = " + this.evaluation.getChrono() + ";\n");
+			writer.write("];\nconst info = [");
+			writer.write(genereInfo());
+			writer.write("}];\nconst hasChrono = " + this.evaluation.getChrono() + ";\n");
 			writer.write("""
 				let currentQuestionIndex = 0;
 				let score = 0;
@@ -110,276 +229,40 @@ public class EcritureWeb
 				let answersValidated = Array(quiz.length).fill(false);
 				let timer;
 				let timeRemaining;
-	
-				//Lance le timer avec le temps correspondant
-				function startTimer(duration) {
-					const timerElement = document.getElementById('timer');
-					timeRemaining = duration;
-					timerElement.textContent = `Temps restant : ${timeRemaining}s`;
-					timer = setInterval(() => {
-						timeRemaining--;
-						timerElement.textContent = `Temps restant : ${timeRemaining}s`;
-						if (timeRemaining <= 0) {
-							clearInterval(timer);
-							handleTimeout();
-						}
-					}, 1000);
-				}
-	
-				//Si timer est faux rien sinon jsp
-				function stopTimer() {
-					if (timer) {
-						clearInterval(timer);
-					}
-				}
-	
-				//Temps
-				function handleTimeout() {
-					//Affiche un message, valide la question, met a jour les  btns, empeche d'appuyer en haut
-					document.getElementById('feedback').textContent = "Temps écoulé ! Réponse incorrecte.";
-					answersValidated[currentQuestionIndex] = true;
-					updateValidateButton();
-					updateNavigationButtons();
-					disableAnswerButtons();
-					highlightAnswers(false);
-				}
-	
-				//Affiche les questions de type QCM
-				function afficheQuestionQCM() {
-					if (currentQuestionIndex >= quiz.length) {
-						showResults();
-						return;
-					}
-	
-					const questionObj = quiz[currentQuestionIndex];
-					document.getElementById('question-number').textContent = `Question ${currentQuestionIndex + 1} / ${quiz.length}`;
-					document.getElementById('question').textContent = questionObj.question;
-	
-					const answersContainer = document.getElementById('answers');
-					answersContainer.innerHTML = "";
-	
-					//Fait un bouton pour chaque reponses
-					questionObj.answers.forEach((answer, index) => {
-						const button = document.createElement('button');
-						button.textContent = answer;
-						button.onclick = () => selectAnswer(index);
-						button.id = `answer-${index}`;
-						answersContainer.appendChild(button);
-					});
-	
-					document.getElementById('feedback').textContent = "";
-					selectedAnswer = null;
-	
-					updateNavigationButtons();
-					updateValidateButton();
-	
-					if (hasChrono) {
-						stopTimer(); // Arrêter le timer précédent
-						startTimer(questionObj.time || 30); // Démarrer un nouveau timer
-					} else {
-						document.getElementById('timer').textContent = "";
-					}
-				}
-
-				//Affiche les questions de type QCM
-				function afficheQuestionAssociati() {
-					if (currentQuestionIndex >= quiz.length) {
-						showResults();
-						return;
-					}
-	
-					const questionObj = quiz[currentQuestionIndex];
-					document.getElementById('question-number').textContent = `Question ${currentQuestionIndex + 1} / ${quiz.length}`;
-					document.getElementById('question').textContent = questionObj.question;
-	
-					const answersContainer = document.getElementById('answers');
-					answersContainer.innerHTML = "";
-	
-					//Fait un bouton pour chaque reponses
-					questionObj.answers.forEach((answer, index) => {
-						const button = document.createElement('button');
-						button.textContent = answer;
-						button.onclick = () => selectAnswer(index);
-						button.id = `answer-${index}`;
-						answersContainer.appendChild(button);
-					});
-	
-					document.getElementById('feedback').textContent = "";
-					selectedAnswer = null;
-	
-					updateNavigationButtons();
-					updateValidateButton();
-	
-					if (hasChrono) {
-						stopTimer(); // Arrêter le timer précédent
-						startTimer(questionObj.time || 30); // Démarrer un nouveau timer
-					} else {
-						document.getElementById('timer').textContent = "";
-					}
-				}
-
-				//Affiche les questions de type QCM
-				function afficheQuestionEnlevement() {
-					if (currentQuestionIndex >= quiz.length) {
-						showResults();
-						return;
-					}
-	
-					const questionObj = quiz[currentQuestionIndex];
-					document.getElementById('question-number').textContent = `Question ${currentQuestionIndex + 1} / ${quiz.length}`;
-					document.getElementById('question').textContent = questionObj.question;
-	
-					const answersContainer = document.getElementById('answers');
-					answersContainer.innerHTML = "";
-	
-					//Fait un bouton pour chaque reponses
-					questionObj.answers.forEach((answer, index) => {
-						const button = document.createElement('button');
-						button.textContent = answer;
-						button.onclick = () => selectAnswer(index);
-						button.id = `answer-${index}`;
-						answersContainer.appendChild(button);
-					});
-	
-					document.getElementById('feedback').textContent = "";
-					selectedAnswer = null;
-	
-					updateNavigationButtons();
-					updateValidateButton();
-	
-					if (hasChrono) {
-						stopTimer(); // Arrêter le timer précédent
-						startTimer(questionObj.time || 30); // Démarrer un nouveau timer
-					} else {
-						document.getElementById('timer').textContent = "";
-					}
-				}
-	
-				//Surligne le bouton sur lequel on a cliqué
-				function selectAnswer(index) {
-					selectedAnswer = index;
-					const answers = document.querySelectorAll("#answers button");
-					answers.forEach((btn, idx) => {
-						btn.style.backgroundColor = idx === index ? "lightblue" : "";
-					});
-				}
-	
-				//Le bouton valider
-				function validateAnswer() {
-					//Si on appuie dessus sans avoir choisi, affiche qqchose
-					if (selectedAnswer === null) {
-						document.getElementById('feedback').textContent = "Veuillez sélectionner une réponse avant de valider.";
-						return;
-					}
-	
-					// Arrêter le chronomètre lors de la validation
-					stopTimer(); 
-	
-					const questionObj = quiz[currentQuestionIndex];
-					const correct = questionObj.correct.includes(selectedAnswer);
-	
-					//Si bonne réponse +1 sinon 0
-					if (correct) {
-						score++;
-						document.getElementById('feedback').textContent = "Bonne réponse !";
-					} else {
-						document.getElementById('feedback').textContent = "Mauvaise réponse !";
-					}
-	
-					//Met la couleur, Désactive les boutons du haut, met que la question a été validée
-					highlightAnswers(correct);
-					disableAnswerButtons();
-					answersValidated[currentQuestionIndex] = true;
-					//met a jour les boutons du bas
-					updateValidateButton();
-					updateNavigationButtons();
-				}
-	
-				//Met en rouge ou vert si la réponse est bonne ou mauvaise
-				function highlightAnswers(isCorrect) {
-					const answers = document.querySelectorAll("#answers button");
-					answers.forEach((btn, idx) => {
-						if (quiz[currentQuestionIndex].correct.includes(idx)) {
-							btn.style.backgroundColor = "lightgreen";
-						} else if (idx === selectedAnswer && !isCorrect) {
-							btn.style.backgroundColor = "lightcoral";
-						}
-					});
-				}
-	
-				// désactive les boutons quand jsp
-				function disableAnswerButtons() {
-					const answers = document.querySelectorAll("#answers button");
-					answers.forEach(btn => btn.disabled = true);
-				}
-	
-				//Desactive valider si on a deja repondu
-				function updateValidateButton() {
-					const validateButton = document.getElementById('validate');
-					validateButton.disabled = answersValidated[currentQuestionIndex];
-				}
-	
-				//Va a la question suivante
-				function nextQuestion() {
-					if (answersValidated[currentQuestionIndex] || !hasChrono) {
-						if (currentQuestionIndex < quiz.length - 1) {
-							currentQuestionIndex++;
-							afficheQuestionQCM();
-						} else {
-							showResults();
-						}
-					}
-					
-				}
-	
-				//Retourne a la question precedente
-				function prevQuestion() {
-					if (!hasChrono && currentQuestionIndex > 0) {
-						currentQuestionIndex--;
-						displayQuestion();
-					}
-				}
-	
-				// Affiche la partie résultats
-				function showResults() {
-					document.body.innerHTML = `
-						<div class="centered">
-							<h1>Résultats</h1>
-							<p>Votre score est de ${score} / ${quiz.length}</p>
-						</div>
-					`;
-				}
-	
-				//Met a jour les boutons precedent et suivant
-				function updateNavigationButtons() {
-					const prevButton = document.getElementById('prev');
-					prevButton.disabled = hasChrono || currentQuestionIndex === 0;
-					const nextButton = document.getElementById('next');
-					nextButton.textContent = currentQuestionIndex === quiz.length - 1 ? "Résultats" : "Suivant";
-				}
-	
-				//Ajoute les eventListener
-				window.onload = () => {
-					afficheQuestionQCM();
-					document.getElementById('next').addEventListener('click', nextQuestion);
-					document.getElementById('prev').addEventListener('click', prevQuestion);
-					document.getElementById('validate').addEventListener('click', validateAnswer);
-				};
+				let type;
+				let niveau = 0;
+				const ligne = info[0];
 				</script>
-
 				</head>
 				<body>
 					<div class="centered">
+						<div class="haut">
+							<p id="ressource"></p>
+							<p id="notion"></p>
+							<p id="difficulte"></p>
+						</div>
 						<p id="timer"></p>
 						<p id="question-number"></p>
 						<p id="question"></p>
+						<p id="response-label" style="font-weight: bold; margin-bottom: 10px;"></p>
 						<div id="answers"></div>
-						<div>
+						<div id="complement"></div> <!-- Conteneur pour le fichier complémentaire -->
+						<div id="supprimer"></div>
+							<div>
 							<button class="buttonAction" id="prev">Précédent</button>
+							<button class="buttonAction" id="feedback">Feedback</button>
 							<button class="buttonAction" id="validate">Valider</button>
 							<button class="buttonAction" id="next">Suivant</button>
 						</div>
-						<p id="feedback"></p>
+						<p id="retourQuestion"></p>
+
+						<div id="customAlert" class="modal">
+							<div class="modal-content">
+								<p id="alertMessage"></p>
+								<button onclick="fermerFeedback()">Valider</button>
+							</div>
+						</div>
+
 					</div>
 				</body>
 				</html>
@@ -389,22 +272,64 @@ public class EcritureWeb
 		}
 	}
 
+	/**
+	 * Méthode qui recupere la notion d'une question
+	 *
+	 * @param q la question
+	 * @return le nom de la notion en String
+	 */
+	public String recupNotion(Question q)
+	{
+		String sRet = "";
+		for (Notion n : this.evaluation.getNotions()) 
+		{
+			if (n.getLstQuestions().contains(q)) 
+				sRet = n.getNom();
+		}
+		return sRet;
+	}
 
+	/**
+	 * Méthode qui génère les informations relatives à l'évaluation
+	 *
+	 * @return un String qui contient les informations générales de l'évaluation
+	 */
+	public String genereInfo()
+	{
+		String sRet = "{\n" +
+					  "ressource: `" + evaluation.getRessource().getNom() + "`,\n"+
+					  "diffQuestion: [" + this.evaluation.getNbQuestionParDifficulte(Difficulte.TF) 
+					   + ", " + this.evaluation.getNbQuestionParDifficulte(Difficulte.F)
+					   + ", " + this.evaluation.getNbQuestionParDifficulte(Difficulte.M)
+					   + ", " + this.evaluation.getNbQuestionParDifficulte(Difficulte.D)
+					   +"],"
+					   + "\ntotalPoint: [" + evaluation.getTotalPoints() + "]\n";;
+		return sRet;
+	}
 
-
-
-
-	public String genereInfoEnlevement(Enlevement q)
+	/**
+	 * Méthode qui génère les informations relatives à une question Elimination
+	 *
+	 * @param q une question de type Elimination
+	 * @return un String qui contient les informations de la question Elimination
+	 */
+	public String genereInfoElimination(Elimination q)
 	{
 		// Écriture de la question dans le fichier HTML
 		String sRet = "{\n" +
-					  "question: \"" + q.getQuestion() + "\",\n"+
+					  "points:" + q.getPoint() + ",\n"+
+					  "explication: `" + q.getExplication() + "`,\n"+
+					  "type: \"Elimination\",\n"+
+					  "difficulte: \"" + q.getDifficulte().getDifficulte() + "\",\n"+
+					  "notion: `" + recupNotion(q) + "`,\n"+
+					  "question: `" + q.getQuestion() + "`,\n"+
+					  "complement: \"" + q.getFileName()+"\",\n"+
 					  "answers: [";
 		
 		// Écriture des réponses possibles dans un tableau
 		for (int i = 0; i < q.getLstRep().size(); i++) 
 		{
-			sRet += "\"" + q.getLstRep().get(i).getReponse() + "\"";
+			sRet += "`" + q.getLstRep().get(i).getReponse() + "`";
 			if (i < q.getLstRep().size() - 1) 
 			{
 				sRet +=", ";
@@ -424,6 +349,29 @@ public class EcritureWeb
 				first = false;
 			}
 		}
+
+		sRet +="],\n";
+
+		first = true;
+		sRet += "lstEnlever: [";
+		for (int i = 0; i < q.getLstRep().size(); i++) 
+		{
+			if (!first) sRet +=", ";
+			sRet += q.getLstRep().get(i).getOrdreEnleve();
+			first = false;
+		}
+
+		sRet +="],\n";
+
+		first = true;
+		sRet += "lstPoints: [";
+		for (int i = 0; i < q.getLstRep().size(); i++) 
+		{
+			if (!first) sRet +=", ";
+			sRet += q.getLstRep().get(i).getNbPointEleve();
+			first = false;
+		}
+
 		sRet +="],\n"+
 			   "time: " + q.getTemps() + "\n"+
 			   "},\n";
@@ -431,17 +379,29 @@ public class EcritureWeb
 		return sRet;
 	}
 	
+	/**
+	 * Méthode qui génère les informations relatives à une question QCM
+	 *
+	 * @param q une question de type QCM
+	 * @return un String qui contient les informations de la question QCM
+	 */
 	public String genereInfoQCM(QCM q)
 	{
 		//ecrit la question
 		String sRet = "{\n" + 
-		"question: \"" + q.getQuestion() + "\",\n"+
-		"answers: [";
+					  "points:" + q.getPoint() + ",\n"+
+					  "explication: `" + q.getExplication() + "`,\n"+
+					  "type: \"QCM\",\n"+
+					  "difficulte: \"" + q.getDifficulte().getDifficulte() + "\",\n"+
+					  "notion: `" + recupNotion(q) + "`,\n"+
+					  "question: `" + q.getQuestion() + "`,\n"+
+					  "complement: \"" + q.getFileName()+"\",\n"+
+					  "answers: [";
 
 		//ecrit les réponses possibles dans un tableau
 		for (int i = 0; i < q.getLstRep().size(); i++) 
 		{
-			sRet += "\"" + q.getLstRep().get(i).getReponse() + "\"";
+			sRet += "`" + q.getLstRep().get(i).getReponse() + "`";
 			if (i < q.getLstRep().size() - 1) 
 			{
 				sRet +=", ";
@@ -470,35 +430,47 @@ public class EcritureWeb
 		return sRet;
 	}
 
+	/**
+	 * Méthode qui génère les informations relatives à une question Association
+	 *
+	 * @param q une question de type Association
+	 * @return un String qui contient les informations de la question Association
+	 */
 	public String genereInfoAssociation(Association q)
 	{
-		String sRet = "{\n" + 
-					  "question : \"" + q.getQuestion() + "\"\n" +
+		
+		String sRet = "{\n" +
+					  "points:" + q.getPoint() + ",\n"+
+					  "explication: `" + q.getExplication() + "`,\n"+
+					  "type: \"Association\",\n"+
+					  "difficulte: \"" + q.getDifficulte().getDifficulte() + "\",\n"+
+					  "notion: `" + recupNotion(q) + "`,\n"+
+					  "question: `" + q.getQuestion() + "`,\n"+
+					  "complement: \"" + q.getFileName()+"\",\n"+
 					  "pairs: [";
-
 	
 		// Ajout des paires (colonne gauche et leurs associations possibles)
 		for (int i = 0; i < q.getLstRep().size(); i++) 
 		{
-			sRet += "{ left: \"" + q.getLstRep().get(i).getReponse() + "\","+
+			sRet += "{ left: `" + q.getLstRep().get(i).getReponse() + "`,"+
 					"rightOptions: [";
 
 			for (int j = 0; j < q.getLstRepAsso().size(); j++)
 			{ // Associer avec les options de droite
-				sRet +="\"" + q.getLstRepAsso().get(j).getReponse() + "\"";
+				sRet +="`" + q.getLstRep().get(j).getAssocie() + "`";
 				
 				if (j < q.getLstRepAsso().size() - 1) 
 					sRet +=", ";
 			}
 			sRet +="], "+
-			        "correct: \"" + q.getLstRepAsso().get(i).getReponse() + "\" },";
+			        "correct: `" + q.getLstRep().get(i).getAssocie() + "`},\n";
+
 		}
 
 		sRet += "],\n" +
 		"time: " + q.getTemps() + "\n" +
 		"},\n";
-	
-		sRet = "]"; 
+		
 		return sRet;
 	}
 
@@ -507,15 +479,27 @@ public class EcritureWeb
 	// ACCUEIL //
 	/////////////
 
-	//page d'acceuil html
+	/**
+	 * Crée la page index.html à partir de de l'emplacement de l'instance
+	 */
 	public void acceuilHtml()
 	{
+
+
 		try (FileWriter writer = new FileWriter(this.emplacement + File.separator + "index.html")) 
 		{
+			File chemin = new File (this.emplacement);
+			String nomQcm = chemin.getName();
+
 			StringBuilder notionsBuilder = new StringBuilder();
 
-			for (Notion not : this.evaluation.getNotions()) 
-				notionsBuilder.append(not.getNom()).append(", ");
+			List<Notion> notions = this.evaluation.getNotions();
+			for (int i = 0; i < notions.size(); i++) {
+				notionsBuilder.append(notions.get(i).getNom());
+				if (i < notions.size() - 1) {
+					notionsBuilder.append(", ");
+				}
+			}
 
 			String chronometre = "";
 			if (!evaluation.getChrono()) chronometre += "non ";
@@ -527,19 +511,48 @@ public class EcritureWeb
 				"<meta charset=\"UTF-8\">\n" +
 				"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
 				"<title>Acceuil</title>\n" +
-				"<link rel=\"stylesheet\" href=\"style.css\">\n" +
+				"<link rel=\"stylesheet\" href=\"questionnaire" + File.separator + "style.css\">\n" +
 				"</head>\n" +
 				"<body>\n" +
 				"<div class=\"centered\">\n" +
-				"<h1>QCM Builder</h1>\n" +
+				"<h1>"+ nomQcm +"</h1>\n" +
 				"<p>Evaluation " + chronometre + "chronométrée.</p>\n" +
 				"<p>Ressouce : " + this.evaluation.getRessource().getNom() + "</p>\n" +
 				"<p>Notions présentes : " + notionsBuilder.toString() + "</p>\n" +
-				"<p>Il contient " + this.evaluation.getQuestions().size() + " questions.</p>\n" +
-				"<p>Dont : questions très faciles, questions faciles, questions moyennes, questions difficiles.</p>\n" +
-				"<p>La durée totale de l'évaluation est de :  secondes.</p>\n" +
-				"<a href=\"questions.html\">Vous aller passer un test.<br>\n" +
-				"Appuyez ici pour le commencer</a>\n" +
+				"<p>Contient " + this.evaluation.getQuestions().size() + " questions.</p>\n");
+				if (this.evaluation.getNbQuestionParDifficulte(Difficulte.TF)>0)
+				{
+				writer.append("<p class=\"difficulte tres-facile\">"+ 	
+				this.evaluation.getNbQuestionParDifficulte(Difficulte.TF)+" TRES FACILE</p>\n");
+				}
+				if (this.evaluation.getNbQuestionParDifficulte(Difficulte.F)>0)
+				{
+					writer.append("<p class=\"difficulte facile\">"+
+						this.evaluation.getNbQuestionParDifficulte(Difficulte.F)+ " FACILE</p>\n");
+				}
+				if (this.evaluation.getNbQuestionParDifficulte(Difficulte.M)>0)
+				{
+					writer.append("<p class=\"difficulte moyen\">"+
+						this.evaluation.getNbQuestionParDifficulte(Difficulte.M)+ " MOYEN</p>");
+				}
+				if (this.evaluation.getNbQuestionParDifficulte(Difficulte.D)>0)
+				{
+					writer.append("<p class=\"difficulte difficile\">"+
+						this.evaluation.getNbQuestionParDifficulte(Difficulte.D)+ " DIFFICILE</p>\n"); 
+				}
+				
+				if (this.evaluation.getChrono())
+				{
+					writer.append("<p>La durée totale de l'évaluation est de :<br>\n");
+				}
+				else
+				{
+					writer.append("<p>La durée estimée de l'évaluation est de :<br>");
+				}
+				writer.append(this.evaluation.getMinutes() + " minutes et "+ this.evaluation.getSecondes() +" secondes.</p>\n");
+				
+				writer.append(
+				"<a href=\"questionnaire" + File.separator + "questions.html\">Commencer l'évaluation</a>" +
 				"</div>\n" +
 				"</body>\n" +
 				"</html>"
@@ -552,106 +565,40 @@ public class EcritureWeb
 	}
 
 	//////////
+	// JS  //
+	//////////
+
+	/**
+	 * Méthode qui copie le fichier JavaScript présent dans le dossier Web
+	 *
+	 * @param cheminDestination l'endroit ou il doit être créé
+	 */
+	public void copierFichierJs(String cheminDestination) throws IOException 
+	{
+        File fichierSource      = new File(".."+File.separator +"src"+File.separator + "Web" + File.separator+"script.js");
+        File fichierDestination = new File(this.emplacement + File.separator + "questionnaire" + File.separator + "script.js");
+
+        Files.copy(fichierSource.toPath(), fichierDestination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        
+        System.out.println("Le fichier JS a été copié avec succès.");
+    }
+
+	//////////
 	// CSS  //
 	//////////
 
-	//methode qui ecrit le code css de l'evaluation
-	public void ecrireFichierCSS()
+	/**
+	 * Méthode qui copie le fichier CSS présent dans le dossier Web
+	 *
+	 * @param cheminDestination l'endroit ou il doit être créé
+	 */
+	public void copierFichierCSS(String cheminDestination) throws IOException 
 	{
-		try (FileWriter writer = new FileWriter(this.emplacement + File.separator + "style.css")) {
-			writer.append("""
-				body {
-					background-image: url("../background.png");
-					margin: 0;
-					padding: 0;
-					background: White;
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					height: 100vh;
-					font-family: 'Roboto', Arial, sans-serif;
-					color: #ffffff;
-				}
+        File fichierSource      = new File(".."+File.separator +"src"+File.separator + "Web" + File.separator+"style.css");
+        File fichierDestination = new File(this.emplacement + File.separator + "questionnaire" + File.separator + "style.css");
 
-				.centered {
-					text-align: center;
-					font-size: 32px;
-					font-weight: 700;
-					text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-					padding: 20px;
-					border: 3px solid rgba(255, 255, 255, 0.8);
-					border-radius: 10px;
-					background-color: rgba(0, 0, 0, 0.3);
-				}
-
-				a {
-					text-decoration: none;
-					color: #ffffff;
-					transition: color 0.3s ease;
-				}
-
-				a:hover {
-					color: #ffdd57;
-				}
-
-				/* Style général pour les boutons */
-				button {
-					background-color: rgb(58, 138, 249) ; /* Couleur de fond orange */
-					color: white;
-					font-size: 18px;
-					font-weight: bold;
-					padding: 15px 30px;
-					border: none;
-					border-radius: 8px;
-					cursor: pointer;
-					transition: all 0.3s ease;
-					margin-top: 10px; /* Ajoute un espacement entre les boutons */
-					width: 100%; /* Les boutons prennent toute la largeur */
-				}
-
-				.buttonAction {
-					background-color:rgb(233, 168, 76); /* Couleur de fond orange */
-					color: white;
-					font-size: 18px;
-					font-weight: bold;
-					padding: 15px 30px;
-					border: none;
-					border-radius: 8px;
-					cursor: pointer;
-					transition: all 0.3s ease;
-					margin-top: 10px; /* Ajoute un espacement entre les boutons */
-					width: 100%; /* Les boutons prennent toute la largeur */
-				}
-
-				/* Effet au survol du bouton */
-				button:hover {
-					background-color: #e65c00; /* Couleur plus foncée au survol */
-					transform: scale(1.1); /* Agrandissement léger */
-				}
-
-				/* Style pour le conteneur des réponses */
-				#answers {
-					display: flex;
-					flex-direction: column; /* Affichage vertical des boutons */
-					align-items: center; /* Centrer les boutons horizontalement */
-					gap: 10px; /* Espacement entre chaque bouton */
-				}
-
-				/* Style pour le texte centré */
-				.centered {
-					text-align: center;
-					font-size: 32px;
-					font-weight: 700;
-					text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Ombre portée */
-					padding: 20px;
-					border: 3px solid rgba(255, 255, 255, 0.8); /* Bordure blanche translucide */
-					border-radius: 10px;
-					background-color: rgba(0, 0, 0, 0.3); /* Fond translucide pour le texte */
-				}
-
-			""");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+        Files.copy(fichierSource.toPath(), fichierDestination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        
+        System.out.println("Le fichier CSS a été copié avec succès.");
+    }
 }

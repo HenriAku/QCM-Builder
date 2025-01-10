@@ -4,14 +4,13 @@
  */
 package IHM;
 
-import javax.swing.JFrame;
-
 import Controlleur.Controlleur;
+import javax.swing.JFrame;
 
 public class FrameEvaluation extends JFrame
 {
-	private PanelEvaluation   qst;
-	private Controlleur    ctrl   ;
+	private PanelEvaluation   qst ;
+	private Controlleur       ctrl;
 
     public static void main(String[] args) 
     {
@@ -20,8 +19,10 @@ public class FrameEvaluation extends JFrame
 
 	public FrameEvaluation(Controlleur ctrl)
 	{
-		this.setTitle("Evaluation");
-		this.setSize(400, 600);
+		this.setTitle    ("Evaluation");
+		this.setSize     (400, 600);
+		this.setLocation ( 350,200   );
+		this.setResizable(false);
 
 		this.ctrl = ctrl;
 		

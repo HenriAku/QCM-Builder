@@ -7,11 +7,19 @@ package Metier;
 
 public abstract class Reponse 
 {
-	private String  reponse     ;
+	//////////////
+	// ATTRIBUT //
+	//////////////
+
+	private String  reponse;
+
+	//////////////////
+	// CONSTRUCTEUR //
+	//////////////////
 
 	public Reponse(String reponse) 
 	{
-		this.reponse = reponse     ;
+		this.reponse = reponse;
 	}
 
 	/***********************/
@@ -33,7 +41,6 @@ public abstract class Reponse
 	/*		STRING		   */
 	/***********************/
 
-	//toString
 	public String toString() 
 	{
 		return this.reponse;

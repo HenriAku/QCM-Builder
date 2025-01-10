@@ -1,0 +1,10 @@
+Question 2	Q	
+DebutQuestion
+En Java, une classe peut à la fois hériter d'une classe et implémenter plusieurs interfaces.
+DebutExplication
+Java autorise une classe à hériter d'une seule classe mère et à implémenter plusieurs interfaces.
+FinExplication
+tres facile	1.0	20.0
+Vrai	vrai
+Faux	faux
+FIN

@@ -1,0 +1,21 @@
+Question 4	A
+DebutQuestion
+Associez chaque concept avec sa définition correcte.
+DebutExplication
+• Une classe est une abstraction d’objets partageant les mêmes caractéristiques et comportements. 
+• Une méthode décrit ce que l’objet peut faire. 
+• Un attribut est une donnée définissant l’état d’un objet. 
+• Un constructeur est une méthode spéciale pour initialiser un objet. 
+FinExplication
+difficile	4.0	120.0
+Reponse
+Constructeur
+Classe
+Méthode
+Attribut
+Association
+Constructeur	Une méthode utilisée pour initialiser un objet.
+Classe	Une description abstraite d’un ensemble d’objets.
+Méthode	Une fonction caractérisant le comportement d’un objet.
+Attribut	Une donnée représentant l’état d’un objet.
+FIN

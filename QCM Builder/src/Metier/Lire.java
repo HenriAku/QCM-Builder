@@ -11,7 +11,11 @@ import java.nio.file.Files;
 
 public class Lire 
 {
-	private String contenuFichier;
+	///////////////
+	// ATTRIBUTS //
+	///////////////
+
+	private String contenuFichier       ;
 	private String emplacementRessources;
 
 	public Lire(String emplacementRessources) 
@@ -19,10 +23,14 @@ public class Lire
 		this.emplacementRessources = emplacementRessources;
 	}
 
+	//////////////
+	// METHODES //
+	//////////////
+
 	// Retourne un tableau qui contient dans chaque case le nom des sous dossiers de nomDossier
 	public ArrayList<String> lireDossier(String nomDossier)
 	{
-		File dossier = new File(emplacementRessources+ File.separator + nomDossier);
+		File              dossier          = new File(emplacementRessources+ File.separator + nomDossier);
 		ArrayList<String> nomsSousDossiers = new ArrayList<>();
 		
 		if (dossier.exists() && dossier.isDirectory())
@@ -34,10 +42,14 @@ public class Lire
 					nomsSousDossiers.add(sousDossier.getName());
 			}
 		}
-		System.out.println("Test lire " + nomsSousDossiers);
 		return nomsSousDossiers;
 	}
 
+	/**
+	 * Renvoie le contenu du fichier en String
+	 * 
+	 * @return un String qui contient le fichier
+	 */
 	public String getFichier()
 	{
 		try
@@ -56,38 +68,59 @@ public class Lire
 	}
 
 	//Emplacement fichier doit etre une ../ressources/X/
-	public ArrayList<Question> lireQuestion(String emplacementFichier)
+	public ArrayList<Question> lireQuestion(String emplacementFichier) 
 	{
-		ArrayList<Question> lstQuestion = new ArrayList<Question>();
-
+		ArrayList<Question> lstQuestion = new ArrayList<>();
+	
 		File dossierNotion = new File(emplacementFichier);
-
-		//vérifier que l'endroit indiqué est bien un dossier
+	
+		// Vérifier que l'endroit indiqué est bien un dossier
 		if (dossierNotion.exists() && dossierNotion.isDirectory()) 
 		{
-			//récupérer tout les dossiers questions dans le dossier notionX 
+			// Récupérer tous les dossiers questions dans le dossier notionX
 			File[] dossierQuestions = dossierNotion.listFiles();
-			if (dossierQuestions != null) 
-			{
-				//pour chaque dossier questions on va récupérer les .csv (soit les questions)
+			if (dossierQuestions != null) {
+				// Pour chaque dossier questions, récupérer les .csv (soit les questions)
 				for (File dossierQuestion : dossierQuestions) 
 				{
 					if (dossierQuestion.isDirectory()) 
 					{
-						//récupération des fichier 
+						// Récupération des fichiers
 						File[] fichiers = dossierQuestion.listFiles();
-						if (fichiers != null) 
-						{
-							for (File fichier : fichiers) 
-							{
-								// Vérifier si c'est un fichier .data
+						if (fichiers != null) {
+							for (File fichier : fichiers) {
+								// Vérifier si c'est un fichier .csv
 								if (fichier.isFile() && fichier.getName().endsWith(".csv")) 
 								{
 									try 
 									{
+										String cheminComplement = null;
+	
+										// Vérifier s'il existe un dossier "complement" au même niveau
+										File parentDir = fichier.getParentFile(); // Dossier parent contenant le .csv
+										if (parentDir != null) 
+										{
+											File complementDir = new File(parentDir, "complement"); // Dossier "complement"
+											if (complementDir.exists() && complementDir.isDirectory()) 
+											{
+												// Récupérer le premier fichier dans le dossier "complement"
+												File[] fichiersComplement = complementDir.listFiles();
+												if (fichiersComplement != null && fichiersComplement.length > 0) 
+												{
+													// Utiliser le premier fichier trouvé
+													cheminComplement = fichiersComplement[0].getAbsolutePath();
+												} 
+											}
+										}
+	
+										// Lire le contenu du fichier .csv
 										String contenu = Files.readString(fichier.toPath());
-										lstQuestion.add(creerQuestion(contenu));
-										
+	
+										// Ajouter la question avec le chemin complément
+										if(cheminComplement == null){cheminComplement = "";}
+
+										lstQuestion.add(creerQuestion(contenu, cheminComplement));
+
 									} 
 									catch (IOException e) 
 									{
@@ -100,40 +133,62 @@ public class Lire
 				}
 			}
 		}
-
+	
 		return lstQuestion;
 	}
 
-	private Question creerQuestion(String qst)
+	private Question creerQuestion(String qst, String cheminComplement)
 	{
 		//première ligne
 		String type              = "";
 		String question          = "";
 		String explication       = "";
 		String stringdifficulte  = "";
-		double   point    = -1;
-		Float time     = 0.00f;
 
-		String[] lines = qst.split("\n");
-		
-		String[] premiereLigne = lines[0].split("\t");
-		type              = premiereLigne[1];
-		question          = premiereLigne[2];
-		explication       = premiereLigne[3];
-		stringdifficulte  = premiereLigne[4]; 
+		double point = -1   ;
+		Float  time  = 0.00f;
 
-		point = Double.parseDouble(premiereLigne[5].replace(",", "."));
-		time = Float.parseFloat(premiereLigne[6].strip().replace(",", "."));
+		String[] lines = qst.split("\n")     ;
+		String[] ligne = lines[0].split("\t");
+		type           = ligne[1];
+	
+		int cpt =2;
+		while (!lines[cpt].equals("DebutExplication")) 
+		{
+			question += lines[cpt];
+			cpt++;
+			if (!lines[cpt].equals("DebutExplication")) 
+			{
+				question += "\n";
+			}
+		}
+
+		int cpt2 =cpt+1;
+		while (!lines[cpt2].equals("FinExplication")) 
+		{
+			explication += lines[cpt2];
+			cpt2++;
+			if (!lines[cpt2].equals("FinExplication")) 
+			{
+				explication += "\n";
+			}
+		}
+
+		ligne             = lines[cpt2+1].split("\t");
+		stringdifficulte  = ligne[0]; 
+
+		point = Double.parseDouble(ligne[1].replace(",", "."));
+		time = Float.parseFloat(ligne[2].strip().replace(",", "."));
 
 		ArrayList<ReponseQcm> repQ = null;
 		ArrayList<ReponseAsso> repA = null;
-		ArrayList<ReponseEnlevement> repE = new ArrayList<ReponseEnlevement>();
+		ArrayList<ReponseElimination> repE = new ArrayList<ReponseElimination>();
 
 		switch(type)
 		{
 			case "Q":
 				ArrayList<ReponseQcm> lstRep = new ArrayList<ReponseQcm>();
-				for(int i = 1; i<lines.length; i++)
+				for(int i = cpt2+2; i<lines.length; i++)
 				{
 					if(lines[i].equals("FIN"))
 					{
@@ -145,66 +200,73 @@ public class Lire
 				repQ = lstRep;
 				break;
 
-			case "A":
-				int indiceTabAsso = -1;
-				String etape = "";
-				ArrayList<ReponseAsso> lstReponsesAsso = new ArrayList<ReponseAsso>();
-				
-				for(int i = 0; i<lines.length; i++)
-				{
-					String[] contenuLigne = lines[i].split("\t");
-					if(lines[i].equals("FIN"))
-						break;
-				
-					if(lines[i].strip().equals("Reponse".strip()))
-						etape = "reponse";
+				case "A":
+					ArrayList<ReponseAsso> lstReponsesAsso = new ArrayList<>();
+					String etape = "";
 
-					else
-					{
-						if(lines[i].strip().equals("Association".strip()))
-							etape = "Association";
-						else
-						{
-							if(etape.equals("reponse"))
-								lstReponsesAsso.add(new ReponseAsso(contenuLigne[0]));
-							else
-							{
-								if(etape.equals("Association"))
-								{
-									for (ReponseAsso reponse : lstReponsesAsso) 
-									{
-										if (reponse.getReponse().strip().equals(contenuLigne[0].strip())) 
-											indiceTabAsso = lstReponsesAsso.indexOf(reponse);
-									}
+					for (String line : lines) {
+						String[] contenuLigne = line.split("\t");
+						String   trimmedLine  = line.strip()    ;
 
-									for(int asso = 1; asso < contenuLigne.length; asso++)
-									{
-										for (ReponseAsso reponse : lstReponsesAsso) 
-										{
-											if (reponse.getReponse().strip().equals(contenuLigne[asso].strip())) 
-												lstReponsesAsso.get(indiceTabAsso).setAssocie(reponse);
+						if (trimmedLine.equals("FIN"))
+							break;
+
+						if (trimmedLine.equals("Reponse")) {
+							etape = "reponse";
+						} else if (trimmedLine.equals("Association")) {
+							etape = "association";
+						} else {
+							if (etape.equals("reponse")) {
+								// Ajouter uniquement les réponses principales
+								lstReponsesAsso.add(new ReponseAsso(contenuLigne[0].strip(), null));
+							} else if (etape.equals("association")) {
+								// Lire et associer les réponses (par paires uniquement)
+								for (int i = 0; i < contenuLigne.length; i += 2) {
+									String principale = contenuLigne[i].strip();
+									String associe = contenuLigne[i + 1].strip();
+
+									// Trouver la réponse principale existante
+									ReponseAsso repPrincipale = null;
+									for (ReponseAsso reponse : lstReponsesAsso) {
+										if (reponse.getReponse().equals(principale)) {
+											repPrincipale = reponse;
+											break;
 										}
 									}
-								}								
+
+									// Si la réponse principale n'existe pas, ignorer (on ne crée pas ici)
+									if (repPrincipale == null) {
+										continue;
+									}
+
+									// Créer l'association uniquement si l'associé n'existe pas encore
+									ReponseAsso repAssociee = repPrincipale.getAssocie();
+									if (repAssociee == null) {
+										repAssociee = new ReponseAsso(associe, null);
+										repPrincipale.setAssocie(repAssociee);
+									}
+								}
 							}
 						}
 					}
-				}
-				repA = lstReponsesAsso;
-				break;
+
+					repA = lstReponsesAsso;
+					break;
+			
 
 			case "E":
-				int i = 1;
+				int i = cpt2+2;
 				while (i < lines.length && ! lines[i].equals("FIN"))
 				{
 					Scanner scannerLine = new Scanner(lines[i]);
 					scannerLine.useDelimiter("\t");
-					question = scannerLine.next();
+					String reponse = scannerLine.next();
+					
 					boolean valide = (scannerLine.next().equals("vrai")) ? true : false;
 					int ordreElimination = Integer.parseInt(scannerLine.next());
 					double nbPointPerdu = Double.parseDouble(scannerLine.next());
 
-					repE.add(new ReponseEnlevement(question, ordreElimination, nbPointPerdu, valide));
+					repE.add(new ReponseElimination(reponse, ordreElimination, nbPointPerdu, valide));
 					scannerLine.close();
 					i++;
 				}
@@ -216,16 +278,16 @@ public class Lire
 		Difficulte difficulte = Difficulte.TF;
 		switch (stringdifficulte.toLowerCase()) 
 		{
-			case "très facile": difficulte = Difficulte.TF;
+			case "tres facile": difficulte = Difficulte.TF;
 				break;
 				
-			case "facile"     : difficulte = Difficulte.F;
+			case "facile"     : difficulte = Difficulte.F ;
 				break;
 
-			case "moyen"      : difficulte = Difficulte.M;
+			case "moyen"      : difficulte = Difficulte.M ;
 				break;
 
-			case "difficile"  : difficulte = Difficulte.D;
+			case "difficile"  : difficulte = Difficulte.D ;
 				break;
 		
 			default:
@@ -233,19 +295,40 @@ public class Lire
 		}
 
 		if(type.equals("Q"))
-			return new QCM(question, explication, difficulte, point, time, repQ);
+		{
+			if (cheminComplement.length() !=0) 
+				return new QCM(question, explication, difficulte, point, time, repQ, cheminComplement);
+			else
+				return new QCM(question, explication, difficulte, point, time, repQ);
+		}
+
 		if(type.equals("A"))
 		{
-			return new Association(question, explication, difficulte, point, time, repA);
+			if (cheminComplement.length() !=0) 
+				return new Association(question, explication, difficulte, point, time, repA, cheminComplement);
+			else
+				return new Association(question, explication, difficulte, point, time, repA);
 		}
-		if(type.equals("E"))
-			return new Enlevement(question, explication, difficulte, point, time, repE);
 
+		if(type.equals("E"))
+		{
+			if (cheminComplement.length() !=0) 
+				return new Elimination(question, explication, difficulte, point, time, repE,cheminComplement);
+			else
+				return new Elimination(question, explication, difficulte, point, time, repE);
+		}
 		return null;
 	}
 
+	/////////////
+	// SETTERS //
+	/////////////
+
 	public void   setEmplacementRessources(String e){this.emplacementRessources = e   ;}
+
+	/////////////
+	// GETTERS //
+	/////////////
+
 	public String getEmplacementRessources(        ){return this.emplacementRessources;}
-	
-	
 }

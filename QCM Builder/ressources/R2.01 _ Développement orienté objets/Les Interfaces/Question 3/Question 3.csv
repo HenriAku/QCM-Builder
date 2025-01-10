@@ -1,0 +1,10 @@
+Question 3	Q	
+DebutQuestion
+Vrai ou Faux : Une interface peut contenir des méthodes static.
+DebutExplication
+Depuis Java 8, les interfaces peuvent contenir des méthodes static, qui doivent être appelées via le nom de l'interface.
+FinExplication
+tres facile	1.0	20.0
+Vrai	vrai
+Faux	faux
+FIN

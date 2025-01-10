@@ -1,30 +1,57 @@
+/**
+ * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Wychowski Théo
+ * @date 09/12/2024
+ */
+
 package IHM;
 
+import Metier.Question;
+import java.awt.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import Metier.Question;
-
-import java.awt.*;
-import java.util.ArrayList;
-
 public class PanelVisu extends JPanel 
 {
-
     private ArrayList<Question> lstQuestions;
 
-    public PanelVisu(ArrayList<Question> lq) 
+    public PanelVisu(ArrayList<Question> lq, boolean chrono) 
     {
         this.lstQuestions = lq;
 
         this.setLayout(new BorderLayout());
-        String[] nomCol = {"Question", "Difficulté", "Point"}; 
+        
+        String[] nomCol;
+
+        if (chrono) 
+        {
+            nomCol = new String[]{"Question", "Difficulté", "Point", "Temps"};
+        } 
+        else 
+        {
+            nomCol = new String[]{"Question", "Difficulté", "Point"};
+        }
 
         DefaultTableModel model = new DefaultTableModel(nomCol, 0);
 
-        for (Question q : lstQuestions) 
+        float tempsTot = 0;
+
+        if (chrono) 
         {
-            model.addRow(new Object[]{q.getQuestion(), q.getDifficulte().getDifficulte(), q.getPoint()}); 
+            for (Question q : lstQuestions) 
+            {
+                model.addRow(new Object[]{q.getQuestion(), q.getDifficulte().getDifficulte(), q.getPoint(), (int)(q.getTemps()) + "secondes"});
+                tempsTot += q.getTemps(); //Additionne les temps
+            }
+            //Ajout ligne temps total
+            model.addRow(new Object[]{"Temps total", "", "", tempsTot/60 + " minutes " + tempsTot%60+  " secondes"});
+        } 
+        else 
+        {
+            for (Question q : lstQuestions) 
+            {
+                model.addRow(new Object[]{q.getQuestion(), q.getDifficulte().getDifficulte(), q.getPoint()});
+            }
         }
 
         JTable table = new JTable(model) 
@@ -41,7 +68,6 @@ public class PanelVisu extends JPanel
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         this.add(scrollPane, BorderLayout.CENTER);
-
     }
 
     static class TextAreaRenderer extends JTextArea implements javax.swing.table.TableCellRenderer 
@@ -63,6 +89,4 @@ public class PanelVisu extends JPanel
             return this;
         }
     }
-
-
 }

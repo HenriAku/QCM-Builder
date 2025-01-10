@@ -9,40 +9,62 @@ import java.util.List;
 
 public class Association extends Question
 {
+	///////////////
+	// ATTRIBUTS //
+	///////////////
 	private String type;
-	private ArrayList<ReponseAsso> lstRep;
-	private ArrayList<ReponseAsso> lstRepAsso;
 
+	private ArrayList<ReponseAsso> lstRep           ;
+	private ArrayList<ReponseAsso> lstRepAsso       ;
+	private ArrayList<ReponseAsso> lstRepPasMelanger;
+
+	///////////////////
+	// CONSTRUCTEURS //
+	///////////////////
+	/**
+	 * Constructeur des questions Association
+	 */
 	public Association( String question, String explication, Difficulte difficulte, double point, float temps, 
 						List<ReponseAsso> lstRep) 
 	{
 		super(question, explication, difficulte, point, temps);
-		
+
 		this.type       = "Association";
 		this.lstRep     = new ArrayList<>(lstRep)     ;
 		this.lstRepAsso = new ArrayList<ReponseAsso>();    
 
-		for (ReponseAsso rep : lstRep) 
+		for (ReponseAsso rep : lstRep)
 			this.lstRepAsso.add(rep.getAssocie());
+
+		this.lstRepPasMelanger = new ArrayList<>(lstRep);
 
 		melanger();
 	}
 
+	/**
+	 * Constructeur des questions Association avec le path en cas de complément à la question
+	 */
 	public Association( String question, String explication, Difficulte difficulte, double point, float temps, 
 						List<ReponseAsso> lstRep, String path) 
 	{
-		super(question, explication, difficulte, point, temps, path);
-	 
+		super(question, explication, difficulte, point, temps,path);
+
 		this.type       = "Association";
 		this.lstRep     = new ArrayList<>(lstRep)     ;
-		this.lstRepAsso = new ArrayList<ReponseAsso>();  
-		
-		for (ReponseAsso rep : lstRep) 
+		this.lstRepAsso = new ArrayList<ReponseAsso>();
+
+		for (ReponseAsso rep : lstRep)
 			this.lstRepAsso.add(rep.getAssocie());
+
+			this.lstRepPasMelanger = new ArrayList<>(lstRep);
 
 		melanger();
 	}
 	
+	//////////////
+	// METHODES //
+	//////////////
+
 	public ReponseAsso getReponseAsso(ReponseAsso rep) {return rep.getAssocie();}
 
 	public void melanger()
@@ -64,17 +86,30 @@ public class Association extends Question
 		lst.set(index2, temp           );
 	}
 
+	/////////////
+	// SETTERS //
+	/////////////
+
 	public void setReponses(ArrayList<ReponseAsso> lstReponseAssos){this.lstRep = lstReponseAssos;}
 
 
+	/////////////
+	// GETTERS //
+	/////////////
 
-	public String                 getType      () {return type      ;}
-	public ArrayList<ReponseAsso> getLstRep    () {return lstRep    ;}
-	public ArrayList<ReponseAsso> getLstRepAsso() {return lstRepAsso;}
+	public String                 getType             () {return this.type             ;}
+	public ArrayList<ReponseAsso> getLstRep           () {return this.lstRep           ;}
+	public ArrayList<ReponseAsso> getLstRepAsso       () {return this.lstRepAsso       ;}
+	public ArrayList<ReponseAsso> getlstRepPasMelanger() {return this.lstRepPasMelanger;}
 
-	
-	//toString
-	@Override
+	//////////////
+	// TOSTRING //
+	//////////////
+	/**
+	 * Affiche dans la console des informations sur la question
+	 * 
+	 * @return un String
+	 */
 	public String toString() 
 	{
 		String str = "[" + super.toString();

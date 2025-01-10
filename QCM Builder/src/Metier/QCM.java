@@ -10,20 +10,35 @@ import java.util.Scanner;
 
 public class QCM extends Question
 {
-	private String type;
+	///////////////
+	// ATTRIBUTS //
+	///////////////
+
+	private String                type  ;
 	private ArrayList<ReponseQcm> lstRep;
 
+	///////////////////
+	// CONSTRUCTEURS //
+	///////////////////
+	/**
+	 * Constructeur des questions QCM
+	 */
 	public QCM(String question, String explication, Difficulte difficulte, double point, float temps, List<ReponseQcm> lstRep) 
 	{
 		super(question, explication, difficulte, point, temps);
-		this.type = "QCM";
+
+		this.type    = "QCM";
 		this.lstRep = new ArrayList<>(lstRep);
 	}
 
+	/**
+	 * Constructeur des questions QCM avec le path en cas de complément à la question
+	 */
 	public QCM(String question, String explication, Difficulte difficulte, double point, float temps, List<ReponseQcm> lstRep, String path) 
 	{
 		super(question, explication, difficulte, point, temps, path);
-		this.type = "QCM";
+		
+		this.type   = "QCM";
 		this.lstRep = new ArrayList<>(lstRep);
 	}
 
@@ -40,6 +55,10 @@ public class QCM extends Question
 		return bonnesReponse;
 	}
 
+	/////////////
+	// SETTERS //
+	/////////////
+
 	public void setReponses(ArrayList<String> lstTxtReponses, ArrayList<Boolean> validite)
 	{
 		this.lstRep = new ArrayList<ReponseQcm>();
@@ -49,14 +68,21 @@ public class QCM extends Question
 		}
 	}
 
-	
+	/////////////
+	// GETTERS //
+	/////////////
 
-	@Override
 	public ArrayList<ReponseQcm> getLstRep(){return this.lstRep;}
 	public String                getType  (){return this.type  ;}
 	
-	//toString
-	@Override
+	//////////////
+	// TOSTRING //
+	//////////////
+	/**
+	 * Affiche dans la console des informations sur la question
+	 * 
+	 * @return un String
+	 */
 	public String toString() 
 	{
 		String str = "[" + super.toString();

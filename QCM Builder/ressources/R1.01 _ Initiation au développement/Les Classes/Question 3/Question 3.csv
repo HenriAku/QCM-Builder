@@ -1,0 +1,13 @@
+Question 3	E	
+DebutQuestion
+Quel est le rôle d’un constructeur par défaut ?
+DebutExplication
+Un constructeur par défaut est fourni automatiquement par le langage s’il n’en existe pas.
+Il initialise les attributs avec des valeurs par défaut (ex. : 0 pour un entier, null pour un objet).
+FinExplication
+moyen	3.0	90.0
+Initialiser les attributs à des valeurs personnalisées	faux	-1	-1.0
+Garantir qu’un objet ne soit pas modifié	faux	1	-1.0
+Initialiser les attributs à leur valeur par défaut	vrai	-1	-1.0
+Supprimer les valeurs des attributs	faux	2	-1.0
+FIN

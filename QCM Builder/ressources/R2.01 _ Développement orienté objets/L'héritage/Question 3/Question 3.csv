@@ -1,0 +1,18 @@
+Question 3	A
+DebutQuestion
+Associez les concepts à leurs caractéristiques.
+DebutExplication
+L’héritage multiple n’est pas autorisé pour les classes, tandis que les attributs protégés ou privés limitent leur accessibilité. 
+FinExplication
+moyen	4.0	60.0
+Reponse
+Héritage simple
+Héritage multiple
+Attribut protégé
+Attribut privé
+Association
+Héritage simple	Relation unidirectionnelle entre deux classes.
+Héritage multiple	Pas autorisé en Java pour les classes.
+Attribut protégé	Accessible à la classe fille et au même package.
+Attribut privé	Accessible uniquement dans la classe où il est déclaré.
+FIN

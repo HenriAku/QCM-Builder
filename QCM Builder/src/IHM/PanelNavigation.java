@@ -1,3 +1,8 @@
+/**
+ * @author Rougeolle Henri, Yachir Yanis, Vauthier Maël, Viez Remi, Wychowski Théo
+ * @date 09/12/2024
+ */
+
 package IHM;
 
 import java.awt.Color;
@@ -38,14 +43,14 @@ public class PanelNavigation extends JPanel implements ActionListener
 		JPanel panelBtn = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panelBtn.setOpaque(false);
 	
-		// Style de la police soulignée
+		//Style de la police soulignée
 		Font font = new Font("Arial", Font.PLAIN, 15); 
 		@SuppressWarnings("unchecked")
 		Map<TextAttribute, Object> attributes = (Map<TextAttribute, Object>) font.getAttributes();
 		attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
 		Font underlinedFont = new Font(attributes);
 	
-		// Création des boutons
+		//Création des boutons
 		this.btnA = new JButton("Acceuil");
 		this.btnA.setContentAreaFilled(false);
 		this.btnA.setBorderPainted    (false);
@@ -67,7 +72,7 @@ public class PanelNavigation extends JPanel implements ActionListener
 		this.btnN.setFont      (underlinedFont);
 		this.btnN.setForeground(Color.WHITE);
 	
-		// Condition sur le bouton Notion
+		//Condition sur le bouton Notion
 		if (ressource == null) 
 			this.btnN.setEnabled(false);
 
@@ -93,7 +98,6 @@ public class PanelNavigation extends JPanel implements ActionListener
 
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) 
 	{
 		if (e.getSource() == this.btnA) 

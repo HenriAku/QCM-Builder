@@ -1,0 +1,10 @@
+Question 6	Q	
+DebutQuestion
+Vrai ou Faux : La zone des méthodes contient les ByteCodes interprétés par la JVM.
+DebutExplication
+La zone des méthodes stocke le code interprété
+FinExplication
+tres facile	1.0	30.0
+Vrai	vrai
+Faux	faux
+FIN

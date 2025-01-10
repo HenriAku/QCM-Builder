@@ -1,0 +1,13 @@
+Question 1	Q	
+DebutQuestion
+Que signifie le modificateur final pour une classe ?
+DebutExplication
+Une classe final signifie qu’elle ne peut pas être étendue (héritée).
+C’est utile pour des classes dont la structure ou le comportement doit rester immuable.
+FinExplication
+facile	2.0	60.0
+La classe ne peut pas être dérivée	vrai
+La classe est abstraite	faux
+La classe ne peut pas être instanciée	faux
+La classe est visible uniquement dans le paquetage	faux
+FIN

@@ -1,0 +1,19 @@
+Question 4	A
+DebutQuestion
+Associez les concepts à leur définition.
+DebutExplication
+Les méthodes abstraites et default diffèrent par la présence ou non d’un corps.
+Les attributs et les méthodes static sont accessibles via l’interface.
+FinExplication
+difficile	4.0	120.0
+Reponse
+Attribut dans une interface
+Méthode abstraite
+Méthode static
+Méthode default
+Association
+Attribut dans une interface	Accès direct par le nom de l'interface, valeur constante.
+Méthode abstraite	Déclarée sans corps, à implémenter dans les classes.
+Méthode static	Appelée directement sur l'interface sans instance.
+Méthode default	Méthode avec un corps définie dans l’interface.
+FIN

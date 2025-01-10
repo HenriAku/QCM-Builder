@@ -1,0 +1,13 @@
+Question 1	Q	
+DebutQuestion
+Quelle est la syntaxe correcte pour écrire une requête SQL ?
+DebutExplication
+La clause SELECT * FROM table_name WHERE condition; est la bonne syntaxe pour récupérer toutes les colonnes d’une table
+en appliquant une condition. Les autres options contiennent des erreurs syntaxiques. 
+FinExplication
+tres facile	1.0	30.0
+SELECT ALL table_name WHERE condition;	faux
+SELECT * table_name WHERE condition;	faux
+SELECT * FROM table_name IF condition;	faux
+SELECT * FROM table_name WHERE condition;	vrai
+FIN

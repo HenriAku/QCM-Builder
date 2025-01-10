@@ -1,0 +1,13 @@
+Question 1	Q	
+DebutQuestion
+Quel modificateur rend une classe accessible de partout ?
+DebutExplication
+Le modificateur public rend une classe accessible depuis n’importe quel endroit dans le code. Les autres options limitent l’accès (privé, protégé) 
+ou concernent un autre aspect (static).
+FinExplication
+tres facile	1.0	30.0
+Privé	faux
+Public	vrai
+Protégé	faux
+Static	faux
+FIN

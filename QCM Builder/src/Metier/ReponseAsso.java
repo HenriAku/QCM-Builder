@@ -6,7 +6,15 @@ package Metier;
 
 public class ReponseAsso extends Reponse
 {
+	//////////////
+	// ATTRIBUT //
+	//////////////
+
 	private ReponseAsso reponseAsso;
+
+	///////////////////
+	// CONSTRUCTEURS //
+	///////////////////
 
 	public ReponseAsso(String reponse, ReponseAsso reponseAsso)
 	{
@@ -20,11 +28,22 @@ public class ReponseAsso extends Reponse
 		super(reponse);
 	}
 
+	/////////////
+	// SETTERS //
+	/////////////
+
 	public void        setAssocie(ReponseAsso r){this.reponseAsso = r   ;} 
+
+	/////////////
+	// GETTERS //
+	/////////////
+
 	public ReponseAsso getAssocie(             ){return this.reponseAsso;}
 
-	//toString
-	@Override
+	//////////////
+	// TOSTRING //
+	//////////////
+
 	public String toString() 
 	{
 		return super.toString();

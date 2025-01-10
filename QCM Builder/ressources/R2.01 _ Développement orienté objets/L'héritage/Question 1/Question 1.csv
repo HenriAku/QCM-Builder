@@ -1,0 +1,13 @@
+Question 1	Q	
+DebutQuestion
+Quels sont les comportements d’une classe fille en Java ?
+DebutExplication
+Une classe fille peut redéfinir des méthodes (avec le même prototype) et accéder au constructeur de la classe mère à l’aide de super.
+Elle n’hérite pas directement des membres privés.
+FinExplication
+moyen	3.0	45.0
+Elle peut redéfinir une méthode de la classe mère.	vrai
+Elle peut hériter de plusieurs classes mères.	faux
+Elle peut appeler un constructeur de la classe mère avec super.	vrai
+Elle peut hériter des membres privés de la classe mère.	faux
+FIN

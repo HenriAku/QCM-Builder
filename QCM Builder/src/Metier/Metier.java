@@ -6,7 +6,12 @@
 package Metier;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.HashMap;
@@ -14,8 +19,8 @@ import java.util.HashMap;
 public class Metier 
 {
 	private List<Ressource> lstRessources;
-	private Lire lecteur;
-	private Ecriture ecriture;
+	private Lire            lecteur      ;
+	private Ecriture        ecriture     ;
 
 	//////////////////
 	// CONSTRUCTEUR //
@@ -29,6 +34,8 @@ public class Metier
 		this.ecriture = new Ecriture(".." + File.separator + "ressources");
 
 		this.init();
+
+		Collections.sort(this.lstRessources);
 	}
 
 	/**
@@ -37,13 +44,16 @@ public class Metier
 	 */
 	public void init() 
 	{
-		ArrayList<Ressource> lstRessources  = new ArrayList<>();
+		if (getLecteur().lireDossier("") == null) 
+			return;
+		
+		ArrayList<Ressource> lstRes  = new ArrayList<>();
 		ArrayList<String>    nomsRessources = getLecteur().lireDossier("");
-	
+
 		for (int i = 0; i < nomsRessources.size(); i++) 
 		{
 			ArrayList<Notion> lstNotion  = new ArrayList<Notion>();
-			ArrayList<String> nomsNotion = getLecteur().lireDossier(nomsRessources.get(i));
+			ArrayList<String> nomsNotion = getLecteur().lireDossier(nomsRessources.get(i) + File.separator);
 
 			for (int j = 0; j < nomsNotion.size(); j++) 
 			{
@@ -51,14 +61,15 @@ public class Metier
 				String cheminQuestion = lecteur.getEmplacementRessources()+ File.separator + nomsRessources.get(i) + File.separator + nomsNotion.get(j);
 	
 				lstQuestions = getLecteur().lireQuestion(cheminQuestion);
+
 				lstNotion.add(new Notion(nomsNotion.get(j), lstQuestions));
 			}
-			lstRessources.add(new Ressource(nomsRessources.get(i), lstNotion));
+			lstRes.add(new Ressource(nomsRessources.get(i), lstNotion));
 		}
-		setLstRessource(lstRessources);
+		setLstRessource(lstRes);
 	}
-	
-	
+
+
 	public boolean creerDossier(String nomRes)
 	{
 		return this.ecriture.creerDossier(nomRes);
@@ -112,15 +123,18 @@ public class Metier
 	 * Ajoute une ressource a la list
 	 * @param res est une ressource
 	 */
-	public void addRessource(Ressource res)
+	public void addRessource(String sRes)
 	{
-		boolean bOk = true;
-		for (Ressource ressource : this.lstRessources)
+		Ressource ressource = new Ressource(sRes);
+		boolean   bOk       = true;
+		for (Ressource res : this.lstRessources)
 		{
-			if (ressource.getNom().equals(res.getNom()))
+			if (res.getNom().equals(ressource.getNom()))
 				bOk = false;
 		}
-		if (bOk)this.lstRessources.add(res);
+		if (bOk)this.lstRessources.add(ressource);
+		
+		this.creerDossierRessource(ressource);
 	}
 
 	public String[] getNomRessources()
@@ -138,13 +152,13 @@ public class Metier
 	////////////////
 
 	//ajouter une notion dans une ressource existante
-	public void addNotion(String nomR, Notion n)
+	public void addNotion(String nomR, String n)
 	{
-		for (Ressource ressource : this.lstRessources) 
-		{
-			if (ressource.getNom().equals(nomR))
-				ressource.addNotion(n);
-		}
+		Notion notion = new Notion(n, null);
+		Ressource res = this.rechercheRessource(nomR);
+
+		res.addNotion(notion);
+		this.creerDossierNotion(res , notion); 
 	}
 
 	/**
@@ -199,7 +213,7 @@ public class Metier
 			erreur += "Aucun type de question choisi\n";
 
 		//verifier si la difficulté est tres facile, facile, moyen ou difficile
-		if (!difficulte.equalsIgnoreCase("Tres facile") && !difficulte.equalsIgnoreCase("Facile") && !difficulte.equalsIgnoreCase("Moyenne") && !difficulte.equalsIgnoreCase("Difficile"))
+		if (!difficulte.equalsIgnoreCase("Tres facile") && !difficulte.equalsIgnoreCase("Facile") && !difficulte.equalsIgnoreCase("Moyen") && !difficulte.equalsIgnoreCase("Difficile"))
 			erreur += "La difficulté doit être Tres facile, Facile, Moyen ou Difficile\n";
 
 		//verifier si le point est positif
@@ -215,9 +229,9 @@ public class Metier
 		//vérifier si secondes > 60
 		else
 		{
-			String[] tab = temps.split(":");
-			int timeMin = -1;
-			int timeSec = -1;
+			String[] tab     = temps.split(":");
+			int      timeMin = -1;
+			int      timeSec = -1;
 
 			boolean erreurTemps = false;
 			try
@@ -247,33 +261,32 @@ public class Metier
 	{
 		String erreur = "";
 
-		//associer r à la ressource portant le même nom dans la liste
 		Ressource ress = null;
 		ress = rechercheRessource(ressource);
 
 		Difficulte diff = null;
 		difficulte = difficulte.toLowerCase();
-		//associer le string difficulté à un objet Difficulte
+
 		if (difficulte.equals("tres facile"))
 			diff = Difficulte.TF;
 		else if (difficulte.equals("facile"))
 			diff = Difficulte.F;
-		else if (difficulte.equals("moyenne"))
+		else if (difficulte.equals("moyen"))
 			diff = Difficulte.M;
 		else if (difficulte.equals("difficile"))
 			diff = Difficulte.D;
 
 		String[] tab = temps.split(":");
-		int timeMin = Integer.parseInt(tab[0]);
-		int timeSec = Integer.parseInt(tab[1]);
-		//calculer le temps en en numérique 1h30 = 1,5h
-		float tempsS = timeMin + (timeSec/60);
+		int timeMin  = Integer.parseInt(tab[0]);
+		int timeSec  = Integer.parseInt(tab[1]);
 
-		ArrayList<ReponseEnlevement> lstReponses = new ArrayList<ReponseEnlevement>();
+		float tempsS = timeMin*60 + timeSec;
 
-		boolean txtReponseValide = true;
-		boolean ordreEliminationValide = true;
-		boolean nbPointPerduValide = true;
+		ArrayList<ReponseElimination> lstReponses = new ArrayList<ReponseElimination>();
+
+		boolean txtReponseValide           = true ;
+		boolean ordreEliminationValide     = true ;
+		boolean nbPointPerduValide         = true ;
 		boolean auMoinsUneReponseSupprimer = false;
 
 		if (question.length() == 0)
@@ -283,7 +296,7 @@ public class Metier
 		for (boolean estValide:validite)
 		{
 			if (estValide)
-				auMoinsUneReponseCorrecte = true;
+				auMoinsUneReponseCorrecte = true ;
 		}
 
 		if (! auMoinsUneReponseCorrecte)
@@ -299,7 +312,12 @@ public class Metier
 
 			if (validite.get(i))
 			{
-				lstReponses.add(new ReponseEnlevement(lstRep.get(i), -1, -1, validite.get(i)));
+				if (! ordreElimination.get(i).equals("") || ! nbPointPerdu.get(i).equals(""))
+				{
+					erreur = "La réponse valide ne doit pas avoir d'ordre d'élimination ou de point perdu\n";
+				}
+					
+				lstReponses.add(new ReponseElimination(lstRep.get(i), -1, -1, validite.get(i)));
 			}
 			else
 			{
@@ -363,7 +381,7 @@ public class Metier
 				}
 
 				if (erreur.length() == 0)
-					lstReponses.add(new ReponseEnlevement(lstRep.get(i), ordre, nbPoint, validite.get(i)));
+					lstReponses.add(new ReponseElimination(lstRep.get(i), ordre, nbPoint, validite.get(i)));
 			}
 		}
 		if (! auMoinsUneReponseSupprimer)
@@ -373,7 +391,7 @@ public class Metier
 		
 		if (erreur.length() == 0)
 		{
-			Enlevement elvt = ress.ajouterQuestionEnleve(notion, question, type, explication, diff, point, tempsS, lstReponses);
+			Elimination elvt = ress.ajouterQuestionElimination(notion, question, type, explication, diff, point, tempsS, lstReponses);
 			this.ecriture.creerElimination(elvt, ressource + File.separator + notion);
 		}
 			
@@ -385,29 +403,28 @@ public class Metier
 	{
 		String erreur = "";
 
-		//associer r à la ressource portant le même nom dans la liste
 		Ressource ress = null;
 		ress = rechercheRessource(ressource);
 
 		Difficulte diff = null;
 		difficulte = difficulte.toLowerCase();
-		//associer le string difficulté à un objet Difficulte
+
 		if (difficulte.equals("tres facile"))
 			diff = Difficulte.TF;
 		else if (difficulte.equals("facile"))
 			diff = Difficulte.F;
-		else if (difficulte.equals("moyenne"))
+		else if (difficulte.equals("moyen"))
 			diff = Difficulte.M;
 		else if (difficulte.equals("difficile"))
 			diff = Difficulte.D;
 
 		String[] tab = temps.split(":");
-		int timeMin = Integer.parseInt(tab[0]);
-		int timeSec = Integer.parseInt(tab[1]);
-		//calculer le temps en en numérique 1h30 = 1,5h
-		float tempsS = timeMin + (timeSec/60);
+		int timeMin  = Integer.parseInt(tab[0]);
+		int timeSec  = Integer.parseInt(tab[1]);
 
-		ArrayList<ReponseEnlevement> lstReponses = new ArrayList<ReponseEnlevement>();
+		float tempsS = timeMin*60 + timeSec;
+
+		ArrayList<ReponseElimination> lstReponses = new ArrayList<ReponseElimination>();
 
 		boolean txtReponseValide = true;
 		boolean ordreEliminationValide = true;
@@ -437,7 +454,7 @@ public class Metier
 
 			if (validite.get(i))
 			{
-				lstReponses.add(new ReponseEnlevement(lstRep.get(i), -1, -1, validite.get(i)));
+				lstReponses.add(new ReponseElimination(lstRep.get(i), -1, -1, validite.get(i)));
 			}
 			else
 			{
@@ -501,7 +518,7 @@ public class Metier
 				}
 
 				if (erreur.length() == 0)
-					lstReponses.add(new ReponseEnlevement(lstRep.get(i), ordre, nbPoint, validite.get(i)));
+					lstReponses.add(new ReponseElimination(lstRep.get(i), ordre, nbPoint, validite.get(i)));
 			}
 		}
 		if (! auMoinsUneReponseSupprimer)
@@ -511,11 +528,11 @@ public class Metier
 		
 		if (erreur.length() == 0)
 		{
-			Enlevement elvt = null;
+			Elimination elvt = null;
 			if(path != null)
-				elvt = ress.ajouterQuestionEnleve(notion, question, type, explication, diff, point, tempsS, lstReponses, path);
+				elvt = ress.ajouterQuestionElimination(notion, question, type, explication, diff, point, tempsS, lstReponses, path);
 			else
-				elvt = ress.ajouterQuestionEnleve(notion, question, type, explication, diff, point, tempsS, lstReponses);
+				elvt = ress.ajouterQuestionElimination(notion, question, type, explication, diff, point, tempsS, lstReponses);
 			this.ecriture.creerElimination(elvt, ressource + File.separator + notion);
 		}
 			
@@ -527,45 +544,43 @@ public class Metier
 	{
 		if (question == null) question = "";
 
-		//associer r à la ressource portant le même nom dans la liste
 		Ressource ress = null;
 		ress = rechercheRessource(ressource);
 
 		String erreur = "";
-		//question
+
 		if (question.equals(""))
 			erreur += "La question ne peut pas être vide\n";
 
-		//difficulte
 		Difficulte diff = null;
-		//mettre en minuscule la difficulté
+
 		difficulte = difficulte.toLowerCase();
-		//associer le string difficulté à un objet Difficulte
+
 		if (difficulte.equals("tres facile"))
 			diff = Difficulte.TF;
 		else if (difficulte.equals("facile"))
 			diff = Difficulte.F;
-		else if (difficulte.equals("moyenne"))
+		else if (difficulte.equals("moyen"))
 			diff = Difficulte.M;
 		else if (difficulte.equals("difficile"))
 			diff = Difficulte.D;
 			
 		//temps
-		//transofrmer le temps (mm::ss) en minutes a virgule
+		//transformer le temps (mm::ss) en minutes a virgule
 		//si le temps est négatif ou égal à 0
-		int timeMin =0;
-		int timeSec =0;
+		int timeMin  = 0;
+		int timeSec  = 0;
 		String[] tab = temps.split(":");
-		timeMin = Integer.parseInt(tab[0]);
-		timeSec = Integer.parseInt(tab[1]);
-		//calculer le temps en en numérique 1h30 = 1,5h
-		float tempsS = timeMin + (timeSec/60);
+		timeMin      = Integer.parseInt(tab[0]);
+		timeSec      = Integer.parseInt(tab[1]);
 
-		//creer la liste de reponses par la list de string entree en paremetre
+		float tempsS = timeMin*60 + timeSec;
+
+		//creer la liste de reponses par la list de string entree en parametre
 		ArrayList<ReponseQcm> lstReponses = new ArrayList<ReponseQcm>();
 		//vérifier si la liste de reponses est vide
 		boolean auMoinsUneReponseVrai = false;
-		boolean texteReponseValide = true;
+		boolean texteReponseValide    = true ;
 
 		if (lstRep.size() == 0)
 			erreur += "Il faut au moins une réponse\n";
@@ -604,7 +619,6 @@ public class Metier
 	{
 		if (question == null) question = "";
 
-		//associer r à la ressource portant le même nom dans la liste
 		Ressource ressource = null;
 		for (Ressource res : this.lstRessources)
 		{
@@ -619,34 +633,33 @@ public class Metier
 
 		//difficulte
 		Difficulte diff = null;
-		//mettre en minuscule la difficulté
 		difficulte = difficulte.toLowerCase();
-		//associer le string difficulté à un objet Difficulte
+
 		if (difficulte.equals("tres facile"))
 			diff = Difficulte.TF;
 		else if (difficulte.equals("facile"))
 			diff = Difficulte.F;
-		else if (difficulte.equals("moyenne"))
+		else if (difficulte.equals("moyen"))
 			diff = Difficulte.M;
 		else if (difficulte.equals("difficile"))
 			diff = Difficulte.D;
 			
 		//temps
-		//transofrmer le temps (mm::ss) en minutes a virgule
+		//transformer le temps (mm::ss) en minutes a virgule
 		//si le temps est négatif ou égal à 0
-		int timeMin =0;
-		int timeSec =0;
+		int timeMin  = 0;
+		int timeSec  = 0;
 		String[] tab = temps.split(":");
-		timeMin = Integer.parseInt(tab[0]);
-		timeSec = Integer.parseInt(tab[1]);
-		//calculer le temps en en numérique 1h30 = 1,5h
-		float tempsS = timeMin + (timeSec/60);
+		timeMin      = Integer.parseInt(tab[0]);
+		timeSec      = Integer.parseInt(tab[1]);
+
+		float tempsS = timeMin*60 + timeSec;
 
 		//creer la liste de reponses par la list de string entree en paremetre
 		ArrayList<ReponseQcm> lstReponses = new ArrayList<ReponseQcm>();
 		//vérifier si la liste de reponses est vide
 		boolean auMoinsUneReponseVrai = false;
-		boolean texteReponseValide = true;
+		boolean texteReponseValide    = true;
 
 		if (lstRep.size() == 0)
 			erreur += "Il faut au moins une réponse\n";
@@ -689,7 +702,6 @@ public class Metier
 	{
 		if (question == null) question = "";
 
-		//associer r à la ressource portant le même nom dans la liste
 		Ressource ressource = null;
 		for (Ressource res : this.lstRessources)
 		{
@@ -704,14 +716,13 @@ public class Metier
 
 		//difficulte
 		Difficulte diff = null;
-		//mettre en minuscule la difficulté
 		difficulte = difficulte.toLowerCase();
-		//associer le string difficulté à un objet Difficulte
+
 		if (difficulte.equals("tres facile"))
 			diff = Difficulte.TF;
 		else if (difficulte.equals("facile"))
 			diff = Difficulte.F;
-		else if (difficulte.equals("moyenne"))
+		else if (difficulte.equals("moyen"))
 			diff = Difficulte.M;
 		else if (difficulte.equals("difficile"))
 			diff = Difficulte.D;
@@ -723,8 +734,8 @@ public class Metier
 		//temps
 		//transofrmer le temps (mm::ss) en minutes a virgule
 		//si le temps est négatif ou égal à 0
-		int timeMin =0;
-		int timeSec =0;
+		int timeMin = 0;
+		int timeSec = 0;
 		if (temps.equals(""))
 			erreur += "Le temps ne peut pas être vide\n";
 		if (temps.indexOf(":") == -1)
@@ -733,15 +744,15 @@ public class Metier
 		else
 		{
 			String[] tab = temps.split(":");
-			timeMin = Integer.parseInt(tab[0]);
-			timeSec = Integer.parseInt(tab[1]);
+			timeMin      = Integer.parseInt(tab[0]);
+			timeSec      = Integer.parseInt(tab[1]);
 			if (timeMin < 0 || timeSec < 0)
 				erreur += "Le temps doit être positif\n";
 			if (timeSec >= 60)
 				erreur += "Les secondes doivent être inférieures à 60\n";
 		}
-		//calculer le temps en en numérique 1h30 = 1,5h
-		float tempsS = timeMin + (timeSec/60);
+
+		float tempsS = timeMin*60 + timeSec;
 
 		//creer la liste de reponses par la list de string entree en paremetre
 		ArrayList<ReponseAsso> lstReponses = new ArrayList<ReponseAsso>();
@@ -751,23 +762,20 @@ public class Metier
 			erreur += "Il faut au moins une réponse\n";
 		else
 		{
-			System.out.println(lstRep.size());
-			for (int i=0; i<lstRep.size(); i = i + 2)
+			for (int i=0; i<lstRep.size()/2; i++)
 			{
-				if (lstRep.get(i).length() == 0 || lstRep.get(i + 1).length() == 0 || lstRep.get(i).equals(null) || lstRep.get(i).equals("") || lstRep.get(i+1).equals(null) || lstRep.get(i+1).equals(""))
+				if (lstRep.get(i).length() == 0 || lstRep.get(i + (lstRep.size()/2)).length() == 0 || lstRep.get(i).equals(null) || lstRep.get(i).equals("") || lstRep.get(i).equals(null) || lstRep.get(i-1 + (lstRep.size()/2)).equals(""))
 				{
 					erreur = "Reponse sans texte";
 				}
 				else
 				{
 					//cree les reponse
-					lstReponses.add(new ReponseAsso(lstRep.get(i  ), null));
-					System.out.println(lstRep.get(i  ));
-					System.out.println(lstRep.get(i+1));
-					lstReponses.add(new ReponseAsso(lstRep.get(i+1), null));
+					lstReponses.add(new ReponseAsso(lstRep.get(i), null));
+					ReponseAsso rep2 = new ReponseAsso(lstRep.get(i + (lstRep.size()/2)), null);
 					//associe les 2 reponse 
-					lstReponses.get(i  ).setAssocie(lstReponses.get(i+1));
-					lstReponses.get(i+1).setAssocie(lstReponses.get(i  ));
+					lstReponses.get(i).setAssocie(rep2);
+					rep2.setAssocie(lstReponses.get(i));
 				}
 			}
 		}
@@ -785,7 +793,7 @@ public class Metier
 		return erreur;
 	}
 
-	public String modifQuestionQCM(String ressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> lstRep, ArrayList<Boolean> validite, QCM questionAModifier)
+	public String modifQuestionQCM(String ressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> lstRep, ArrayList<Boolean> validite, QCM questionAModifier, String path)
 	{
 		if (question == null) question = "";
 
@@ -858,8 +866,37 @@ public class Metier
 
 			String chemin = this.ecriture.rechercherFichierQuestion(questionAModifier, ressourceQuestion, notionQuestion);
 			File ancierFichier = new File(chemin);
+			System.out.println("chemin -> " +chemin);
+			System.out.println("chemin modif  -> " +chemin.substring(0, chemin.lastIndexOf(File.separator)));
 			File ancienDossier = new File(chemin.substring(0, chemin.lastIndexOf(File.separator)));
 			ancierFichier.delete();
+			
+			File dossierTemp = new File("../temp");
+			if (! dossierTemp.exists())
+				dossierTemp.mkdir();
+
+			for (File file:ancienDossier.listFiles())
+			{
+				if (file.isDirectory())
+				{
+					for (File fileDir:file.listFiles())
+					{
+						try
+						{
+							if (path == null)
+							{
+								Path source      = Paths.get(fileDir.getPath());
+								Path destination = Paths.get(dossierTemp.getPath() + File.separator + fileDir.getName());
+								Files.copy(source, destination);
+							}
+						} catch (IOException e) {}
+
+						fileDir.delete();
+					}
+				}
+				file.delete();
+			}
+			
 			ancienDossier.delete();
 			questionAModifier.setDifficulte(diff);
 			questionAModifier.setExplication(explication);
@@ -867,12 +904,52 @@ public class Metier
 			questionAModifier.setQuestion(question);
 			questionAModifier.setTemps(tempsS);
 			questionAModifier.setReponses(lstRep, validite);
+
+			if (path != null)
+				questionAModifier.setPath(path);
+			
 			this.ecriture.creerQCM(questionAModifier, ressourceQuestion.getNom() + File.separator + notionQuestion.getNom());
+
+			File dossierComp = new File(this.ecriture.rechercherFichierQuestion(questionAModifier, ressourceQuestion, notionQuestion));
+			dossierComp = new File(dossierComp.getParent() + File.separator + "complement");
+			
+			if (! dossierComp.exists() && (dossierTemp.list().length > 0))
+				dossierComp.mkdir();
+			
+			try
+			{
+				if (path == null)
+				{
+					if (dossierTemp.list().length > 0)
+					{
+						Path source      = Paths.get(dossierTemp.getAbsolutePath() + File.separator + dossierTemp.list()[0]);
+						Path destination = Paths.get(dossierComp.getAbsolutePath() + File.separator + dossierTemp.list()[0]);
+						Files.copy(source, destination);
+					}
+
+				}
+
+			} catch (IOException e) {}
+
+
+			for (File f:dossierTemp.listFiles())
+				f.delete();
+			
+			dossierTemp.delete();
 		}
 		return erreur;
 	}
 
-	public String modifQuestionAsso(String Sressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> lstRep, Association questionAModifier)
+	public static void deleteDirectory(File directory) {
+        if (directory.isDirectory()) {
+            for (File file : directory.listFiles()) {
+                deleteDirectory(file); // Appel récursif pour supprimer les fichiers/sous-dossiers
+            }
+        }
+        directory.delete(); // Supprime le fichier ou dossier vide
+    }
+
+	public String modifQuestionAsso(String Sressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> lstRep, Association questionAModifier, String path)
 	{
 		if (question == null) question = "";
 
@@ -939,19 +1016,39 @@ public class Metier
 		if (erreur.equals(""))
 		{
 			ressourceQuestion.supprimerQuestion(questionAModifier, notionQuestion);
-			ressourceQuestion.ajouterQuestionAsso(notionQuestion.getNom(), question, type, explication, diff, point, tempsS, lstReponses);
+			ressourceQuestion.ajouterQuestionAsso(notion, question, type, explication, diff, point, tempsS, lstReponses);
 
 			String chemin = this.ecriture.rechercherFichierQuestion(questionAModifier, ressourceQuestion, notionQuestion);
 			File ancierFichier = new File(chemin);
-			String cheminDossier = chemin;
-			chemin= chemin.substring(chemin.indexOf("/")+1);
-			chemin = chemin.substring(chemin.indexOf("/")+1);
-			chemin = chemin.substring(chemin.indexOf("/")+1);
+			File ancienDossier = new File(chemin.substring(0, chemin.lastIndexOf(File.separator)));
+			ancierFichier.delete();
+			
+			File dossierTemp = new File("../temp");
+			if (! dossierTemp.exists())
+				dossierTemp.mkdir();
 
-			chemin = chemin.substring(0, chemin.indexOf("/", chemin.indexOf("/")+1));
-			cheminDossier = cheminDossier.substring(0, cheminDossier.lastIndexOf("/"));
+			for (File file:ancienDossier.listFiles())
+			{
+				if (file.isDirectory())
+				{
+					for (File fileDir:file.listFiles())
+					{
+						try
+						{
+							if (path == null)
+							{
+								Path source      = Paths.get(fileDir.getPath());
+								Path destination = Paths.get(dossierTemp.getPath() + File.separator + fileDir.getName());
+								Files.copy(source, destination);
+							}
+						} catch (IOException e) {}
 
-			File ancienDossier = new File(cheminDossier);
+						fileDir.delete();
+					}
+				}
+				file.delete();
+			}
+			
 			ancierFichier.delete();
 			ancienDossier.delete();
 			questionAModifier.setDifficulte(diff);
@@ -960,12 +1057,45 @@ public class Metier
 			questionAModifier.setQuestion(question);
 			questionAModifier.setTemps(tempsS);
 			questionAModifier.setReponses(lstReponses);
-			this.ecriture.creerAssociation(questionAModifier, chemin);
+
+			if (path != null)
+				questionAModifier.setPath(path);
+			
+			this.ecriture.creerAssociation(questionAModifier, ressourceQuestion.getNom() + File.separator + notionQuestion.getNom());
+
+			File dossierComp = new File(this.ecriture.rechercherFichierQuestion(questionAModifier, ressourceQuestion, notionQuestion));
+			dossierComp = new File(dossierComp.getParent() + File.separator + "complement");
+			
+			if (! dossierComp.exists() && (dossierTemp.list().length > 0))
+				dossierComp.mkdir();
+			
+			try
+			{
+				if (path == null)
+				{
+					if (dossierTemp.list().length > 0)
+					{
+						Path source      = Paths.get(dossierTemp.getAbsolutePath() + File.separator + dossierTemp.list()[0]);
+						Path destination = Paths.get(dossierComp.getAbsolutePath() + File.separator + dossierTemp.list()[0]);
+						Files.copy(source, destination);
+					}
+
+				}
+
+			} catch (IOException e) {}
+
+
+			for (File f:dossierTemp.listFiles())
+				f.delete();
+			
+			dossierTemp.delete();
+			
+
 		}
 		return erreur;
 	}
 
-	public String modifQuestionElimination(String ressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> ordreElimination, ArrayList<String> nbPointPerdu, ArrayList<String> lstRep, ArrayList<Boolean> validite, Enlevement questionAModifier)
+	public String modifQuestionElimination(String ressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> ordreElimination, ArrayList<String> nbPointPerdu, ArrayList<String> lstRep, ArrayList<Boolean> validite, Elimination questionAModifier, String path)
 	{
 		String erreur = "";
 
@@ -987,20 +1117,18 @@ public class Metier
 			}
 		}
 
-
 		//difficulte
 		Difficulte diff = null;
-		//mettre en minuscule la difficulté
 		diff = questionAModifier.getDifficulte();
 			
 		//temps
 		float tempsS = questionAModifier.getTemps();
 
-		ArrayList<ReponseEnlevement> lstReponses = new ArrayList<ReponseEnlevement>();
+		ArrayList<ReponseElimination> lstReponses = new ArrayList<ReponseElimination>();
 
-		boolean txtReponseValide = true;
-		boolean ordreEliminationValide = true;
-		boolean nbPointPerduValide = true;
+		boolean txtReponseValide           = true ;
+		boolean ordreEliminationValide     = true ;
+		boolean nbPointPerduValide         = true ;
 		boolean auMoinsUneReponseSupprimer = false;
 
 		if (question.length() == 0)
@@ -1026,7 +1154,7 @@ public class Metier
 
 			if (validite.get(i))
 			{
-				lstReponses.add(new ReponseEnlevement(lstRep.get(i), -1, -1, validite.get(i)));
+				lstReponses.add(new ReponseElimination(lstRep.get(i), -1, -1, validite.get(i)));
 			}
 			else
 			{
@@ -1090,7 +1218,7 @@ public class Metier
 				}
 
 				if (erreur.length() == 0)
-					lstReponses.add(new ReponseEnlevement(lstRep.get(i), ordre, nbPoint, validite.get(i)));
+					lstReponses.add(new ReponseElimination(lstRep.get(i), ordre, nbPoint, validite.get(i)));
 			}
 		}
 		if (! auMoinsUneReponseSupprimer)
@@ -1101,21 +1229,78 @@ public class Metier
 		if (erreur.length() == 0)
 		{
 			ressourceQuestion.supprimerQuestion(questionAModifier, notionQuestion);
-			ressourceQuestion.ajouterQuestionEnleve(notionQuestion.getNom(), question, type, explication, diff, point, tempsS, lstReponses);
+			ressourceQuestion.ajouterQuestionElimination(notion, question, type, explication, diff, point, tempsS, lstReponses);
 
 			String chemin = this.ecriture.rechercherFichierQuestion(questionAModifier, ressourceQuestion, notionQuestion);
-			System.out.println("chemin : " + chemin);
 			File ancierFichier = new File(chemin);
 			File ancienDossier = new File(chemin.substring(0, chemin.lastIndexOf(File.separator)));
 			ancierFichier.delete();
+			
+			File dossierTemp = new File("../temp");
+			if (! dossierTemp.exists())
+				dossierTemp.mkdir();
+
+			for (File file:ancienDossier.listFiles())
+			{
+				if (file.isDirectory())
+				{
+					for (File fileDir:file.listFiles())
+					{
+						try
+						{
+							if (path == null)
+							{
+								Path source      = Paths.get(fileDir.getPath());
+								Path destination = Paths.get(dossierTemp.getPath() + File.separator + fileDir.getName());
+								Files.copy(source, destination);
+							}
+						} catch (IOException e) {}
+
+						fileDir.delete();
+					}
+				}
+				file.delete();
+			}
 			ancienDossier.delete();
+
 			questionAModifier.setDifficulte(diff);
 			questionAModifier.setExplication(explication);
 			questionAModifier.setPoint(point);
 			questionAModifier.setQuestion(question);
 			questionAModifier.setTemps(tempsS);
 			questionAModifier.setReponses(lstReponses);
+
+			if (path != null)
+				questionAModifier.setPath(path);
+			
 			this.ecriture.creerElimination(questionAModifier, ressourceQuestion.getNom() + File.separator + notionQuestion.getNom());
+
+			File dossierComp = new File(this.ecriture.rechercherFichierQuestion(questionAModifier, ressourceQuestion, notionQuestion));
+			dossierComp = new File(dossierComp.getParent() + File.separator + "complement");
+			
+			if (! dossierComp.exists() && (dossierTemp.list().length > 0))
+				dossierComp.mkdir();
+			
+			try
+			{
+				if (path == null)
+				{
+					if (dossierTemp.list().length > 0)
+					{
+						Path source      = Paths.get(dossierTemp.getAbsolutePath() + File.separator + dossierTemp.list()[0]);
+						Path destination = Paths.get(dossierComp.getAbsolutePath() + File.separator + dossierTemp.list()[0]);
+						Files.copy(source, destination);
+					}
+
+				}
+
+			} catch (IOException e) {}
+
+
+			for (File f:dossierTemp.listFiles())
+				f.delete();
+			
+			dossierTemp.delete();
 		}
 
 
@@ -1125,6 +1310,22 @@ public class Metier
 	public String rechercherFichierQuestion (Question question,Ressource res, Notion not)
 	{
 		return this.ecriture.rechercherFichierQuestion(question, res, not);
+	}
+
+	public void supprimerComplement(Question question, String res, String not)
+	{
+		String chemin = rechercherFichierQuestion(question, this.rechercheRessource(res), this.rechercheNotion(res, not));
+		chemin = chemin.substring(0, chemin.lastIndexOf(File.separator)) + File.separator + "complement";
+		File dossierComplement = new File(chemin);
+		
+		if (dossierComplement.exists())
+		{
+			for (File f:dossierComplement.listFiles())
+			{
+				f.delete();
+			}
+			dossierComplement.delete();
+		}
 	}
 
 	///////////////////
@@ -1175,7 +1376,7 @@ public class Metier
 				if (tab[1] > not.getNbQuestionsFacile())
 					erreur += "Facile : " + tab[1] + " > " + not.getNbQuestionsFacile() + "\n";
 				if (tab[2] > not.getNbQuestionsMoyenne())
-					erreur += "Moyenne : " + tab[2] + " > " + not.getNbQuestionsMoyenne() + "\n";
+					erreur += "Moyen : " + tab[2] + " > " + not.getNbQuestionsMoyenne() + "\n";
 				if (tab[3] > not.getNbQuestionsDifficile())
 					erreur += "Difficile : " + tab[3] + " > " + not.getNbQuestionsDifficile() + "\n";
 			}
@@ -1190,9 +1391,10 @@ public class Metier
 	public ArrayList<Question> genererEvaluation(String r, boolean chrono, HashMap<String, int[]> nbQuestParNotionDiff, String nomFichier, String emplacement)
 	{
 		ArrayList<Question> lstQuestionsGenere = new ArrayList<Question>();
-		ArrayList<Notion> lstNotions = new ArrayList<Notion>();
-		Ressource ressource = rechercheRessource(r);
-		Notion not = null;
+		ArrayList<Notion>   lstNotions         = new ArrayList<Notion>  ();
+		
+		Ressource           ressource = rechercheRessource(r);
+		Notion              not       = null;
 
 		//ajouter les question de chaque notion selon la difficulte
 		for (String nomNotion : nbQuestParNotionDiff.keySet()) 

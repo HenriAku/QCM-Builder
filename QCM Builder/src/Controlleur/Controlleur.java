@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 import IHM.FramePrincipal;
 import Metier.Association;
-import Metier.Enlevement;
+import Metier.Elimination;
 import Metier.Metier;
 import Metier.Notion;
 import Metier.Question;
@@ -20,10 +20,11 @@ import Metier.QCM;
 public class Controlleur
 {
 	private Metier         metier;
+	private FramePrincipal framePrincipal;
 	public Controlleur()
 	{
 		this.metier = new Metier();
-		new FramePrincipal(this);
+		this.framePrincipal = new FramePrincipal(this);
 	}
 
 	/////////////
@@ -52,7 +53,6 @@ public class Controlleur
 
 	public boolean supprimerDossier(String nomDossier)
 	{
-		System.out.println(nomDossier);
 		return this.metier.supprimerDossier(nomDossier);
 	}
 
@@ -65,7 +65,7 @@ public class Controlleur
 	// RESSOURCES //
 	////////////////
 
-	public void addRessource(Ressource ressource)
+	public void addRessource(String ressource)
 	{
 		this.metier.addRessource(ressource);
 	}
@@ -88,6 +88,12 @@ public class Controlleur
 	//////////////
 	
 	public String[] getNomNotion (String res) {return this.metier.getNomNotion    (res);}
+
+	public void addNotion(String nomR, String n) 
+	{
+		this.metier.addNotion(nomR, n);
+	}
+
 
 	//////////////
 	// QUESTION //
@@ -124,24 +130,35 @@ public class Controlleur
 		return this.metier.creerQuestionElimination(Sressource, notion, question, type, explication, difficulte, point, temps, ordreElimination, nbPointPerdu, lstRep, validite, path);
 	}
 
-	public String modifQuestionQCM(String r, String c, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses ,  ArrayList<Boolean> validite, QCM questionAMettreAJour)
+	public String modifQuestionQCM(String r, String c, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses ,  ArrayList<Boolean> validite, QCM questionAMettreAJour, String path)
 	{
-		return this.metier.modifQuestionQCM(r, c, question, type, explication, difficulte, point, temps, reponses, validite, questionAMettreAJour);
+		return this.metier.modifQuestionQCM(r, c, question, type, explication, difficulte, point, temps, reponses, validite, questionAMettreAJour, path);
 	}
 
-	public String modifQuestionAsso(String r, String c, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses, Association questionAModifier)
+	public String modifQuestionAsso(String r, String c, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> reponses, Association questionAModifier, String path)
 	{
-		return (this.metier.modifQuestionAsso(r, c, question, type, explication, difficulte, point, temps, reponses, questionAModifier));
+		return (this.metier.modifQuestionAsso(r, c, question, type, explication, difficulte, point, temps, reponses, questionAModifier, path));
 	}
 
-	public String modifQuestionElimination(String Sressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> ordreElimination, ArrayList<String> nbPointPerdu, ArrayList<String> lstRep, ArrayList<Boolean> validite, Enlevement questionAModifier)
+	public String modifQuestionElimination(String Sressource, String notion, String question, String type, String explication, String difficulte, double point, String temps, ArrayList<String> ordreElimination, ArrayList<String> nbPointPerdu, ArrayList<String> lstRep, ArrayList<Boolean> validite, Elimination questionAModifier, String path)
 	{
-		return this.metier.modifQuestionElimination(Sressource, notion, question, type, explication, difficulte, point, temps, ordreElimination, nbPointPerdu, lstRep, validite, questionAModifier);
+		return this.metier.modifQuestionElimination(Sressource, notion, question, type, explication, difficulte, point, temps, ordreElimination, nbPointPerdu, lstRep, validite, questionAModifier, path);
 	}
 
 	public String rechercherFichierQuestion (Question question,Ressource res, Notion not)
 	{
 		return this.metier.rechercherFichierQuestion(question, res, not);
+	}
+
+	public void majPanelQuestion()
+	{
+		this.framePrincipal.afficheAcceuil();
+		this.framePrincipal.AfficheQuestion(null, null);
+	}
+
+	public void supprimerComplement(Question question, String res, String not)
+	{
+		this.metier.supprimerComplement(question, res, not);
 	}
 
 	////////////////

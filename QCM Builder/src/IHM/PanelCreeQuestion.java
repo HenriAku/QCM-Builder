@@ -4,6 +4,7 @@
  */
 package IHM;
 
+import Controlleur.Controlleur;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -11,34 +12,30 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-import Controlleur.Controlleur;
-
-import javax.swing.JOptionPane;
-
 
 public class PanelCreeQuestion extends JPanel implements ActionListener
 {
-	private JTextField txtNbPoints;
+	private JTextField txtNbPoints    ;
 	private JTextField txtTempsReponse;
 
 	private JComboBox<String> ddlstRessource;
-	private JComboBox<String> ddlstNotion;
+	private JComboBox<String> ddlstNotion   ;
 
-	private JRadioButton rbQcmUnique;
-	private JRadioButton rbQcmMulti;
+	private JRadioButton rbQcmUnique  ;
+	private JRadioButton rbQcmMulti   ;
 	private JRadioButton rbAssociation;
 	private JRadioButton rbElimination;
 
@@ -48,36 +45,42 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 
 	private Graphics2D g2;
 
-	private int btnCouleurSelectionner;
+	private int     btnCouleurSelectionner;
+	private boolean boutonCouleurEditable ;
+	private boolean estCreeDepuisRessource;
 
-	private boolean boutonCouleurEditable;
-
-	private FrameAjoutQuestion frameAjoutQuestion;
+	private FrameAjoutQuestion    frameAjoutQuestion   ;
+	private FrameCreationQuestion frameCreationQuestion;
 
 	private Controlleur    ctrl ;
 
-	public PanelCreeQuestion(Controlleur ctrl, FramePrincipal frame)
+
+
+	public PanelCreeQuestion(Controlleur ctrl, FramePrincipal frame, FrameCreationQuestion frameCreationQuestion, boolean estCreeDepuisRessource)
 	{
 		this.setLayout(new GridLayout(5,1));
 
-		this.ctrl  = ctrl ;
+		this.ctrl               = ctrl;
 		this.frameAjoutQuestion = null;
 
 		this.btnCouleurSelectionner = -1;
 		this.boutonCouleurEditable  = false;
 
-		/* Création Objets */
-		// Partie 1
-		this.txtNbPoints = new JTextField(4);
+		this.estCreeDepuisRessource = estCreeDepuisRessource;
+
+		this.frameCreationQuestion  = frameCreationQuestion ;
+
+		this.txtNbPoints     = new JTextField(4);
 		this.txtTempsReponse = new JTextField(9);
 
-		// Partie2
 		this.ddlstRessource = new JComboBox<>(this.ctrl.getNomRessources());
+		for (int i = 0; i<this.ctrl.getNomRessources().length; i++)
+			System.out.println("ressource : " + this.ctrl.getNomRessources()[i]);
+
 		this.ddlstRessource.setSelectedItem(null);
 		this.ddlstNotion = new JComboBox<>();
-		this.ddlstNotion.setEnabled(false); // Désactivé par défaut
+		this.ddlstNotion.setEnabled(false);
 
-		// Partie 3
 		this.rbQcmUnique   = new JRadioButton("question à choix multiple à réponse unique"           );
 		this.rbQcmMulti    = new JRadioButton("question à choix multiple à réponse multiple"         );
 		this.rbAssociation = new JRadioButton("question à association d’éléments"                    );
@@ -89,11 +92,8 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 		this.btgTypeQuestion.add(this.rbAssociation);
 		this.btgTypeQuestion.add(this.rbElimination);
 
-		// Partie 4
 		this.btnCreeQuestion = new JButton("Créer");
 
-		/* Ajouts */
-		// Partie 1
 		JPanel panelTexte = new JPanel();
 		panelTexte.setLayout(new GridLayout(2,4));
 
@@ -169,28 +169,38 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 		this.btnCreeQuestion.addActionListener(this);
 	}
 
+	public void setRessourceNotion(String ressource, String notion)
+	{
+		this.ddlstRessource.setSelectedItem(ressource);
+		this.ddlstNotion   .setSelectedItem(notion);
+
+		this.ddlstRessource.setEnabled(false);
+		this.ddlstNotion   .setEnabled(false);
+	}
+
 	public void actionPerformed(ActionEvent e)
 	{
 		if (e.getSource() == this.ddlstRessource) 
 		{
 			if (this.ddlstRessource.getSelectedItem() != null) 
 			{
-				// Récupérer les notions correspondant à la ressource sélectionnée
+				//Récupérer les notions correspondant à la ressource sélectionnée
 				String ressourceSelectionnee = (String) this.ddlstRessource.getSelectedItem();
 				String[] notions = this.ctrl.getNomNotion(ressourceSelectionnee);
 		
-				// Mettre à jour le JComboBox des notions
-				this.ddlstNotion.removeAllItems(); // Vider les anciennes notions
+				//Mettre à jour le JComboBox des notions
+				this.ddlstNotion.removeAllItems();
 				for (String notion : notions) 
 				{
-					this.ddlstNotion.addItem(notion); // Ajouter chaque notion
+					this.ddlstNotion.addItem(notion);
 				}
 		
-				// Activer le JComboBox des notions
+				//Activer le JComboBox des notions
 				this.ddlstNotion.setEnabled(true);
-			} else 
+			} 
+			else 
 			{
-				// Désactiver le JComboBox des notions si aucune ressource n'est sélectionnée
+				//Désactiver le JComboBox des notions si aucune ressource n'est sélectionnée
 				this.ddlstNotion.removeAllItems();
 				this.ddlstNotion.setEnabled(false);
 			}
@@ -222,7 +232,7 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 					break;
 
 				case 3:
-					difficulte = "Moyenne";
+					difficulte = "Moyen";
 					break;
 
 				case 4:
@@ -235,7 +245,8 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 			try
 			{
 				point = Double.parseDouble(this.txtNbPoints.getText());
-			} catch (Exception err) {}
+			} 
+			catch (Exception err) {}
 
 			String temps = this.txtTempsReponse.getText();
 			
@@ -247,10 +258,9 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 
 
 			String erreur = this.ctrl.validerQuestion(ressource, notion, type, difficulte, point, temps);
-			System.out.println(erreur);
 			if (erreur.length() == 0)
 			{
-				this.frameAjoutQuestion = new FrameAjoutQuestion(this.ctrl, type, null);
+				this.frameAjoutQuestion = new FrameAjoutQuestion(this.ctrl, this.frameCreationQuestion, type, null, estCreeDepuisRessource);
 				this.frameAjoutQuestion.setParametres(ressource, notion, type, difficulte, temps, point);
 				this.frameAjoutQuestion.setVisible(true);
 			}
@@ -261,12 +271,12 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 
 	public void paintComponent(Graphics g)
 	{
-		// Dessine les ronds de couleur pour le niveau des questions
+		//Dessine les ronds de couleur pour le niveau des questions
 		super.paintComponent(g);
 
 		g2 = (Graphics2D) g;
 
-		// Dessin des ronds
+		//Dessin des ronds
 		g2.setColor(Color.GREEN);
 		if (! this.boutonCouleurEditable) g2.setColor(new Color(185, 225, 185));
 		g2.fillOval(620, 95, 25, 25);
@@ -283,7 +293,7 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 		if (! this.boutonCouleurEditable) g2.setColor(new Color(211, 211, 211));
 		g2.fillOval(740, 95, 25, 25);
 
-		// Dessin du texte (TF, F, M, D)
+		//Dessin du texte (TF, F, M, D)
 		if (this.boutonCouleurEditable)
 		{
 			g2.setColor(Color.WHITE);
@@ -295,7 +305,7 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 			g2.drawString("D" , 749, 113);
 		}
 
-		// Dessin de la selection du bouton
+		//Dessin de la selection du bouton
 		if (this.btnCouleurSelectionner != -1)
 		{
 			switch (this.btnCouleurSelectionner)
@@ -329,25 +339,25 @@ public class PanelCreeQuestion extends JPanel implements ActionListener
 		{
 			if (PanelCreeQuestion.this.boutonCouleurEditable)
 			{
-				// Bouton Vert
+				//Bouton Vert
 				if (e.getX() >= 620 && e.getX() <= 640 && e.getY() >= 95 && e.getY() <= 117)
 				{
 					PanelCreeQuestion.this.btnCouleurSelectionner = 1;
 				}
 
-				// Bouton Bleue
+				//Bouton Bleue
 				if (e.getX() >= 660 && e.getX() <= 680 && e.getY() >= 95 && e.getY() <= 117)
 				{
 					PanelCreeQuestion.this.btnCouleurSelectionner = 2;
 				}
 
-				// Bouton Rouge
+				//Bouton Rouge
 				if (e.getX() >= 700 && e.getX() <= 720 && e.getY() >= 95 && e.getY() <= 117)
 				{
 					PanelCreeQuestion.this.btnCouleurSelectionner = 3;
 				}
 
-				// Bouton Gris
+				//Bouton Gris
 				if (e.getX() >= 740 && e.getX() <= 760 && e.getY() >= 95 && e.getY() <= 117)
 				{
 					PanelCreeQuestion.this.btnCouleurSelectionner = 4;

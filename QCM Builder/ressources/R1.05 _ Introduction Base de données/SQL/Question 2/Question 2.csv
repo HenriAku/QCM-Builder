@@ -1,0 +1,14 @@
+Question 2	Q	
+DebutQuestion
+Quelles sont les syntaxes valides pour utiliser des alias dans une requête SQL ?
+DebutExplication
+Les alias permettent de simplifier la lecture ou de référencer des colonnes et des tables.
+Les syntaxes avec AS sont courantes, mais son utilisation est optionnelle pour les tables. 
+FinExplication
+facile	2.0	60.0
+SELECT column_name AS alias_name FROM table_name;	vrai
+SELECT column_name alias_name FROM table_name;	vrai
+SELECT t.column_name FROM table_name AS t;	vrai
+SELECT t.column_name FROM table_name t;	vrai
+SELECT t.column_name AS alias_name FROM table_name AS t;	vrai
+FIN

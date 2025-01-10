@@ -4,21 +4,18 @@
  */
 package IHM;
 
-import javax.swing.*;
-
 import Controlleur.Controlleur;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.ArrayList;
-
 import Metier.Notion;
 import Metier.QCM;
 import Metier.Question;
 import Metier.ReponseQcm;
 import Metier.Ressource;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
+import javax.swing.*;
 
 public class PanelQuestion extends JPanel implements ActionListener
 {
@@ -38,17 +35,17 @@ public class PanelQuestion extends JPanel implements ActionListener
 		this.frame     = frame    ;
 		this.notion    = notion   ;
 		this.ressource = ressource;
-		this.lstQ   = notion.getLstQuestions();
+		this.lstQ      = notion.getLstQuestions();
 
 
 		int tailleLst  = this.lstQ.size();
 
-		// Récupérer la taille de l'écran
+		//Récupérer la taille de l'écran
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int screenWidth = screenSize.width;
 		int screenHeight = screenSize.height;
 
-		// Panel principal
+		//Panel principal
 		this.setLayout(null);
 
 		/*********************************/
@@ -63,8 +60,8 @@ public class PanelQuestion extends JPanel implements ActionListener
 		panelAjout.setLayout(null);
 		panelAjout.setBounds((screenWidth - 600) / 2, 100, 600, 50);
 
-		JLabel lblTitre = new JLabel("Toutes vos questions de la ressource " + ressource.getNom() + " et notion " + notion.getNom() + " :");
-		lblTitre.setBounds(0, 10, 400, 50);
+		JLabel lblTitre = new JLabel("<html>Toutes vos questions de la ressource " + ressource.getNom() + "<br> et notion " + notion.getNom() + " : </html>");
+		lblTitre.setBounds(0, 0, 400, 50);
 
 		this.btnAdd = new JButton(new ImageIcon(
 				new ImageIcon(".." + File.separator + "img" + File.separator + "Ajout.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
@@ -78,17 +75,17 @@ public class PanelQuestion extends JPanel implements ActionListener
 		this.add(panelAjout);
 
 		/*********************************/
-		/*  Création des notions      */
+		/*  Création des notions         */
 		/*********************************/
 		JPanel contentPanel = new JPanel();
-		contentPanel.setLayout(null); // Positionnement manuel
-		contentPanel.setPreferredSize(new Dimension(screenWidth, tailleLst * 100)); // Définir une taille préférée pour le défilement
+		contentPanel.setLayout(null);
+		contentPanel.setPreferredSize(new Dimension(screenWidth, tailleLst * 100));
 
 		this.tabBtn = new JButton[tailleLst][3];
 
-		int panelWidth = 600;
-		int panelHeight = 70;
-		int spacing = 20;
+		int panelWidth  = 600;
+		int panelHeight = 70 ;
+		int spacing     = 20 ;
 
 		for (int i = 0; i < tailleLst; i++) 
 		{
@@ -97,14 +94,14 @@ public class PanelQuestion extends JPanel implements ActionListener
 			panelRes.setBounds((screenWidth - panelWidth) / 2, i * (panelHeight + spacing), panelWidth, panelHeight);
 			contentPanel.add(panelRes);
 
-			// Boutons pour chaque notion
+			//Boutons pour chaque notion
 			String question = this.lstQ.get(i).getQuestion();
 			String motif = "{\\rtf1\\ansi{\\fonttbl\\f0\\fnil Monospaced;}";
 			
 			if (question.startsWith(motif)) 
 				question = question.substring(motif.length());
 			
-			this.tabBtn[i][0] = new JButton(question);			
+			this.tabBtn[i][0] = new JButton(question);
 			this.tabBtn[i][0].setBounds(0, 10, 400, 50);
 			this.tabBtn[i][0].setBackground(new Color(201,80,46));
 			this.tabBtn[i][0].setForeground(Color.WHITE);
@@ -127,9 +124,9 @@ public class PanelQuestion extends JPanel implements ActionListener
 			panelRes.add(this.tabBtn[i][2]);
 		}
 
-		// Ajouter contentPanel dans un JScrollPane
+		//Ajouter contentPanel dans un JScrollPane
 		scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBounds(0, 160, screenWidth, screenHeight - 200); // Ajusté pour prendre en compte PanelNavigation et panelAjout
+		scrollPane.setBounds(0, 160, screenWidth, screenHeight - 200);
 		this.add(scrollPane);
 
 
@@ -146,12 +143,13 @@ public class PanelQuestion extends JPanel implements ActionListener
 		}
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) 
 	{
 		if (e.getSource() == this.btnAdd) 
 		{
-			new FrameCreationQuestion(frame, ctrl);
+			FrameCreationQuestion frameCreationQuestion = new FrameCreationQuestion(frame, ctrl, true);
+			frameCreationQuestion.setVisible(true);
+			frameCreationQuestion.setRessourceNotion(this.ressource.getNom(), this.notion.getNom());
 			this.repaint();
 		}
 
@@ -160,12 +158,47 @@ public class PanelQuestion extends JPanel implements ActionListener
 			//supprime la notion de la ligne
 			if (e.getSource() == this.tabBtn[i][1]) 
 			{
-				String chemin = this.ctrl.rechercherFichierQuestion(this.lstQ.get(i), ressource, notion);
-				this.ctrl  .supprimerDossierQuestion(chemin.substring(0, chemin.lastIndexOf(File.separator)));
-				this.notion.getLstQuestions().remove(i);
-				this.frame .refreshQuestion(notion, this.ressource);
+				Object[] options = { "Oui", "Non" };
+				int choix = JOptionPane.showOptionDialog(
+					null, 
+					"Voulez-vous supprimer ?", 
+					"Confirmation", 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.QUESTION_MESSAGE, 
+					null, 
+					options,
+					options[0]
+				);
+
+
+				//Vérifie le choix de l'utilisateur
+				if (choix == JOptionPane.YES_OPTION) 
+				{
+					String chemin = this.ctrl.rechercherFichierQuestion(this.lstQ.get(i), ressource, notion);
+
+					if (chemin != null && !chemin.isEmpty()) 
+					{
+						int lastSeparatorIndex = chemin.lastIndexOf(File.separator);
+						if (lastSeparatorIndex >= 0) 
+						{
+							String parentPath = chemin.substring(0, lastSeparatorIndex);
+							System.out.println("Chemin du dossier parent : " + parentPath);
+							this.ctrl.supprimerDossierQuestion(parentPath);
+							this.notion.getLstQuestions().remove(i);
+							this.frame.refreshQuestion(notion, this.ressource);
+						} 
+						else 
+						{
+							System.err.println("Le séparateur n'a pas été trouvé dans : " + chemin);
+						}
+					} 
+					else 
+					{
+						System.err.println("Chemin non valide : " + chemin);
+					}
+				}				
 			}
-			//modifie le nom de la notion de la ligne
+			//modifie la question
 			if (e.getSource() == this.tabBtn[i][2]) 
 			{
 				String type = "";
@@ -173,7 +206,7 @@ public class PanelQuestion extends JPanel implements ActionListener
 				{
 					type = "question à association d’éléments";
 				}
-				else if (this.notion.getLstQuestions().get(i).getClass() == Metier.Enlevement.class)
+				else if (this.notion.getLstQuestions().get(i).getClass() == Metier.Elimination.class)
 				{
 					type = "question avec élimination de propositions de réponses";
 				}
@@ -192,7 +225,9 @@ public class PanelQuestion extends JPanel implements ActionListener
 					else
 						type = "question à choix multiple à réponse unique";
 				}
-				FrameAjoutQuestion frameModif = new FrameAjoutQuestion(this.ctrl, type, this.notion.getLstQuestions().get(i));
+				Question question = this.notion.getLstQuestions().get(i);
+				FrameAjoutQuestion frameModif = new FrameAjoutQuestion(this.ctrl, null, type, question, true);
+				frameModif.setParametres(ressource.getNom(), notion.getNom(), type, question.getDifficulte().getDifficulte(), String.valueOf(question.getTemps()), question.getPoint());
 				frameModif.setVisible(true);
 			}
 		}

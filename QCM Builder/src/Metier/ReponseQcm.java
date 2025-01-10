@@ -6,18 +6,32 @@ package Metier;
 
 public class ReponseQcm extends Reponse
 {
+	//////////////
+	// ATTRIBUT //
+	//////////////
+
 	private boolean valeur;
+
+	//////////////////
+	// CONSTRUCTEUR //
+	//////////////////
+
 	public ReponseQcm(String reponse, boolean valeur)
 	{
 		super(reponse);
 
 		this.valeur = valeur;
 	}
+
+	////////////
+	// GETTER //
+	////////////
 	
 	public boolean getValeur() {return valeur;}
 
-	//toString
-	@Override
+	//////////////
+	// TOSTRING //
+	//////////////
 	public String toString() 
 	{
 		return super.toString() + "[" + this.valeur+"]";

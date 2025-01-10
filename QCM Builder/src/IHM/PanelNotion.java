@@ -19,13 +19,13 @@ import Metier.Ressource;
 
 public class PanelNotion extends JPanel implements ActionListener 
 {
-	private Controlleur ctrl  ;
-	private JButton[][] tabBtn;
-	private JButton     btnAdd;
-	private ArrayList<Notion> lstN;
-	private Ressource ressource;
-	private FramePrincipal frame;
-	private JScrollPane scrollPane;
+	private Controlleur       ctrl      ;
+	private JButton[][]       tabBtn    ;
+	private JButton           btnAdd    ;
+	private ArrayList<Notion> lstN      ;
+	private Ressource         ressource ;
+	private FramePrincipal    frame     ;
+	private JScrollPane       scrollPane;
 
 	public PanelNotion(Controlleur ctrl, Ressource ressource, FramePrincipal frame) 
 	{
@@ -35,12 +35,12 @@ public class PanelNotion extends JPanel implements ActionListener
 		this.lstN      = ressource.getNotions();
 		int tailleLst  = this.lstN.size      ();
 
-		// Récupérer la taille de l'écran
+		//Récupérer la taille de l'écran
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int screenWidth = screenSize.width;
 		int screenHeight = screenSize.height;
 
-		// Panel principal
+		//Panel principal
 		this.setLayout(null);
 
 		/*********************************/
@@ -78,8 +78,8 @@ public class PanelNotion extends JPanel implements ActionListener
 		/*  Création des ressources      */
 		/*********************************/
 		JPanel contentPanel = new JPanel();
-		contentPanel.setLayout(null); // Positionnement manuel
-		contentPanel.setPreferredSize(new Dimension(screenWidth, tailleLst * 100)); // Définir une taille préférée pour le défilement
+		contentPanel.setLayout(null);
+		contentPanel.setPreferredSize(new Dimension(screenWidth, tailleLst * 100));
 
 		this.tabBtn = new JButton[tailleLst][3];
 
@@ -94,7 +94,7 @@ public class PanelNotion extends JPanel implements ActionListener
 			panelRes.setBounds((screenWidth - panelWidth) / 2, i * (panelHeight + spacing), panelWidth, panelHeight);
 			contentPanel.add(panelRes);
 
-			// Boutons pour chaque ressource
+			//Boutons pour chaque ressource
 			this.tabBtn[i][0] = new JButton(this.lstN.get(i).getNom());
 			this.tabBtn[i][0].setBounds(0, 10, 400, 50);
 			this.tabBtn[i][0].setBackground(new Color(201,80,46));
@@ -118,9 +118,9 @@ public class PanelNotion extends JPanel implements ActionListener
 			panelRes.add(this.tabBtn[i][2]);
 		}
 
-		// Ajouter contentPanel dans un JScrollPane
+		//Ajouter contentPanel dans un JScrollPane
 		scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBounds(0, 160, screenWidth, screenHeight - 200); // Ajusté pour prendre en compte PanelNavigation et panelAjout
+		scrollPane.setBounds(0, 160, screenWidth, screenHeight - 200);
 		this.add(scrollPane);
 
 
@@ -138,7 +138,6 @@ public class PanelNotion extends JPanel implements ActionListener
 		}
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) 
 	{
 		if (e.getSource() == this.btnAdd) 
@@ -157,9 +156,26 @@ public class PanelNotion extends JPanel implements ActionListener
 			//supprime la notion de la ligne
 			if (e.getSource() == this.tabBtn[i][1]) 
 			{
-				this.ctrl.supprimerDossier(this.ressource.getNom()+ File.separator +this.tabBtn[i][0].getText());
-				this.ressource.getNotions().remove(i);
-				this.frame.refreshNotion(ressource);
+				Object[] options = { "Oui", "Non" };
+				int choix = JOptionPane.showOptionDialog(
+					null, 
+					"Voulez-vous supprimer ?", 
+					"Confirmation", 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.QUESTION_MESSAGE, 
+					null,
+					options,
+					options[0]
+				);
+
+
+				//Vérifie le choix de l'utilisateur
+				if (choix == JOptionPane.YES_OPTION) 
+				{
+					this.ctrl.supprimerDossier(this.ressource.getNom()+ File.separator +this.tabBtn[i][0].getText());
+					this.ressource.getNotions().remove(i);
+					this.frame.refreshNotion(ressource);
+				}
 			}
 			//modifie le nom de la notion de la ligne
 			if (e.getSource() == this.tabBtn[i][2]) 

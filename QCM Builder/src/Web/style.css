@@ -1,0 +1,332 @@
+:root {
+    --primary-color: #1976d2;
+    --secondary-color: #ff9800;
+    --background-color: #f0f4f8;
+    --text-color: #333333;
+    --white: #ffffff;
+    --error-color: #f44336;
+    }
+    
+    body {
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Roboto', Arial, sans-serif;
+    color: var(--text-color);
+    overflow-y: auto;
+    }
+    
+    .centered {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    padding: 1.25rem;
+    border: 3px solid rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    background-color: var(--white);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 1.25rem auto;
+    max-width: 600px;
+    width: 90%;
+    overflow-y: auto;
+    max-height: 90vh;
+    }
+    
+    h1 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    }
+    
+    .haut {
+    text-align: center;
+    font-size: 1.125rem;
+    font-weight: 600;
+    padding: 0.9375rem;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    color: var(--text-color);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto 1.25rem;
+    }
+    
+    .difficulte {
+    font-weight: bold;
+    font-family: "Arial Black", Impact, sans-serif;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-align: center;
+    width: auto;
+    display: inline-block;
+    white-space: nowrap;
+    }
+    
+    .tres-facile { color: #4caf50; -webkit-text-stroke: 0.2px rgb(21, 58, 23); }
+    .facile { color: #8bc34a; -webkit-text-stroke: 0.2px rgb(38, 62, 21); }
+    .moyen{ color: #ffc107; -webkit-text-stroke: 0.2px rgb(138, 103, 0); }
+    .difficile { color: var(--error-color); -webkit-text-stroke: 0.2px rgb(87, 15, 15); }
+    
+    
+    a {
+    display: inline-block;
+    text-decoration: none;
+    color: var(--white);
+    background-color: var(--primary-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    margin-top: 1.25rem;
+    }
+    
+    a:hover {
+    background-color: #1565c0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    button {
+    background-color: var(--primary-color);
+    color: var(--white);
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0.625rem 0;
+    width: 80%;
+    text-align: center;
+    }
+    
+    button:hover {
+    background-color: #1565c0;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .buttonAction {
+    background-color: var(--secondary-color);
+    width: auto;
+    }
+    
+    .buttonAction:hover {
+    background-color: #f57c00;
+    }
+    
+    .question-container {
+        position: relative; /* Nécessaire pour que le bouton soit positionné par rapport à ce conteneur */
+    }
+    
+    .complement-btn {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        text-transform: uppercase;
+        z-index: 10; /* S'assure que le bouton est au-dessus des autres éléments */
+        width: 40%;
+	margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .complement-btn:hover {
+        background-color: #0056b3; /* Couleur au survol */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Effet de survol */
+    }
+    
+    
+    #answers {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    }
+    
+    #answers button {
+    min-width: 200px;
+    max-width: 100%;
+    padding: 0.625rem 0.9375rem;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    text-align: center;
+    height: auto;
+    min-height: 44px;
+    margin: 0.3125rem 0;
+    }
+    
+    #supprimer {
+    width: 60%;
+    background-color: #ff6528;
+    }
+    
+    #btnGrise {
+        width: 60%;
+        background-color: #8b8b8b;
+        }
+    
+    #timer {
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: #ff5722;
+    margin-bottom: 0.625rem;
+    }
+    
+    #question-number {
+    font-size: 1rem;
+    margin: 0.625rem 0;
+    color: var(--primary-color);
+    }
+    
+    #question {
+    font-size: 1.25rem;
+    margin: 0.9375rem 0;
+    font-weight: bold;
+    color: var(--text-color);
+    }
+    
+    #retourQuestion {
+    margin-top: 0.9375rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-align: center;
+    white-space: pre-line; /* Respecte \n pour les retours à la ligne */
+    }
+    
+    @media (max-width: 600px) {
+    .centered {
+        width: 95%;
+        padding: 1.25rem;
+    }
+    
+    button {
+        width: 100%;
+        margin: 0.3125rem 0;
+    }
+    }
+    
+    .modal {
+        display: none; /* Masqué par défaut */
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4); /* Fond semi-transparent */
+    }
+    
+    .modal-content {
+        background-color: #fff;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 60%; /* Réduisez la largeur ici */
+        max-width: 400px; /* Limitez la largeur maximale */
+        text-align: center;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .modal-content button {
+        padding: 10px 20px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+    
+    .modal-content button:hover {
+        background-color: #0056b3;
+    }
+    
+    #alertMessage {
+        white-space: pre-line; /* Respecte \n pour les retours à la ligne */
+    }
+    
+    
+    @media (max-width: 600px) {
+    .centered {
+        width: 95%; /* La largeur des conteneurs sur mobile */
+        padding: 1rem; /* Ajustement du padding */
+        margin: 0 auto; /* Centrer l'élément */
+        box-sizing: border-box; /* Assurer que les bordures et paddings ne dépassent pas */
+    }
+
+    h1 {
+        font-size: 1.5rem; /* Réduction de la taille du titre */
+    }
+
+    .haut {
+        font-size: 1rem;
+        padding: 0.75rem;
+    }
+
+    .difficulte {
+        font-size: 0.9rem;
+        padding: 3px 7px;
+    }
+
+    button {
+        width: auto; /* Pas de largeur complète */
+        max-width: 250px; /* Limite la largeur des boutons */
+        margin: 0.3125rem auto; /* Centrage des boutons */
+    }
+
+    #answers button {
+        padding: 0.5rem 0.75rem; /* Ajustement des boutons */
+    }
+
+    .modal-content {
+        width: 80%;
+        max-width: 90%;
+        padding: 10px;
+    }
+
+    /* Espacement sous le nom de la question */
+    #question {
+        font-size: 1.125rem;
+    }
+
+    /* Centrage du bouton complément uniquement en mode mobile */
+    .complement-btn {
+        padding: 12px 12px;
+        font-size: 12px;
+        width: auto;
+        text-align: center;
+        display: block;
+        margin-left: auto;
+        margin-right: auto; /* Centrer le bouton horizontalement uniquement sur mobile */
+        left: 0;
+        right: 0;
+    }
+
+    #timer {
+        font-size: 1rem;
+    }
+
+    #question-number {
+        font-size: 0.9rem;
+    }
+
+    
+}

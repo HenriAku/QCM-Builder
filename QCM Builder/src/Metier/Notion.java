@@ -5,6 +5,7 @@
 
 package Metier;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
@@ -22,14 +23,12 @@ public class Notion
 	
 	public Notion(String notion, ArrayList<Question> lstQuestions)
 	{
-		this.notion = notion;
+		this.notion       = notion      ;
 		this.lstQuestions = lstQuestions;
 
 		if (this.lstQuestions == null)
-		this.lstQuestions = new ArrayList<Question>();
+			this.lstQuestions = new ArrayList<Question>();
 
-		Ecriture ef = new Ecriture("../ressources/" );
-		ef.creerDossier(notion);
 	}
 
 	//////////////
@@ -56,7 +55,6 @@ public class Notion
 
 	public void addQuestion(Question q)
 	{
-		System.out.println("dif : " + q.getDifficulte());
 		this.lstQuestions.add(q);
 		Collections.sort(this.lstQuestions);
 	}
@@ -75,16 +73,16 @@ public class Notion
 		return a;
 	}
 
-	public Enlevement ajouterQuestionEnleve(String question, String explication, Difficulte difficulte, double point, float temps, ArrayList<ReponseEnlevement> lstReponses)
+	public Elimination ajouterQuestionElimination(String question, String explication, Difficulte difficulte, double point, float temps, ArrayList<ReponseElimination> lstReponses)
 	{
-		Enlevement e = new Enlevement(question, explication, difficulte, point, temps, lstReponses);
+		Elimination e = new Elimination(question, explication, difficulte, point, temps, lstReponses);
 		this.addQuestion(e);
 		return e;
 	}
 
-	public Enlevement ajouterQuestionEnleve(String question, String explication, Difficulte difficulte, double point, float temps, ArrayList<ReponseEnlevement> lstReponses, String path)
+	public Elimination ajouterQuestionElimination(String question, String explication, Difficulte difficulte, double point, float temps, ArrayList<ReponseElimination> lstReponses, String path)
 	{
-		Enlevement e = new Enlevement(question, explication, difficulte, point, temps, lstReponses, path);
+		Elimination e = new Elimination(question, explication, difficulte, point, temps, lstReponses, path);
 		this.addQuestion(e);
 		return e;
 	}
@@ -101,11 +99,10 @@ public class Notion
 	{
 		ArrayList<Question> lstQuestionsAlea = new ArrayList<Question>();
 
-
 		ArrayList<Question> lstQuestionsTresFacile = new ArrayList<Question>();
-		ArrayList<Question> lstQuestionsFacile = new ArrayList<Question>();
-		ArrayList<Question> lstQuestionsMoyenne = new ArrayList<Question>();
-		ArrayList<Question> lstQuestionsDifficile = new ArrayList<Question>();
+		ArrayList<Question> lstQuestionsFacile     = new ArrayList<Question>();
+		ArrayList<Question> lstQuestionsMoyenne    = new ArrayList<Question>();
+		ArrayList<Question> lstQuestionsDifficile  = new ArrayList<Question>();
 
 
 		for (Question question : this.lstQuestions)
@@ -123,12 +120,12 @@ public class Notion
 		//verifier si le nombre de question est bien inférieur au nombre de question de la difficulté
 		if (nbQuestionTresFacile > lstQuestionsTresFacile.size())
 			nbQuestionTresFacile = lstQuestionsTresFacile.size();
-		if (nbQuestionFacile > lstQuestionsFacile.size())
-			nbQuestionFacile = lstQuestionsFacile.size();
-		if (nbQuestionMoyenne > lstQuestionsMoyenne.size())
-			nbQuestionMoyenne = lstQuestionsMoyenne.size();
-		if (nbQuestionDifficile > lstQuestionsDifficile.size())
-			nbQuestionDifficile = lstQuestionsDifficile.size();
+		if (nbQuestionFacile     > lstQuestionsFacile.size())
+			nbQuestionFacile     = lstQuestionsFacile.size();
+		if (nbQuestionMoyenne    > lstQuestionsMoyenne.size())
+			nbQuestionMoyenne    = lstQuestionsMoyenne.size();
+		if (nbQuestionDifficile  > lstQuestionsDifficile.size())
+			nbQuestionDifficile  = lstQuestionsDifficile.size();
 
 		//ajouter les questions aléatoirement
 
@@ -159,6 +156,9 @@ public class Notion
 			lstQuestionsAlea.add(questionAlea);
 			lstQuestionsDifficile.remove(questionAlea);
 		}
+
+		//melanger la liste de question
+		Collections.shuffle(lstQuestionsAlea);
 
 		return lstQuestionsAlea;
 	}
@@ -304,97 +304,5 @@ public class Notion
 		}
 
 		return str;
-	}
-
-	//renvoi la ressource contenant la notion en verifiants touts les ressources
-
-	//affiche le notion et ses questions
-	/*public String afficherNotion()
-	{
-		String str = "Notion : "+this.notion+"\n";
-
-		str += "Questions Faciles : \n";
-		for (Question question : this.lstQuestionsFacile) 
-		{
-			str += question.toString()+"\n";
-		}
-
-		str += "Questions Moyennes : \n";
-		for (Question question : this.lstQuestionsMoyenne) 
-		{
-			str += question.toString()+"\n";
-		}
-
-		str += "Questions Difficiles : \n";
-		for (Question question : this.lstQuestionsDifficile) 
-		{
-			str += question.toString()+"\n";
-		}
-
-		str += "Questions Très Faciles : \n";
-		for (Question question : this.lstQuestionsTresFacile) 
-		{
-			str += question.toString()+"\n";
-		}
-
-		return str;
-
-	} */
-
-	/////////
-	// CUI //
-	/////////
-
-	
-	//methode creerNotion en demandant les informations à l'utilisateur
-	public static Notion creerNotion(Scanner sc)
-	//"sc" utilisation de scanner pour récupérer les informations de l'utilisateur en version console
-	{
-		// Demande le nom du notion
-		System.out.print("Entrez le nom du notion : ");
-		String notion = sc.nextLine();
-
-		ArrayList<Question> lstQuestions = new ArrayList<Question>();
-		
-		//demander si on creer la liste de question tant que la réponse n'est pas oui ou non
-		String reponse;
-		do
-		{
-			System.out.print("Voulez-vous ajouter des questions ? (oui/non) : ");
-			reponse = sc.nextLine();
-		}
-		while (!reponse.equals("oui") && !reponse.equals("non"));
-
-		//si oui on demande le nombre de questions et reer la liste de question
-		
-		if (reponse.equals("oui"))
-		{	
-			//demander le nombre de question tant que le nombre n'est pas positif et tant que ce n'est pas un entier
-			int nbQuestion;
-			do
-			{
-				System.out.print("Entrez le nombre de questions : ");
-				while (!sc.hasNextInt())
-				{
-					System.out.print("Ce n'est pas un entier, réessayez : ");
-					sc.next();
-				}
-				nbQuestion = sc.nextInt();
-			}
-			while (nbQuestion <= 0);
-
-			sc.nextLine();
-
-			//créer les questions
-
-			for (int i=0; i<nbQuestion; i++)
-			{
-				System.out.println("\nCréation de la question "+(i+1)+" : ");
-				Question question = Question.creerQuestionQCM(sc);
-				lstQuestions.add(question);
-			}
-		}
-		return new Notion(notion, lstQuestions);
-	}
-	
+	}	
 }

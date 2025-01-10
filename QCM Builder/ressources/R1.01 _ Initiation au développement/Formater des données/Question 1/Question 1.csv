@@ -1,0 +1,22 @@
+Question 1	A
+DebutQuestion
+Associer les conversions avec leurs symboles dans String.format
+DebutExplication
+Ces symboles sont utilisés dans String.format pour contrôler le formatage des données affichées. 
+FinExplication
+moyen	3.0	90.0
+Reponse
+Hexadécimal(minuscule) 
+Octal
+Décimal
+Hexadécimal (majuscule)
+Booléen (majuscule)
+Booléen (minuscule)
+Association
+Hexadécimal(minuscule) 	'x'
+Octal	'o'
+Décimal	'd'
+Hexadécimal (majuscule)	'X'
+Booléen (majuscule)	'B'
+Booléen (minuscule)	'b'
+FIN

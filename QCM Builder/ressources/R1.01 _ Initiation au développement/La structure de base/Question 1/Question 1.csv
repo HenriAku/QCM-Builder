@@ -1,0 +1,13 @@
+Question 1	Q	
+DebutQuestion
+Quels types parmi les suivants sont des types primitifs en Java ?
+DebutExplication
+Les types primitifs en Java incluent int, float, char, et boolean. String est une classe, donc ce n’est pas un type primitif.
+FinExplication
+facile	2.0	60.0
+int	vrai
+String	faux
+float	vrai
+char	vrai
+boolean	vrai
+FIN

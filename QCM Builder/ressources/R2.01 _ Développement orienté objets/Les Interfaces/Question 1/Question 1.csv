@@ -1,0 +1,13 @@
+Question 1	Q	
+DebutQuestion
+Que se passe-t-il si une méthode "default" est ajoutée à une interface et qu’une classe implémente déjà cette interface ?
+DebutExplication
+Depuis Java 8, les méthodes default fournissent une implémentation par défaut
+et ne nécessitent pas d'être redéfinies par les classes implémentantes. 
+FinExplication
+facile	2.0	30.0
+L’implémentation est obligatoire dans la classe.	faux
+Elle est accessible sans implémentation obligatoire dans la classe.	vrai
+Elle doit être redéfinie comme méthode abstraite dans l’interface.	faux
+Elle provoque une erreur de compilation.	faux
+FIN

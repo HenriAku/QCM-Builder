@@ -1,0 +1,11 @@
+Question 1	Q	
+DebutQuestion
+Quel est l’équivalent de la boucle "tant que" en Java ?
+DebutExplication
+La boucle while exécute un bloc de code tant qu'une condition est vraie, ce qui est équivalent à "tant que". 
+FinExplication
+tres facile	1.0	30.0
+for( ; ; )	faux
+do…while	faux
+while	vrai
+FIN

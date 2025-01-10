@@ -15,8 +15,8 @@ public class Evaluation
 	private Ressource           ressource   ;
 	private ArrayList<Notion>   lstNotions  ;
 	private ArrayList<Question> lstQuestions;
-	private boolean chrono;
-	private int nbQuestion;
+	private boolean             chrono      ;
+	private int                 nbQuestion  ;
 
 	///////////////////
 	// CONSTRUCTEURS //
@@ -24,11 +24,11 @@ public class Evaluation
 
 	public Evaluation(Ressource r, ArrayList<Notion> lstN, ArrayList<Question> lstQ, boolean chrono) 
 	{
-		this.ressource = r;
-		this.lstNotions = lstN;
-		this.lstQuestions = lstQ;
-		this.chrono = chrono;
-		this.nbQuestion = lstQ.size();
+		this.ressource    = r     ;
+		this.lstNotions   = lstN  ;
+		this.lstQuestions = lstQ  ;
+		this.chrono       = chrono;
+		this.nbQuestion   = lstQ.size();
 	}
 
 	/////////////////
@@ -45,6 +45,52 @@ public class Evaluation
 	public int                 getNbQuestion() {return this.nbQuestion  ;}
 	public boolean             getChrono    () {return this.chrono      ;}
 
+	public int getTempsTotalSec()
+	{
+		int totalSec = 0;
+		for (Question question : this.getQuestions())
+			totalSec += question.getTemps();
+			
+		return totalSec;
+	}
+
+	//minutes
+	public int getMinutes ()
+	{
+		return getTempsTotalSec()/60;
+	}
+
+	//secondes
+	public int getSecondes ()
+	{
+		return getTempsTotalSec()%60;
+	}
+
+
+	public double getTotalPoints()
+	{
+		double points = 0.0;
+		for (Question q : this.lstQuestions)
+		{
+			points += q.getPoint();
+		}
+		return points;
+	}
+
+	//methode retourne le nombre de questions en fonciton de la difficulté en paramètre
+	public int getNbQuestionParDifficulte(Difficulte difficulte)
+	{
+		int nb = 0;
+		for (Question q : this.lstQuestions)
+		{
+			if (q.getDifficulte() == difficulte)
+			{
+				nb++;
+			}
+		}
+		return nb;
+	}
+
 	//////////////
 	// STRING   //
 	//////////////
@@ -52,24 +98,20 @@ public class Evaluation
 	//afficher Evaluation
 	public String afficherEvaluation()
 	{
-		String str = "Evaluation : \n";
-		str += "Ressource : " + this.ressource.getNom() + "\n";
-		str += "Notions : \n";
-
+		String str  = "Evaluation : \n";
+			   str += "Ressource : " + this.ressource.getNom() + "\n";
+			   str += "Notions : \n";
 		for (Notion not : this.lstNotions)
+		{
 			str += " - " + not.getNom() + "\n";
-		
+		}
+
 		str += "Questions : \n";
-
 		for (Question q : this.lstQuestions)
+		{
 			str += q.afficherQuestion();
-			
+		}
 		return str;
-	}
-
-	public void genererEvaluationHTML()
-	{
-		
 	}
 
 	/////////
@@ -85,7 +127,7 @@ public class Evaluation
 		 */
 
 		// on affiche les ressources, le nombre de notion à l'interieur et le nombre de questions total
-		System.out.println("Création d'un Evaluation : \n");
+		System.out.println("Création d'une Evaluation : \n");
 		for (int i = 0; i < m.getLstRessource().size(); i++) 
 		{
 			System.out.println((i + 1) + " : " + m.getLstRessource().get(i).getNom() + " ("
@@ -172,9 +214,9 @@ public class Evaluation
 		// on demande le nombre de question par notion
 		// tant que le total de question n'est pas atteint et ne dépasse pas le nombre
 		// de question total et que le nombre de question n'est pas valide
-		ArrayList<Question> lstQuestions = new ArrayList<Question>();
-		int totalQuestions = 0;
-		int nbQues;
+		ArrayList<Question> lstQuestions   = new ArrayList<Question>();
+		int                 totalQuestions = 0                        ;
+		int                 nbQues;
 
 		for (Notion notion : lstNotion) 
 		{

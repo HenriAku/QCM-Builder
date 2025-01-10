@@ -6,17 +6,25 @@
 package Metier;
 
 import java.util.Scanner;
+import java.io.File;
 import java.util.ArrayList;
 
 public abstract class Question implements Comparable<Question>
 {
+	///////////////
+	// ATTRIBUTS //
+	///////////////
+
 	private String       question    ;
 	private String       explication ;
 	private Difficulte   difficulte  ;
 	private double		 point       ;
-	private float        temps        ;
-	private String		 filePath;
+	private float        temps       ;
+	private String		 filePath    ;
 
+	///////////////////
+	// CONSTRUCTEURS //
+	///////////////////
 
 	public Question(String question, String explication, Difficulte difficulte, double point, float temps) 
 	{
@@ -29,11 +37,7 @@ public abstract class Question implements Comparable<Question>
 
 	public Question(String question, String explication, Difficulte difficulte, double point, float temps, String path) 
 	{
-		this.question     = question    ;
-		this.explication  = explication ;
-		this.difficulte   = difficulte  ;
-		this.point        = point       ;
-		this.temps		  = temps       ;
+		this(question, explication, difficulte, point, temps);
 		this.filePath     = path;
 	}
 
@@ -53,6 +57,15 @@ public abstract class Question implements Comparable<Question>
 	public double     getPoint        () {return point        ;}
 	public float      getTemps        () {return temps        ;}
 	public String 	  getFilePath     () {return this.filePath;}
+
+	//récuperer le nom du fichier de filepath
+	public String getFileName()
+	{
+		if (this.filePath == null)
+			return null;
+		File fichier = new File(this.filePath);
+        return fichier.getName();
+	}
 
 	public abstract ArrayList<?> getLstRep();
 
@@ -81,10 +94,10 @@ public abstract class Question implements Comparable<Question>
 	{	
 		String str = "";
 
-		str += "Question : " + question +"\n";
+		str += "Question    : " + question    + "\n";
 		str += "Explication : " + explication + "\n";
-		str += "Difficulte : " + difficulte + "\n";
-		str += "Point : " + point + "\n";
+		str += "Difficulte  : " + difficulte  + "\n";
+		str += "Point       : " + point       + "\n";
 	
 		return str + "\n";
 	}

@@ -17,28 +17,28 @@ import Metier.Ressource;
 
 public class PanelRessource extends JPanel implements ActionListener 
 {
-	private Controlleur ctrl;
-	private JButton[][] tabBtn;
-	private JButton btnAdd;
-	private List<Ressource> lstRes;
-	private JScrollPane scrollPane;
-	private FramePrincipal frame;
+	private Controlleur     ctrl      ;
+	private JButton[][]     tabBtn    ;
+	private JButton         btnAdd    ;
+	private List<Ressource> lstRes    ;
+	private JScrollPane     scrollPane;
+	private FramePrincipal  frame     ;
 
 	public PanelRessource(Controlleur ctrl, FramePrincipal frame) 
 	{
-		this.ctrl = ctrl;
+		this.ctrl  = ctrl ;
 		this.frame = frame;
 
-		// Récupérer les ressources
-		this.lstRes = this.ctrl.getLstRessource();
+		//Récupére les ressources
+		this.lstRes   = this.ctrl.getLstRessource();
 		int tailleLst = this.lstRes.size();
 
-		// Récupérer la taille de l'écran
+		//Récupére la taille de l'écran
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int screenWidth = screenSize.width;
-		int screenHeight = screenSize.height;
+		int screenWidth      = screenSize.width ;
+		int screenHeight     = screenSize.height;
 
-		// Panel principal
+		//Panel principal
 		this.setLayout(null);
 
 		PanelNavigation navigation = new PanelNavigation(frame, null);
@@ -53,7 +53,7 @@ public class PanelRessource extends JPanel implements ActionListener
 		panelAjout.setBounds((screenWidth - 600) / 2, 100, 600, 50);
 
 		JLabel lblTitre = new JLabel("Toute vos ressources : ");
-		lblTitre.setBounds(0, 10, 400, 50);
+		lblTitre.setBounds(0, 5, 400, 20);
 
 		this.btnAdd = new JButton(new ImageIcon(
 				new ImageIcon(".." + File.separator + "img" + File.separator + "Ajout.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
@@ -62,11 +62,12 @@ public class PanelRessource extends JPanel implements ActionListener
 		this.btnAdd.setFocusPainted     (false);
 		this.btnAdd.setBounds(450, 10, 30, 30);
 				
-		JLabel lblExplication = new JLabel("Cliquer sur les Ressource pour voir leur questions");
+		JLabel lblExplication = new JLabel("Cliquer sur les Ressource pour voir leur notions");
 		lblExplication.setBounds(0, 25, 400, 20);
 
 		panelAjout.add(lblTitre   );
 		panelAjout.add(this.btnAdd);
+		panelAjout.add(lblExplication);
 		this.add(panelAjout);
 
 		/*********************************/
@@ -74,13 +75,13 @@ public class PanelRessource extends JPanel implements ActionListener
 		/*********************************/
 		JPanel contentPanel = new JPanel();
 		contentPanel.setLayout(null); // Positionnement manuel
-		contentPanel.setPreferredSize(new Dimension(screenWidth, tailleLst * 100)); // Définir une taille préférée pour le défilement
+		contentPanel.setPreferredSize(new Dimension(screenWidth, tailleLst * 100));
 
 		this.tabBtn = new JButton[tailleLst][3];
 
-		int panelWidth = 600;
-		int panelHeight = 70;
-		int spacing = 20;
+		int panelWidth  = 600;
+		int panelHeight = 70 ;
+		int spacing     = 20 ;
 
 		for (int i = 0; i < tailleLst; i++) 
 		{
@@ -89,7 +90,7 @@ public class PanelRessource extends JPanel implements ActionListener
 			panelRes.setBounds((screenWidth - panelWidth) / 2, i * (panelHeight + spacing), panelWidth, panelHeight);
 			contentPanel.add(panelRes);
 
-			// Boutons pour chaque ressource
+			//Boutons pour chaque ressource
 			this.tabBtn[i][0] = new JButton(this.lstRes.get(i).getNom());
 			this.tabBtn[i][0].setBounds(0, 10, 400, 50);
 			this.tabBtn[i][0].setBackground(new Color(201,80,46));
@@ -113,9 +114,9 @@ public class PanelRessource extends JPanel implements ActionListener
 			panelRes.add(this.tabBtn[i][2]);
 		}
 
-		// Ajouter contentPanel dans un JScrollPane
+		//Ajouter contentPanel dans un JScrollPane
 		scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBounds(0, 160, screenWidth, screenHeight - 200); // Ajusté pour prendre en compte PanelNavigation et panelAjout
+		scrollPane.setBounds(0, 160, screenWidth, screenHeight - 200); 
 		this.add(scrollPane);
 
 		/*********************************/
@@ -131,7 +132,7 @@ public class PanelRessource extends JPanel implements ActionListener
 		}
 	}
 
-	@Override
+	
 	public void actionPerformed(ActionEvent e) 
 	{
 		//affiche une frame pour crée une ressource
@@ -150,9 +151,26 @@ public class PanelRessource extends JPanel implements ActionListener
 			//supprime la ressource de la ligne
 			if (e.getSource() == this.tabBtn[i][1]) 
 			{
-				this.ctrl.supprimerDossier(this.tabBtn[i][0].getText());
-				this.ctrl.getLstRessource().remove(i);
-				this.frame.refreshRessource();
+				Object[] options = { "Oui", "Non" };
+				int choix = JOptionPane.showOptionDialog(
+					null, 
+					"Voulez-vous supprimer ?", 
+					"Confirmation", 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.QUESTION_MESSAGE, 
+					null, 
+					options,
+					options[0]
+				);
+
+
+				//Vérifie le choix de l'utilisateur
+				if (choix == JOptionPane.YES_OPTION) 
+				{
+					this.ctrl.supprimerDossier(this.tabBtn[i][0].getText());
+					this.ctrl.getLstRessource().remove(i);
+					this.frame.refreshRessource();
+				}
 			}
 			//modifie le nom de la ressource de la ligne
 			if (e.getSource() == this.tabBtn[i][2]) 

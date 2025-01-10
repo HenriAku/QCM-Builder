@@ -1,0 +1,16 @@
+Question 2	Q	
+DebutQuestion
+Quels sont les types de modificateurs disponibles pour les membres d'une classe ?
+DebutExplication
+Les modificateurs contrôlent la visibilité des membres :
+• public : Accessible de partout.
+• privé : Accessible uniquement dans la classe.
+• protégé : Accessible dans la classe et les sous-classes.
+•paquetage (absence de modificateur) : Accessible aux classes du même paquetage.
+FinExplication
+facile	2.0	60.0
+public	vrai
+privé	vrai
+protégé	vrai
+final	faux
+FIN

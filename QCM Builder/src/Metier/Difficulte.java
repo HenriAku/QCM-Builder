@@ -6,7 +6,7 @@ package Metier;
 
 public enum Difficulte
 {
-	TF("très facile"),
+	TF("tres facile"),
 	F("facile"      ),
 	M("moyen"       ),
 	D("difficile"   );
@@ -43,10 +43,16 @@ public enum Difficulte
 		this.point = point;
 	}
 
-	//getters
+	/////////////
+	// GETTERS //
+	/////////////
+
 	public String getDifficulte(){return this.dif  ;}
 	public int    getPoint     (){return this.point;}
 	
-	//setters
+	/////////////
+	// SETTERS //
+	/////////////
+	
 	public void setPoint (int p){this.point = p;}
 } 

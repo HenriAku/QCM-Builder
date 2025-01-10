@@ -10,109 +10,107 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import Controlleur.Controlleur;
-import Metier.Notion;
 import Metier.Ressource;
 
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 
-public class FrameCreation extends JFrame implements ActionListener
+public class FrameCreation extends JFrame implements ActionListener 
 {
-	private Controlleur ctrl;
-	private JTextField  txtName;
-	private JButton     btnVald;
-	private JButton     btnCancel;
-	private String      operation;
-	private String      ressource;
-	private FramePrincipal   frame;
+	private Controlleur    ctrl      ;
+	private JTextField     txtName   ;
+	private JButton        btnValider;
+	private JButton        btnAnnuler;
+	private String         operation ;
+	private String         ressource ;
+	private FramePrincipal frame     ;
 
-	//operation = soit notion soit ressource
-	public FrameCreation(Controlleur ctrl, String operation, String ressource, FramePrincipal frame)
+	//Constructeur
+	public FrameCreation(Controlleur ctrl, String operation, String ressource, FramePrincipal frame) 
 	{
-		this.setTitle("Creation de " + operation);
+		this.setTitle ("Création de " + operation    );
 		this.setLayout(new GridLayout(2, 1));
-		this.setSize(400, 500);
+		this.setSize  (400, 200         ); 
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		this.ctrl 	   = ctrl;
-		this.frame     = frame;
+		this.ctrl      = ctrl     ;
+		this.frame     = frame    ;
 		this.operation = operation;
 		this.ressource = ressource;
 
 		/****************************/
-		/*	Création des composant  */
+		/* Création des composants  */
 		/****************************/
 
 		this.txtName = new JTextField();
 
-		JPanel panelBtn = new JPanel();
-		panelBtn.setLayout(new GridLayout(1,2));
+		JPanel panelButtons = new JPanel();
+		panelButtons.setLayout(new GridLayout(1, 2, 10, 0)); 
 
-		this.btnVald   = new JButton("Valider");
-		this.btnCancel = new JButton("Annuler");
+		this.btnValider = new JButton("Valider");
+		this.btnValider.setBackground(new Color(201,80,46));
+		this.btnValider.setForeground(Color.WHITE);
+
+		this.btnAnnuler = new JButton("Annuler");
+		this.btnAnnuler.setBackground(new Color(201,80,46));
+		this.btnAnnuler.setForeground(Color.WHITE);	
+
 
 		/*********************************/
-		/*	positionnement des composant */
+		/* Positionnement des composants */
 		/*********************************/
 
 		this.add(this.txtName);
 
-		panelBtn.add(this.btnVald  );
-		panelBtn.add(this.btnCancel);
-		this.add(panelBtn);
-
+		panelButtons.add(this.btnValider);
+		panelButtons.add(this.btnAnnuler);
+		this.add(panelButtons);
 
 		/*********************************/
-		/*	  Activation des composant   */
+		/* Activation des composants     */
 		/*********************************/
 
-		this.txtName  .addActionListener(this);
-		this.btnVald  .addActionListener(this);
-		this.btnCancel.addActionListener(this);
-
+		this.txtName   .addActionListener(this);
+		this.btnValider.addActionListener(this);
+		this.btnAnnuler.addActionListener(this);
 
 		this.setVisible(true);
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) 
 	{
-		if (e.getSource() == this.btnVald) 
+		if (e.getSource() == this.btnValider) 
 		{
-			if (this.txtName.getText().length() == 0) 
-	   	 	{
-		   		JOptionPane.showMessageDialog(
-					this, 
+			if (this.txtName.getText().trim().isEmpty()) 
+			{
+				JOptionPane.showMessageDialog(
+					this,
 					"Le champ de texte ne peut pas être vide.",
-					"Erreur", 
-					JOptionPane.WARNING_MESSAGE 
+					"Erreur",
+					JOptionPane.WARNING_MESSAGE
 				);
-				return; 
+				return;
 			}
 
-			String name = this.txtName.getText();
+			String name = this.txtName.getText().trim();
 			if (this.operation.equals("Ressource")) 
 			{
-				Ressource ressource = new Ressource(name);
-				this.ctrl.creerDossierRessource(ressource); 
-				this.ctrl.addRessource(ressource);
+				this.ctrl.addRessource(name);
 				this.frame.refreshRessource();
-			}
-			else 
+			} else 
 			{
-				Notion    not = new Notion(name, null);
 				Ressource res = this.ctrl.rechercheRessource(this.ressource);
-				this.ctrl.creerDossierNotion(res , not); 
-				res.addNotion(not);
+				this.ctrl.addNotion(this.ressource, name);
 				this.frame.afficheNotion(res);
 			}
-			this.dispose();	
+			this.dispose();
 		}
 
-		if (e.getSource() == this.btnCancel) 
+		if (e.getSource() == this.btnAnnuler) 
 		{
-			this.dispose();	
+			this.dispose();
 		}
 	}
 }

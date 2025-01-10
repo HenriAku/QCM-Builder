@@ -1,0 +1,10 @@
+Question 3	Q	
+DebutQuestion
+Vrai ou Faux : La pile (Stack) est utilisée pour stocker les objets créés avec new.
+DebutExplication
+Les objets créés avec new sont stockés dans le tas
+FinExplication
+tres facile	1.0	30.0
+Vrai	faux
+Faux	vrai
+FIN

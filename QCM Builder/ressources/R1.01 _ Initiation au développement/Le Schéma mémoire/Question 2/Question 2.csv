@@ -1,0 +1,21 @@
+Question 2	A
+DebutQuestion
+Associez chaque terme avec sa définition correcte.
+DebutExplication
+• L’encapsulation protège les données des modifications externes non contrôlées. 
+• La méthode toString convertit un objet en texte pour affichage. 
+• La JVM (Java Virtual Machine) est responsable de l’exécution du bytecode. 
+• Le tas (heap) est la mémoire où sont stockées les instances des objets. 
+FinExplication
+difficile	4.0	120.0
+Reponse
+JVM 
+Tas
+Méthode toString
+Encapsulation
+Association
+JVM 	Exécute le bytecode Java et assure la portabilité des applications.
+Tas	Stocke les objets (instances de classe) en mémoire.
+Méthode toString	Permet de visualiser l’état d’un objet sous forme de chaîne de caractères.
+Encapsulation	Préconise de ne pas rendre les attributs directement accessibles.
+FIN

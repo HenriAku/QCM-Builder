@@ -6,9 +6,8 @@
 package Metier;
 
 import java.util.ArrayList;
-import java.util.Scanner;
 
-public class Ressource
+public class Ressource implements Comparable<Ressource>
 {
 
 	///////////////
@@ -24,17 +23,17 @@ public class Ressource
 
 	public Ressource(String nom)
 	{
-		this.nom = nom;
+		this.nom     = nom;
 		this.notions = new ArrayList<>(); 
-		Ecriture ef = new Ecriture("../ressources/");
+		Ecriture ef  = new Ecriture("../ressources/");
 		ef.creerDossier(nom);
 	}
 
 	public Ressource(String nom, ArrayList<Notion> notions)
 	{
-		this.nom = nom;
+		this.nom     = nom;
 		this.notions = notions; 
-		Ecriture ef = new Ecriture("../ressources/");
+		Ecriture ef  = new Ecriture("../ressources/");
 		ef.creerDossier(nom);
 	}
 
@@ -112,7 +111,6 @@ public class Ressource
 		{
 			if (not.getNom().equals(notion)) 
 			{
-				System.out.println("Test1");
 				return not.ajouterQuestionAsso(question, explication, difficulte, point, temps, reponses);
 			}
 		}
@@ -121,37 +119,35 @@ public class Ressource
 
 	public Association ajouterQuestionAsso(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseAsso> reponses, String path)
 	{
-		System.out.println("path : " + path);
 		//on récupère le notion dans lstNotions
 		for (Notion not : this.notions) 
 		{
 			if (not.getNom().equals(notion)) 
 			{
-				System.out.println("Test1");
 				return not.ajouterQuestionAsso(question, explication, difficulte, point, temps, reponses, path);
 			}
 		}
 		return null;
 	}
 
-	public Enlevement ajouterQuestionEnleve(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseEnlevement> reponses)
+	public Elimination ajouterQuestionElimination(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseElimination> reponses)
 	{
 		//on récupère le notion dans lstNotions
 		for (Notion not : this.notions) 
 		{
 			if (not.getNom().equals(notion)) 
-				return not.ajouterQuestionEnleve(question, explication, difficulte, point, temps, reponses);
+				return not.ajouterQuestionElimination(question, explication, difficulte, point, temps, reponses);
 		}
 		return null;
 	}
 
-	public Enlevement ajouterQuestionEnleve(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseEnlevement> reponses, String path)
+	public Elimination ajouterQuestionElimination(String notion, String question, String type, String explication, Difficulte difficulte,double point, float temps, ArrayList<ReponseElimination> reponses, String path)
 	{
 		//on récupère le notion dans lstNotions
 		for (Notion not : this.notions) 
 		{
 			if (not.getNom().equals(notion)) 
-				return not.ajouterQuestionEnleve(question, explication, difficulte, point, temps, reponses, path);
+				return not.ajouterQuestionElimination(question, explication, difficulte, point, temps, reponses, path);
 		}
 		return null;
 	}
@@ -160,20 +156,6 @@ public class Ressource
 	{
 		notion.supprQuestion(questionn);
 	}
-
-
-	/*
-	////////////////
-	// Evaluation //
-	////////////////
-
-	//genererQuestionnaire(chrono, duree, notions, nbQuestions);
-	public String genererEvaluation(boolean chrono, float duree, ArrayList<String> notions, int nbQuestions)
-	{
-		return "Creation de l'évaluation";
-		//parmis les notions on récupère 
-	}
-	*/
 
 	/////////////
 	// GETTERS //
@@ -211,7 +193,7 @@ public class Ressource
 	
 	public String toString ()
 	{
-		String 	str ="Ressource : " +this.nom +"\n";
+		String 	str  = "Ressource : " +this.nom +"\n";
 				str += "Liste des Notions :\n";
 		for (Notion not : notions) 
 		{
@@ -224,7 +206,7 @@ public class Ressource
 	//affiche la resource et ses notions
 	public String afficherRessource()
 	{
-		String 	str ="Ressource : " +this.nom +"\n";
+		String 	str  = "Ressource : " +this.nom +"\n";
 				str += "Liste des Notions :\n";
 
 		for (Notion not : notions) 
@@ -238,7 +220,7 @@ public class Ressource
 	//affiche la ressource et le détail de ses notions
 	public String afficherRessourceDetail()
 	{
-		String 	str ="\nRessource : " +this.nom +"\n";
+		String 	str  = "\nRessource : " +this.nom +"\n";
 				str += "Liste des Notions :\n";
 
 		for (Notion not : this.notions) 
@@ -250,58 +232,9 @@ public class Ressource
 		return str;
 	}
 
-	/////////
-	// CUI //
-	/////////
-
-	//methode creerRessource en demandant les informations à l'utilisateur
-	public static Ressource creerRessource(Scanner sc) 
-	//"sc" utilisation de scanner pour récupérer les informations de l'utilisateur en version console
+	@Override
+	public int compareTo(Ressource o) 
 	{
-		System.out.print("Entrez le nom de la ressource : ");
-		String nom = sc.nextLine();
-
-		return new Ressource(nom);
-	}
-
-	
-	//ajouter notions
-	public void ajouterNotions(Scanner sc)
-	{
-		//demander si on creer la liste des notions, tant que la réponse n'est pas oui ou non
-		String reponse;
-		do
-		{
-			System.out.print("Voulez-vous ajouter des notions ? (oui/non) : ");
-			reponse = sc.nextLine();
-		}
-		while (!reponse.equalsIgnoreCase("oui") && !reponse.equalsIgnoreCase("non"));
-		
-		//si oui on demande le nombre et on les ajoute
-		if (reponse.equalsIgnoreCase("oui")) 
-		{
-			//on demande le nombre de notions tant que le nombre n'est pas positif et entier
-			int nbNot;
-			do
-			{
-				System.out.print("Combien de notions voulez-vous ajouter ? ");
-				while (!sc.hasNextInt()) 
-				{
-					System.out.print("Veuillez entrer un nombre entier : ");
-					sc.next();
-				}
-				nbNot = sc.nextInt();
-				sc.nextLine();
-			}
-			while (nbNot <= 0);
-
-			//on crée les notions
-			for (int i=0; i<nbNot; i++)
-			{	
-				System.out.println("\nCréation du notion "+(i+1)+" : ");
-				Notion not = Notion.creerNotion(sc);
-				this.addNotion(not);
-			}
-		}
+		return this.nom.compareToIgnoreCase(o.nom);
 	}
 }

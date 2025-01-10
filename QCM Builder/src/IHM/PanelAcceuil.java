@@ -4,123 +4,131 @@
  */
 package IHM;
 
-import javax.swing.*;
+import Controlleur.Controlleur;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import Controlleur.Controlleur;
+import javax.swing.*;
 
 public class PanelAcceuil extends JPanel implements ActionListener 
 {
-    private Controlleur ctrl;
-    private FramePrincipal frame;
+	private Controlleur    ctrl;
+	private FramePrincipal frame;
 
-    public PanelAcceuil(Controlleur ctrl, FramePrincipal frame) 
-    {
-        this.ctrl  = ctrl;
-        this.frame = frame;
+	public PanelAcceuil(Controlleur ctrl, FramePrincipal frame) 
+	{
+		this.ctrl  = ctrl;
+		this.frame = frame;
 
-        // Configuration du layout principal
-        GridBagLayout grid = new GridBagLayout();
-        setLayout(grid);
+		GridBagLayout grid = new GridBagLayout();
+		setLayout(grid);
 
-        GridBagConstraints c = new GridBagConstraints();
+		GridBagConstraints c = new GridBagConstraints();
 
-        // Contenu entête
-        c.fill = GridBagConstraints.BOTH;
-        c.weightx = 1;
-        c.weighty = 0.1; // 10% de la hauteur totale
-        c.gridx = 0;
-        c.gridy = 0;
-        
-        PanelNavigation navigation = new PanelNavigation(frame, null);
-        this.add(navigation, c);
+		// Contenu entête
+		c.fill    = GridBagConstraints.BOTH;
+		c.weightx = 1  ;
+		c.weighty = 0.1;
+		c.gridx   = 0  ;
+		c.gridy   = 0  ;
+		
+		PanelNavigation navigation = new PanelNavigation(frame, null);
+		this.add(navigation, c);
 
-        // Contenu principal (Milieu)
-        c.fill = GridBagConstraints.BOTH;
-        c.weightx = 1;
-        c.weighty = 0.9; // 80% de la hauteur totale
-        c.gridx = 0;
-        c.gridy = 1;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1  ;
+		c.weighty = 0.9;
+		c.gridx   = 0  ;
+		c.gridy   = 1  ;
 
-        // Panneau pour les éléments dans la zone centrale
-        JPanel contenuMilieu = new JPanel();
-        contenuMilieu.setLayout(new GridBagLayout());
+		//Panel pour les éléments dans la zone centrale
+		JPanel contenuMilieu = new JPanel();
+		contenuMilieu.setLayout(new GridBagLayout());
 
-        // Configuration des éléments dans contenuMilieu
-        GridBagConstraints cmConstraints = new GridBagConstraints();
-        cmConstraints.fill = GridBagConstraints.HORIZONTAL;
-        cmConstraints.insets = new Insets(20, 20, 20, 20); // Espacement autour des composants
-        cmConstraints.weightx = 1;
-        cmConstraints.weighty = 1;
+		//Configuration des éléments dans contenuMilieu
+		GridBagConstraints cmConstraints = new GridBagConstraints();
+		cmConstraints.fill    = GridBagConstraints.HORIZONTAL;
+		cmConstraints.insets  = new Insets(20, 20, 20, 20); // Espacement autour des composants
+		cmConstraints.weightx = 1;
+		cmConstraints.weighty = 1;
 
-        // Ajout de "Créer une question"
-        cmConstraints.gridx = 0; // Position 0, colonne 0
-        cmConstraints.gridy = 0; // Ligne 0
-        JPanel creationQuestion = createPanel("Créer question");
-        contenuMilieu.add(creationQuestion, cmConstraints);
 
-        // Ajout de "Créer une evaluation"
-        cmConstraints.gridx = 1; // Colonne 1
-        cmConstraints.gridy = 0; // Ligne 0
-        JPanel creationEvaluation = createPanel("Générer évaluation");
-        contenuMilieu.add(creationEvaluation, cmConstraints);
+		cmConstraints.gridx = 0;
+		cmConstraints.gridy = 0;
+		JPanel creationQuestion = createPanel("Créer question");
+		contenuMilieu.add(creationQuestion, cmConstraints);
 
-        // Ajout de "Créer une ressource"
-        cmConstraints.gridx = 2; // Colonne 2
-        cmConstraints.gridy = 0; // Ligne 0
-        JPanel creationRessource = createPanel("Créer ressource");
-        contenuMilieu.add(creationRessource, cmConstraints);
+		cmConstraints.gridx = 1;
+		cmConstraints.gridy = 0;
+		JPanel creationEvaluation = createPanel("Générer évaluation");
+		contenuMilieu.add(creationEvaluation, cmConstraints);
 
-        // Ajout du panneau central
-        this.add(contenuMilieu, c);
+		cmConstraints.gridx = 2; 
+		cmConstraints.gridy = 0; 
+		JPanel creationRessource = createPanel("Créer ressource");
+		contenuMilieu.add(creationRessource, cmConstraints);
 
-        frame.setVisible(true);
-    }
+		this.add(contenuMilieu, c);
 
-    private JPanel createPanel( String boutonTexte) 
-    {
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(2, 1)); // Grille à deux lignes (titre + bouton)
+		frame.setVisible(true);
+	}
 
-        // Bouton avec le texte
-        JButton bouton = new JButton(boutonTexte);
-        bouton.setFont(new Font("Arial", Font.BOLD, 14)); // Taille plus petite du texte
-        bouton.setPreferredSize(new Dimension(150, 40)); // Taille plus petite et plus rectangulaire
-        bouton.setForeground(Color.WHITE);
-        
-        // Enlever le fond du bouton et arrondir les bords
-        bouton.setBackground(new Color(201,80,46)); 
-        bouton.setFocusPainted(false); // Enlever la surbrillance lorsqu'on clique sur le bouton
-        bouton.setContentAreaFilled(true); // Remplir la zone de contenu du bouton
+	//Méthodes pour créé les panel
+	private JPanel createPanel( String boutonTexte) 
+	{
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(2, 1));
 
-        bouton.addActionListener(this);
+		JButton bouton = new JButton(boutonTexte);
+		bouton.setFont(new Font("Arial", Font.BOLD, 14)); 
+		bouton.setPreferredSize(new Dimension(150, 40)); 
+		bouton.setForeground(Color.WHITE);
+		
 
-        panel.add(bouton);
+		bouton.setBackground(new Color(201,80,46)); 
+		bouton.setFocusPainted     (false);
+		bouton.setContentAreaFilled(true );
 
-        return panel;
-    }
+		bouton.addActionListener(this);
 
-    public void actionPerformed(ActionEvent e) 
-    {
-        if (e.getSource() instanceof JButton) 
+		panel.add(bouton);
+
+		return panel;
+	}
+
+	public void actionPerformed(ActionEvent e) 
+	{
+		if (e.getSource() instanceof JButton) 
 		{
-            JButton btn = (JButton) e.getSource();
-            if("Créer question".equals(btn.getText()))
-            {
-                new FrameCreationQuestion(frame, ctrl);
-            }
+			JButton btn = (JButton) e.getSource();
+			if("Créer question".equals(btn.getText()))
+			{
+				if (this.ctrl.getNomRessources().length == 0)
+				{
+					JOptionPane.showMessageDialog(null, 
+					"Il doit y avoir au moins une ressource pour créer une question", "Erreur", JOptionPane.ERROR_MESSAGE);
+				}
+				else
+				{
+					new FrameCreationQuestion(this.frame, this.ctrl, false);
+				}
+			}
 
-            if("Créer evaluation".equals(btn.getText()))
-            {
-                new FrameEvaluation(ctrl);
-            }
+			if("Générer évaluation".equals( btn.getText() ) )
+			{
+				if (this.ctrl.getNomRessources().length == 0)
+				{
+					JOptionPane.showMessageDialog(null, 
+					"Il doit y avoir au moins une ressource pour générer une évaluation", "Erreur", JOptionPane.ERROR_MESSAGE);
+				}
+				else 
+				{
+					new FrameEvaluation(ctrl);
+				}
+			}
 
-            if("Créer ressource".equals(btn.getText()))
-            {
-                this.frame.afficheRessource();
-            }
-        }
-    }
+			if("Créer ressource".equals(btn.getText()))
+				this.frame.afficheRessource();
+		}
+	}
 }
