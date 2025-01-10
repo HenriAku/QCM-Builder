@@ -616,8 +616,27 @@ function feedbackos() {
 }
 
 //Va a la question suivante
-function nextQuestion() {
+function verifQuestionSuivante() {
 
+    if (!answersValidated[currentQuestionIndex]) {
+        const confirmationAlert = document.getElementById('confirmationAlert');
+        confirmationAlert.style.display = 'block';
+
+        document.getElementById('confirmYes').onclick = () => {
+            confirmationAlert.style.display = 'none';
+            questionSuivante();
+        };
+
+        document.getElementById('confirmNo').onclick = () => {
+            confirmationAlert.style.display = 'none';
+        };
+
+        return;
+    }
+    questionSuivante();
+}
+
+function questionSuivante() {
     if (currentQuestionIndex < quiz.length - 1) 
     {
         currentQuestionIndex++;
@@ -758,8 +777,6 @@ function updateNavigationButtons() {
     } else {
         nextButton.textContent = "Suivant";
     }
-
-    //nextButton.disabled = hasChrono && !answersValidated[currentQuestionIndex];
 }
 
 
@@ -802,7 +819,7 @@ window.onload = () => {
 		validateButton.addEventListener('click', validateAnswerElimination); // Validation pour Elimination
 	}
 
-	document.getElementById('next').addEventListener('click', nextQuestion);
+	document.getElementById('next').addEventListener('click', verifQuestionSuivante);
 	document.getElementById('prev').addEventListener('click', prevQuestion);
 	document.getElementById('feedback').addEventListener('click', afficherFeedback);
 };

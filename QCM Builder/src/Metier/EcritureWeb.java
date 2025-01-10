@@ -244,9 +244,9 @@ public class EcritureWeb
 						<p id="timer"></p>
 						<p id="question-number"></p>
 						<p id="question"></p>
+						<div id="complement">Complément</div>
 						<p id="response-label" style="font-weight: bold; margin-bottom: 10px;"></p>
 						<div id="answers"></div>
-						<div id="complement"></div> <!-- Conteneur pour le fichier complémentaire -->
 						<div id="supprimer"></div>
 							<div>
 							<button class="buttonAction" id="prev">Précédent</button>
@@ -261,6 +261,12 @@ public class EcritureWeb
 								<p id="alertMessage"></p>
 								<button onclick="fermerFeedback()">Valider</button>
 							</div>
+						</div>
+
+						<div id="confirmationAlert" style="display: none;">
+							<p id="confirmationMessage">Êtes-vous sûr de passer la question sans avoir validé ?</p>
+							<button id="confirmYes">Oui</button>
+							<button id="confirmNo">Non</button>
 						</div>
 
 					</div>
