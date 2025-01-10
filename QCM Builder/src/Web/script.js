@@ -551,14 +551,21 @@ function validateAnswerAssociation() {
 // Fonction pour surligner les réponses après la validation d'une question d'elimination
 function highlightAnswersElimination(isCorrect) {
     const buttons = document.querySelectorAll("#answers button");
+    const questionObj = quiz[currentQuestionIndex]; // Récupère les données de la question actuelle
+    const correctAnswerIndex = questionObj.correct[0]; // Indice de la bonne réponse
+
     buttons.forEach((button, index) => {
         if (index === selectedAnswer) {
-            // Si la réponse sélectionnée est correcte ou incorrecte, changez la couleur
+            // Si la réponse sélectionnée est correcte ou incorrecte, change la couleur
             button.style.backgroundColor = isCorrect ? "lightgreen" : "lightcoral";
+        }
+
+        // Affiche la bonne réponse en vert, même si elle n'a pas été sélectionnée
+        if (index === correctAnswerIndex) {
+            button.style.backgroundColor = "lightgreen";
         }
     });
 }
-
 
 // Met à jour les couleurs pour plusieurs réponses
 function highlightAnswers(isCorrect) {
